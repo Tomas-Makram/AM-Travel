@@ -1,4 +1,4 @@
-﻿using BusinessLayer.DTOs;
+using BusinessLayer.DTOs;
 using BusinessLayer.DTOs.Bus;
 using BusinessLayer.DTOs.Company;
 using BusinessLayer.DTOs.CompanyBookSeat;
@@ -2036,12 +2036,16 @@ namespace BusinessLayer.Functions
 
                     foreach (var snap in snaps ?? new List<TransferredSeatSnapshot>())
                     {
-                        if (snap.BookingSeatId != Guid.Empty)
+                        var isClientTransfer = booking.TransferredFromBookingId.HasValue;
+
+                        var isCompanyTransfer = !isClientTransfer && snap.OriginalCompanyId.HasValue && snap.OriginalCompanyId.Value != Guid.Empty;
+
+                        if (isCompanyTransfer && snap.BookingSeatId != Guid.Empty)
                             deleteIds.Add(snap.BookingSeatId);
 
                         rows.Add(new ForceDeleteConflictSeatDTO
                         {
-                            BookingId = snap.BookingSeatId != Guid.Empty ? snap.BookingSeatId : booking.BookingId,
+                            BookingId = isClientTransfer ? booking.BookingId : snap.BookingSeatId != Guid.Empty ? snap.BookingSeatId : booking.BookingId,
                             TripId = snap.TripId,
                             SeatId = snap.SeatId,
                             SeatLabel = snap.SeatLabel,
@@ -2051,7 +2055,9 @@ namespace BusinessLayer.Functions
                             BusName = booking.Trip?.BusNameSnapshot ?? "-",
                             TripDate = booking.TripDate,
                             Route = $"{snap.FromLocation} → {snap.ToLocation}",
-                            Type = "Original booking"
+                            Type = isClientTransfer
+                            ? "Original Booking transfer - protected"
+                            : "Original company booking"
                         });
                     }
                 }
@@ -2084,7 +2090,7 @@ namespace BusinessLayer.Functions
                 var data = new ForceDeleteConflictDetailsDTO
                 {
                     BookingIds = deleteIds.ToList(),
-                    Message = "Force delete will remove only the selected transfer booking and its original related booking records.",
+                    Message = "Force delete will restore/delete company transfers when possible. Transfers that belong to an original Booking cannot be force deleted if their original seats are already booked again.",
                     Seats = rows
                         .GroupBy(x => x.BookingId)
                         .Select(x => x.First())
@@ -2228,12 +2234,29 @@ namespace BusinessLayer.Functions
 
                     if (!canRestore)
                     {
-                        foreach (var snap in snaps)
+                        if (isClientTransfer)
                         {
-                            if (snap.BookingSeatId != Guid.Empty)
-                                deleteIds.Add(snap.BookingSeatId);
+                            await tx.RollbackAsync();
+
+                            return ResponceApi<bool>.Fail(
+                                "Cannot force delete this transfer because it belongs to an original Booking, " +
+                                "and its original bus seat(s) are already booked again. " +
+                                "No changes were made. To remove it, delete the original Booking itself."
+                            );
                         }
 
+                        if (isCompanyTransfer || isExternalReplacement)
+                        {
+                            foreach (var snap in snaps)
+                            {
+                                if (snap.BookingSeatId != Guid.Empty)
+                                    deleteIds.Add(snap.BookingSeatId);
+                            }
+
+                            continue;
+                        }
+
+                        deleteIds.Add(transfer.BookingId);
                         continue;
                     }
 
@@ -2416,6 +2439,18 @@ namespace BusinessLayer.Functions
 
                     deleteIds.Add(transfer.BookingId);
                 }
+
+                var protectedClientTransferIds = await _db.CompanySeatBookings
+                .Where(x =>
+                    deleteIds.Contains(x.BookingId) &&
+                    x.BookingDirection == CompanySeatBookingDirection.Outbound &&
+                    x.TransferredFromBookingId != null &&
+                    !string.IsNullOrWhiteSpace(x.TransferredSeatsJson))
+                .Select(x => x.BookingId)
+                .ToListAsync();
+
+                foreach (var id in protectedClientTransferIds)
+                    deleteIds.Remove(id);
 
                 var companyBookingsToDelete = await _db.CompanySeatBookings
                     .Where(x => deleteIds.Contains(x.BookingId))
