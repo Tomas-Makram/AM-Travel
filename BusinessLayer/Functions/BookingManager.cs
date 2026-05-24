@@ -1740,16 +1740,21 @@ namespace BusinessLayer.Functions
                     .ToDictionaryAsync(x => x.TripId, x => x.Count);
 
                 // حذف الـ Trips الفاضية
-                var emptyTrips = trips.Where(x =>
-                    !x.ReservedSeats.Any() &&
-                    (!companyBookingCounts.TryGetValue(x.TripId, out var cc) || cc == 0)).ToList();
+                // مهم جدًا:
+                // لا تحذف Trips من شاشة البحث أو تجهيز الحجز.
+                // الـ Trip ممكن يكون فاضي من المقاعد الفعلية بعد نقل مقاعد Booking لشركة،
+                // لكنه ما زال مستخدمًا داخل TransferredSeatsJson لعرض المقاعد المنقولة في تفاصيل الحجز القديم.
+                // لذلك ممنوع RemoveRange أو SaveChanges هنا.
+                //var emptyTrips = trips.Where(x =>
+                //    !x.ReservedSeats.Any() &&
+                //    (!companyBookingCounts.TryGetValue(x.TripId, out var cc) || cc == 0)).ToList();
 
-                if (emptyTrips.Any())
-                {
-                    _db.BusTrips.RemoveRange(emptyTrips);
-                    await _db.SaveChangesAsync();
-                    trips = trips.Except(emptyTrips).ToList();
-                }
+                //if (emptyTrips.Any())
+                //{
+                //    _db.BusTrips.RemoveRange(emptyTrips);
+                //    await _db.SaveChangesAsync();
+                //    trips = trips.Except(emptyTrips).ToList();
+                //}
 
                 var result = BuildAvailabilityResult(
                     busesWithCapacity.Select(x => (x.Bus, x.Capacity)).ToList(),
@@ -2231,13 +2236,43 @@ namespace BusinessLayer.Functions
                 var first = transferredGroup.First();
 
                 var trip = _db.BusTrips
-                    .AsNoTracking()
-                    .Include(x => x.Bus)
-                        .ThenInclude(x => x.Seats)
-                    .FirstOrDefault(x => x.TripId == transferredGroup.Key);
+                 .AsNoTracking()
+                 .Include(x => x.Bus)
+                     .ThenInclude(x => x.Seats)
+                 .FirstOrDefault(x => x.TripId == transferredGroup.Key);
 
                 if (trip == null || trip.Bus == null)
+                {
+                    trips.Add(new BookingTransportationTripDTO
+                    {
+                        TripId = transferredGroup.Key,
+                        Direction = first.Direction,
+                        TripDate = first.TripDate,
+                        FromLocation = first.FromLocation,
+                        ToLocation = first.ToLocation,
+
+                        BusId = first.BusId,
+                        BusName = !string.IsNullOrWhiteSpace(first.BusName)
+                            ? first.BusName
+                            : "Transferred Bus",
+
+                        PlateNumber = first.PlateNumber ?? string.Empty,
+
+                        LayoutRows = 0,
+                        LayoutColumns = 0,
+
+                        Total = transferredGroup.Sum(x => x.SeatPrice),
+
+                        BusSeats = new List<BookingBusSeatDTO>(),
+
+                        BookedSeats = transferredGroup
+                            .OrderBy(x => x.RowNumber)
+                            .ThenBy(x => x.ColumnNumber)
+                            .ToList()
+                    });
+
                     continue;
+                }
 
                 trips.Add(new BookingTransportationTripDTO
                 {
