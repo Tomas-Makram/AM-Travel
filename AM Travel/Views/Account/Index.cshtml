@@ -1,0 +1,515 @@
+@model BusinessLayer.DTOs.Account.MyAccountDTO
+
+@{
+    ViewData["Title"] = L["Account_Title"];
+
+    var roleText = Model.AccountType.ToString();
+
+    var initials = Model.FullName
+        .Split(' ')
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Take(2)
+        .Select(x => x[0])
+        .Aggregate("", (a, b) => a + b)
+        .ToUpper();
+}
+
+<style>
+    :root {
+        --acc-page-gap:      20px;
+        --acc-hero-bg:       linear-gradient(135deg, #ff7a18, #ffad42);
+        --acc-hero-glow:     rgba(255,122,24,.18);
+        --acc-hero-text:     #fff;
+        --acc-hero-sub:      rgba(255,255,255,.92);
+        --acc-card-bg:       #fff;
+        --acc-card-border:   #f0d8c2;
+        --acc-card-shadow:   rgba(255,122,24,.09);
+        --acc-card-row-bg:   #fffaf5;
+        --acc-card-row-bdr:  #f3dfcc;
+        --acc-heading:       #172033;
+        --acc-sub:           #667085;
+        --acc-value:         #172033;
+        --acc-empty:         #98a2b3;
+        --acc-pill-role-bg:  #fff3e6;
+        --acc-pill-role-txt: #ff7a18;
+        --acc-pill-ok-bg:    rgba(18,183,106,.12);
+        --acc-pill-ok-txt:   #12b76a;
+        --acc-pill-warn-bg:  rgba(247,144,9,.13);
+        --acc-pill-warn-txt: #f79009;
+    }
+
+    html[data-theme="dark"] {
+        --acc-hero-bg:       linear-gradient(135deg, #c45c0a, #d97c2a);
+        --acc-hero-glow:     rgba(196,92,10,.22);
+        --acc-hero-text:     #f5f0eb;
+        --acc-hero-sub:      rgba(245,240,235,.82);
+        --acc-card-bg:       #1e2535;
+        --acc-card-border:   #2d3650;
+        --acc-card-shadow:   rgba(0,0,0,.28);
+        --acc-card-row-bg:   #252d3f;
+        --acc-card-row-bdr:  #313c54;
+        --acc-heading:       #e8ddd5;
+        --acc-sub:           #8a96a8;
+        --acc-value:         #d4cbc3;
+        --acc-empty:         #5a6478;
+        --acc-pill-role-bg:  rgba(196,92,10,.22);
+        --acc-pill-role-txt: #e8925a;
+        --acc-pill-ok-bg:    rgba(18,183,106,.16);
+        --acc-pill-ok-txt:   #34d399;
+        --acc-pill-warn-bg:  rgba(247,144,9,.16);
+        --acc-pill-warn-txt: #fbbf24;
+    }
+
+    .account-page {
+        display: grid;
+        gap: var(--acc-page-gap);
+    }
+
+    .account-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: var(--acc-hero-text);
+        background: var(--acc-hero-bg);
+        box-shadow: 0 24px 70px var(--acc-hero-glow);
+    }
+
+        .account-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.18), transparent 28%);
+            pointer-events: none;
+        }
+
+        .account-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            bottom: -110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+        }
+
+    .account-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .account-title {
+        display: grid;
+        gap: 10px;
+    }
+
+    .account-badge {
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: var(--acc-hero-text);
+    }
+
+    .account-title h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1;
+        letter-spacing: -1px;
+        color: var(--acc-hero-text);
+    }
+
+    .account-title p {
+        margin: 0;
+        color: var(--acc-hero-sub);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .account-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+        flex-shrink: 0;
+    }
+
+        .account-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .account-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: account-avatar-spin 4s linear infinite;
+        }
+
+    .account-avatar {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)),
+                    linear-gradient(135deg, #ffffff, #fff3e6);
+        color: #ff7a18;
+        border: 1px solid rgba(255,255,255,.55);
+        font-size: 42px;
+        font-weight: 1000;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .account-avatar-status {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+        box-shadow: 0 8px 18px rgba(18,183,106,.35);
+    }
+
+    @@keyframes account-avatar-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .account-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .account-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 900;
+        transition: .2s ease;
+    }
+
+        .account-btn:hover { transform: translateY(-2px); }
+
+    .btn-white {
+        background: #fff;
+        color: #ff7a18;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .btn-glass {
+        background: rgba(255,255,255,.16);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.24);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .summary-card {
+        background: var(--acc-card-bg);
+        border: 1px solid var(--acc-card-border);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 16px 38px var(--acc-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+        .summary-card small {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--acc-sub);
+            font-weight: 900;
+        }
+
+        .summary-card strong {
+            display: block;
+            color: var(--acc-heading);
+            font-size: 20px;
+            word-break: break-word;
+        }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        width: fit-content;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .pill-role    { color: var(--acc-pill-role-txt); background: var(--acc-pill-role-bg); }
+    .pill-success { color: var(--acc-pill-ok-txt);   background: var(--acc-pill-ok-bg);   }
+    .pill-warning { color: var(--acc-pill-warn-txt); background: var(--acc-pill-warn-bg); }
+
+    .details-card {
+        background: var(--acc-card-bg);
+        border: 1px solid var(--acc-card-border);
+        border-radius: 30px;
+        padding: 26px;
+        box-shadow: 0 18px 42px var(--acc-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .details-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+        .details-head h2 {
+            margin: 0;
+            color: var(--acc-heading);
+            font-size: 28px;
+        }
+
+        .details-head p {
+            margin: 6px 0 0;
+            color: var(--acc-sub);
+            line-height: 1.7;
+        }
+
+    .details-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .detail-row {
+        padding: 16px;
+        border-radius: 18px;
+        background: var(--acc-card-row-bg);
+        border: 1px solid var(--acc-card-row-bdr);
+        transition: background .3s, border-color .3s;
+    }
+
+    .detail-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--acc-sub);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .detail-value {
+        color: var(--acc-value);
+        font-size: 16px;
+        font-weight: 900;
+        word-break: break-word;
+    }
+
+    .empty-value {
+        color: var(--acc-empty);
+        font-weight: 800;
+    }
+
+    @@media (max-width: 1000px) {
+        .summary-grid,
+        .details-list { grid-template-columns: 1fr 1fr; }
+    }
+
+    @@media (max-width: 640px) {
+        .account-hero { padding: 24px; border-radius: 24px; }
+
+        .summary-grid,
+        .details-list { grid-template-columns: 1fr; }
+
+        .account-avatar-wrap { width: 112px; height: 112px; border-radius: 32px; }
+
+            .account-avatar-wrap::before,
+            .account-avatar-wrap::after { border-radius: 38px; }
+
+        .account-avatar { width: 88px; height: 88px; border-radius: 27px; font-size: 34px; }
+
+        .account-actions { flex-direction: column; }
+        .account-btn { width: 100%; }
+    }
+</style>
+
+<div class="account-page">
+
+    @* Hero *@
+    <section class="account-hero">
+        <div class="account-hero-inner">
+            <div class="account-title">
+                <span class="account-badge">@L["Account_Badge"]</span>
+                <h1>@Model.FullName</h1>
+                <p>@L["Account_Subtitle"]</p>
+            </div>
+
+            <div class="account-avatar-wrap" title="@Model.FullName">
+                <div class="account-avatar">@initials</div>
+
+                @if (Model.Login)
+                {
+                    <span class="account-avatar-status"></span>
+                }
+            </div>
+        </div>
+
+        <div class="account-actions">
+            <a class="account-btn btn-white" asp-action="Edit">@L["Account_EditProfile"]</a>
+            <a class="account-btn btn-glass" asp-action="ChangePassword">@L["Account_ChangePassword"]</a>
+            <a class="account-btn btn-glass" asp-controller="Dashboard" asp-action="Index">@L["Account_Dashboard"]</a>
+        </div>
+    </section>
+
+    @* Summary strip *@
+    <section class="summary-grid">
+        <div class="summary-card">
+            <small>@L["Account_Username"]</small>
+            <strong>@Model.UserName</strong>
+        </div>
+
+        <div class="summary-card">
+            <small>@L["Account_Role"]</small>
+            <span class="pill pill-role">@roleText</span>
+        </div>
+
+        <div class="summary-card">
+            <small>@L["Account_AccountStatus"]</small>
+            @if (Model.Activate)
+            {
+                <span class="pill pill-success">● @L["Account_Active"]</span>
+            }
+            else
+            {
+                <span class="pill pill-warning">● @L["Account_Inactive"]</span>
+            }
+        </div>
+
+        <div class="summary-card">
+            <small>@L["Account_LoginStatus"]</small>
+            @if (Model.Login)
+            {
+                <span class="pill pill-success">● @L["Account_Online"]</span>
+            }
+            else
+            {
+                <span class="pill pill-warning">● @L["Account_Offline"]</span>
+            }
+        </div>
+    </section>
+
+    @* Profile details *@
+    <section class="details-card">
+        <div class="details-head">
+            <div>
+                <h2>@L["Account_ProfileDetails"]</h2>
+                <p>@L["Account_ProfileSubtitle"]</p>
+            </div>
+        </div>
+
+        <div class="details-list">
+            <div class="detail-row">
+                <span class="detail-label">@L["Account_FullName"]</span>
+                <span class="detail-value">
+                    @if (string.IsNullOrWhiteSpace(Model.FullName))
+                    {
+                        <span class="empty-value">@L["Account_NotSet"]</span>
+                    }
+                    else
+                    {
+                        @Model.FullName
+                    }
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">@L["Account_Username"]</span>
+                <span class="detail-value">
+                    @if (string.IsNullOrWhiteSpace(Model.UserName))
+                    {
+                        <span class="empty-value">@L["Account_NotSet"]</span>
+                    }
+                    else
+                    {
+                        @Model.UserName
+                    }
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">@L["Account_PhoneNumber"]</span>
+                <span class="detail-value">
+                    @if (string.IsNullOrWhiteSpace(Model.PhoneNumber))
+                    {
+                        <span class="empty-value">@L["Account_NotSet"]</span>
+                    }
+                    else
+                    {
+                        @Model.PhoneNumber
+                    }
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">@L["Account_NationalId"]</span>
+                <span class="detail-value">
+                    @if (string.IsNullOrWhiteSpace(Model.NationalId))
+                    {
+                        <span class="empty-value">@L["Account_NotSet"]</span>
+                    }
+                    else
+                    {
+                        @Model.NationalId
+                    }
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">@L["Account_JoinDate"]</span>
+                <span class="detail-value">@Model.JoinDate</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">@L["Account_LastLogin"]</span>
+                <span class="detail-value">@Model.LastLogin</span>
+            </div>
+        </div>
+    </section>
+
+</div>

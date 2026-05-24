@@ -1,0 +1,255 @@
+﻿@model BusinessLayer.DTOs.Company.CreateCompanyDTO
+
+@{
+    ViewData["Title"] = L["CoCreate_Title"];
+
+    string fullName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName   = fullName.Trim().Replace("  ", " ");
+
+    var userName = string.Join("", cleanName
+        .Split(' ')
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Take(2)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(userName)) userName = "U";
+}
+
+<style>
+    /* ── CSS Variables ────────────────────────────────────────────────────── */
+    :root {
+        --co-hero-bg:        linear-gradient(135deg, #ff7a18, #ffad42);
+        --co-hero-glow:      rgba(255,122,24,.18);
+        --co-hero-text:      #fff;
+        --co-hero-sub:       rgba(255,255,255,.92);
+        --co-card-bg:        #fff;
+        --co-card-border:    #f0d8c2;
+        --co-card-shadow:    rgba(255,122,24,.10);
+        --co-label:          #667085;
+        --co-input-bg:       #fff;
+        --co-input-border:   #f3dfcc;
+        --co-input-text:     #172033;
+        --co-light-btn-bg:   #fffaf5;
+        --co-light-btn-bdr:  #f3dfcc;
+        --co-light-btn-txt:  #ff7a18;
+    }
+
+    html[data-theme="dark"] {
+        --co-hero-bg:        linear-gradient(135deg, #c45c0a, #d97c2a);
+        --co-hero-glow:      rgba(196,92,10,.22);
+        --co-hero-text:      #f5f0eb;
+        --co-hero-sub:       rgba(245,240,235,.85);
+        --co-card-bg:        #1a2236;
+        --co-card-border:    #283148;
+        --co-card-shadow:    rgba(0,0,0,.35);
+        --co-label:          #7a8ba0;
+        --co-input-bg:       #212c3f;
+        --co-input-border:   #3a4d66;
+        --co-input-text:     #c4cedb;
+        --co-light-btn-bg:   #212c3f;
+        --co-light-btn-bdr:  #3a4d66;
+        --co-light-btn-txt:  #f6ba72;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .transport-page { display: grid; gap: 20px; }
+
+    /* ── Hero ────────────────────────────────────────────────────────────── */
+    .transport-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: var(--co-hero-text);
+        background: var(--co-hero-bg);
+        box-shadow: 0 24px 70px var(--co-hero-glow);
+    }
+
+        .transport-hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.18), transparent 26%); pointer-events: none; }
+        .transport-hero::after  { content: ""; position: absolute; width: 260px; height: 260px; right: -90px; bottom: -110px; border-radius: 50%; background: rgba(255,255,255,.12); }
+
+    .transport-hero-inner { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 22px; flex-wrap: wrap; }
+    .transport-title      { display: grid; gap: 10px; }
+
+    .transport-badge { width: fit-content; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.24); font-weight: 900; color: var(--co-hero-text); }
+    .transport-title h1 { margin: 0; font-size: clamp(34px,5vw,54px); line-height: 1; letter-spacing: -1px; color: var(--co-hero-text); }
+    .transport-title p  { margin: 0; color: var(--co-hero-sub); font-size: 17px; line-height: 1.7; }
+
+    /* ── Avatar ──────────────────────────────────────────────────────────── */
+    .transport-avatar-wrap { position: relative; width: 132px; height: 132px; display: grid; place-items: center; border-radius: 38px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(12px); flex-shrink: 0; }
+    .transport-avatar-wrap::before { content: ""; position: absolute; inset: -7px; border-radius: 44px; border: 3px solid rgba(255,255,255,.22); }
+    .transport-avatar-wrap::after  { content: ""; position: absolute; inset: -7px; border-radius: 44px; border: 3px solid transparent; border-top-color: #fff; border-right-color: rgba(255,255,255,.72); animation: transport-avatar-spin 4s linear infinite; }
+    .transport-avatar { position: relative; z-index: 2; width: 104px; height: 104px; border-radius: 32px; display: grid; place-items: center; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)), linear-gradient(135deg,#fff,#fff3e6); color: #ff7a18; border: 1px solid rgba(255,255,255,.55); font-size: 42px; font-weight: 1000; box-shadow: 0 18px 38px rgba(0,0,0,.16); }
+    .transport-avatar-status { position: absolute; right: 13px; bottom: 13px; z-index: 3; width: 20px; height: 20px; border-radius: 50%; background: #12b76a; border: 4px solid #fff; }
+    @@keyframes transport-avatar-spin { to { transform: rotate(360deg); } }
+
+    /* ── Hero actions ────────────────────────────────────────────────────── */
+    .transport-actions { position: relative; z-index: 1; display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .transport-btn { min-height: 46px; padding: 12px 18px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 900; transition: .2s ease; }
+    .transport-btn:hover { transform: translateY(-2px); }
+    .btn-white { background: #fff; color: #ff7a18; box-shadow: 0 14px 30px rgba(0,0,0,.12); }
+    .btn-glass  { background: rgba(255,255,255,.16); color: var(--co-hero-text); border: 1px solid rgba(255,255,255,.24); }
+
+    /* ── Form card ───────────────────────────────────────────────────────── */
+    .form-card {
+        background: var(--co-card-bg);
+        border: 1px solid var(--co-card-border);
+        border-radius: 30px;
+        padding: 26px;
+        box-shadow: 0 18px 42px var(--co-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .form-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+    .form-group { display: grid; gap: 7px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group label { color: var(--co-label); font-size: 13px; font-weight: 900; transition: color .3s; }
+
+    .form-group input,
+    .form-group textarea {
+        border-radius: 16px;
+        border: 1px solid var(--co-input-border);
+        padding: 13px 14px;
+        outline: none;
+        font-weight: 800;
+        resize: vertical;
+        background: var(--co-input-bg);
+        color: var(--co-input-text);
+        font-size: 14px;
+        transition: border-color .2s, background .3s, color .3s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: rgba(255,122,24,.55);
+            background: var(--co-card-bg);
+            box-shadow: 0 0 0 4px rgba(255,122,24,.09);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: var(--co-label); opacity: .7; }
+
+    /* ── Form actions ────────────────────────────────────────────────────── */
+    .form-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+
+    .orange-btn {
+        min-height: 46px;
+        padding: 0 22px;
+        border-radius: 16px;
+        border: none;
+        background: linear-gradient(135deg, #ff7a18, #ffad42);
+        color: #fff;
+        font-weight: 900;
+        font-size: 15px;
+        cursor: pointer;
+        box-shadow: 0 10px 28px rgba(255,122,24,.22);
+        transition: .2s ease;
+    }
+
+        .orange-btn:hover  { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(255,122,24,.30); }
+        .orange-btn:active { transform: translateY(0); }
+
+    .light-btn {
+        min-height: 46px;
+        padding: 0 22px;
+        border-radius: 16px;
+        border: 1px solid var(--co-light-btn-bdr);
+        background: var(--co-light-btn-bg);
+        color: var(--co-light-btn-txt);
+        font-weight: 900;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+    }
+
+        .light-btn:hover { transform: translateY(-2px); }
+
+    /* ── Validation ──────────────────────────────────────────────────────── */
+    .text-danger,
+    .field-validation-error { color: #f04438; font-weight: 800; font-size: 13px; }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @@media (max-width: 700px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .transport-actions { flex-direction: column; }
+        .transport-btn { width: 100%; }
+        .form-actions  { flex-direction: column; }
+        .orange-btn, .light-btn { width: 100%; }
+        .transport-avatar-wrap { width: 112px; height: 112px; border-radius: 32px; }
+        .transport-avatar-wrap::before, .transport-avatar-wrap::after { border-radius: 38px; }
+        .transport-avatar { width: 88px; height: 88px; font-size: 34px; border-radius: 27px; }
+    }
+</style>
+
+<div class="transport-page">
+
+    @* Hero *@
+    <section class="transport-hero">
+        <div class="transport-hero-inner">
+            <div class="transport-title">
+                <span class="transport-badge">@L["CoCreate_Badge"]</span>
+                <h1>@L["CoCreate_Heading"]</h1>
+                <p>@L["CoCreate_Subtitle"]</p>
+            </div>
+
+            <div class="transport-avatar-wrap">
+                <div class="transport-avatar">@userName</div>
+                <span class="transport-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="transport-actions">
+            <a class="transport-btn btn-white" asp-action="Companies">@L["CoCreate_Companies"]</a>
+            <a class="transport-btn btn-glass" asp-action="Buses">@L["CoCreate_Buses"]</a>
+            <a class="transport-btn btn-glass" asp-action="Trips">@L["CoCreate_Trips"]</a>
+        </div>
+    </section>
+
+    @* Form *@
+    <section class="form-card">
+        <form asp-action="CreateCompany" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label asp-for="Name">@L["CoCreate_Name"]</label>
+                    <input asp-for="Name" placeholder="@L["CoCreate_NamePH"]" />
+                    <span asp-validation-for="Name" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="PhoneNumber">@L["CoCreate_Phone"]</label>
+                    <input asp-for="PhoneNumber" placeholder="@L["CoCreate_PhonePH"]" />
+                    <span asp-validation-for="PhoneNumber" class="field-validation-error"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Notes">@L["CoCreate_Notes"]</label>
+                    <textarea asp-for="Notes" rows="5" placeholder="@L["CoCreate_NotesPH"]"></textarea>
+                    <span asp-validation-for="Notes" class="field-validation-error"></span>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button class="orange-btn" type="submit">@L["CoCreate_Submit"]</button>
+                <a class="light-btn" asp-action="Companies">@L["CoCreate_Cancel"]</a>
+            </div>
+        </form>
+    </section>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,791 @@
+@model BusinessLayer.DTOs.Book.BookingDetailsDTO
+@using BusinessLayer.DTOs.Book
+@using DataLayer.Models
+
+@{
+    Layout = null;
+    var today = DateTime.Now.ToString("yyyy/MM/dd");
+
+    var mainPhone = Model.PhoneNumbers?.FirstOrDefault(x => x.Prime)?.PhoneNumber
+                 ?? Model.PhoneNumbers?.FirstOrDefault()?.PhoneNumber ?? "";
+
+    var goTrip     = Model.TransportationTrips?.FirstOrDefault(x => x.Direction == TripDirection.Departure);
+    var returnTrip = Model.TransportationTrips?.FirstOrDefault(x => x.Direction == TripDirection.Return);
+
+    var tripTypeLabel =
+        goTrip != null && returnTrip != null ? "Round Trip" :
+        goTrip != null ? "Go Only" :
+        returnTrip != null ? "Return Only" : "Transportation";
+}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Transport Ticket - @Model.Code</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #f0f0f0;
+            font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+            color: #111;
+            padding: 10px;
+            font-size: 10px;
+        }
+
+        /* ---- ACTIONS ---- */
+        .actions {
+            width: 105mm;
+            margin: 0 auto 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 10px; border: none;
+            font-weight: 900; font-size: 12px; cursor: pointer; text-decoration: none;
+            transition: .2s ease;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-print  { background: #ff7a18; color: #fff; }
+        .btn-back   { background: #172033; color: #fff; }
+
+        /* ---- TICKET WRAPPER ---- */
+        .ticket-page {
+            width: 105mm;
+            margin: auto;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,.15);
+        }
+
+        /* ---- HEADER BAND ---- */
+        .ticket-header {
+            background: #ff7a18;
+            padding: 10px 14px;
+            display: grid;
+            grid-template-columns: 44px 1fr 70px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-circle {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #fff;
+            display: grid; place-items: center;
+            border: 2px solid rgba(255,255,255,.4);
+            box-shadow: 0 4px 10px rgba(0,0,0,.15);
+            flex-shrink: 0;
+        }
+        .logo-circle img { width: 30px; height: 30px; object-fit: contain; border-radius: 50%; }
+        .logo-circle .logo-text { font-size: 14px; font-weight: 1000; color: #ff7a18; }
+
+        .ticket-title { text-align: center; color: #fff; }
+        .ticket-title h1 { font-size: 13px; font-weight: 1000; letter-spacing: .5px; margin-bottom: 2px; }
+        .ticket-title p  { font-size: 8px; font-weight: 700; opacity: .92; line-height: 1.4; }
+
+        .ticket-code-box {
+            text-align: center; color: #fff;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.35);
+            border-radius: 8px; padding: 6px 8px;
+        }
+        .ticket-code-box small  { display: block; font-size: 7px; font-weight: 900; opacity: .85; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .5px; }
+        .ticket-code-box strong { font-size: 13px; font-weight: 1000; letter-spacing: 1px; font-family: monospace; }
+
+        /* ---- META STRIP ---- */
+        .meta-strip {
+            background: #172033; color: #fff;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 5px 14px; font-size: 7.5px; font-weight: 900;
+            gap: 2px; text-align: center;
+        }
+        .meta-strip span { opacity: .85; }
+        .meta-strip strong { color: #ff7a18; }
+
+        /* ---- BODY ---- */
+        .ticket-body {
+            background: #fff;
+            padding: 10px 12px;
+        }
+
+        /* CLIENT ROW */
+        .client-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+            background: #fff8f2;
+            border: 1px solid #f3dfcc;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+        }
+        .client-field.full { grid-column: 1 / -1; }
+        .client-field small { display: block; color: #ff7a18; font-size: 7.5px; font-weight: 1000; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 2px; }
+        .client-field span  { font-size: 10.5px; font-weight: 900; color: #172033; }
+
+        /* SECTION TITLE */
+        .sec-title {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 10px; font-weight: 1000; color: #fff;
+            background: #ff7a18; border-radius: 8px;
+            padding: 6px 10px; margin: 10px 0 8px;
+        }
+        .sec-title .badge {
+            background: rgba(255,255,255,.22);
+            border-radius: 999px; padding: 2px 8px; font-size: 7.5px;
+        }
+
+        /* TRIP CARD */
+        .trip-card {
+            border: 1.5px solid #f3dfcc; border-radius: 12px;
+            overflow: hidden; margin-bottom: 10px;
+        }
+        .trip-card-head {
+            background: linear-gradient(135deg, #fff8f2, #fff3e6);
+            padding: 8px 10px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            flex-wrap: wrap; gap: 6px;
+            border-bottom: 1px solid #f3dfcc;
+        }
+        .trip-dir-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px; border-radius: 999px; font-weight: 1000; font-size: 8.5px;
+        }
+        .go-badge     { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .return-badge { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .trip-bus-info h4 { font-size: 10px; font-weight: 1000; color: #172033; margin: 4px 0 2px; }
+        .trip-bus-info p  { font-size: 8px; color: #667085; font-weight: 800; }
+        .trip-total-badge {
+            background: #ff7a18; color: #fff;
+            border-radius: 8px; padding: 5px 10px;
+            font-size: 11px; font-weight: 1000;
+            white-space: nowrap;
+        }
+
+        /* ROUTE DISPLAY */
+        .route-display {
+            direction: ltr;
+            unicode-bidi: isolate;
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 10px;
+            background: #fff; border-bottom: 1px solid #f3dfcc;
+            flex-wrap: wrap;
+        }
+        .route-node {
+            direction: auto;
+            unicode-bidi: isolate;
+            background: #fff8f2; border: 1px solid #f3dfcc;
+            border-radius: 999px; padding: 4px 10px;
+            font-weight: 1000; font-size: 9px; color: #172033;
+        }
+        .route-arrow-big {
+            direction: ltr;
+            unicode-bidi: isolate;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: #ff7a18; color: #fff;
+            display: grid; place-items: center;
+            font-size: 12px; font-weight: 1000;
+            flex-shrink: 0;
+        }
+        .route-date {
+            direction: rtl;
+            unicode-bidi: isolate;
+            font-size: 8px;
+            font-weight: 900;
+            color: #667085;
+            margin-left: auto;
+        }
+
+        /* GROUPED SEATS */
+        .seats-area { padding: 8px 10px; }
+        .seats-title {
+            font-size: 8px;
+            font-weight: 1000;
+            color: #667085;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            margin-bottom: 6px;
+        }
+
+        .seat-groups { display: grid; gap: 7px; }
+
+        .seat-group-card {
+            border: 1px solid #f3dfcc;
+            background: #fff8f2;
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .seat-group-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            padding-bottom: 7px;
+            border-bottom: 1px dashed #f3dfcc;
+        }
+
+        .seat-group-title {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            font-weight: 1000;
+            color: #172033;
+            font-size: 10px;
+        }
+
+        .seat-group-total {
+            background: #ff7a18;
+            color: #fff;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-weight: 1000;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .seat-group-route {
+            direction: ltr;
+            unicode-bidi: isolate;
+            margin-top: 5px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 8.5px;
+            font-weight: 1000;
+            color: #172033;
+        }
+
+        .seat-group-route .route-mini-node {
+            direction: auto;
+            unicode-bidi: isolate;
+            background: #fff;
+            border: 1px solid #f3dfcc;
+            border-radius: 999px;
+            padding: 3px 8px;
+        }
+
+        .seat-group-route .route-mini-arrow {
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .seat-group-body {
+            display: grid;
+            grid-template-columns: 1fr 72px 72px;
+            gap: 7px;
+            margin-top: 7px;
+            align-items: center;
+        }
+
+        .seat-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .seat-chip {
+            display: inline-flex;
+            min-width: 22px;
+            justify-content: center;
+            padding: 3px 7px;
+            border-radius: 999px;
+            font-weight: 1000;
+            font-size: 8.5px;
+        }
+
+        .seat-chip.normal { background: #fff3e6; color: #ff7a18; border: 1px solid #ffd7b0; }
+        .seat-chip.vip    { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+
+        .seat-metric {
+            background: #fff;
+            border: 1px solid #f3dfcc;
+            border-radius: 8px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .seat-metric small {
+            display: block;
+            color: #667085;
+            font-size: 7.5px;
+            font-weight: 1000;
+            margin-bottom: 2px;
+        }
+
+        .seat-metric strong {
+            color: #172033;
+            font-size: 10px;
+            font-weight: 1000;
+        }
+
+        /* TRIP TOTALS ROW */
+        .trip-totals-row {
+            display: flex;
+            flex-wrap: wrap;
+            border-top: 1.5px solid #f3dfcc;
+        }
+        .trip-total-cell {
+            flex: 1;
+            padding: 7px 8px; text-align: center;
+            border-right: 1px solid #f3dfcc;
+        }
+        .trip-total-cell:last-child { border-right: none; }
+        .trip-total-cell small { display: block; color: #667085; font-size: 7px; font-weight: 1000; margin-bottom: 3px; }
+        .trip-total-cell strong { font-size: 12px; font-weight: 1000; color: #172033; }
+
+        /* FINANCIAL TABLE */
+        .fin-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+        .fin-table th { background: #172033; color: #fff; padding: 6px 8px; font-size: 8.5px; font-weight: 900; text-align: center; }
+        .fin-table th:first-child { border-radius: 8px 0 0 0; }
+        .fin-table th:last-child  { border-radius: 0 8px 0 0; }
+        .fin-table td { padding: 7px 8px; text-align: center; font-size: 10px; font-weight: 900; border-bottom: 1px solid #f3dfcc; }
+        .fin-table td.highlight { font-size: 12px; font-weight: 1000; color: #ff7a18; }
+        .fin-table td.remain-ok  { color: #16a34a; font-weight: 1000; }
+        .fin-table td.remain-bad { color: #dc2626; font-weight: 1000; }
+
+        /* NOTES */
+        .notes-box {
+            background: #fff8f2; border: 1px solid #f3dfcc;
+            border-radius: 10px; padding: 8px 10px; margin-top: 4px;
+            font-size: 9px; font-weight: 800; line-height: 1.7; color: #172033;
+            min-height: 36px;
+        }
+
+        /* TERMS */
+        .terms-box {
+            margin-top: 10px;
+            border-top: 1.5px dashed #f3dfcc;
+            padding-top: 8px;
+            font-size: 7.5px; line-height: 1.7; color: #667085; font-weight: 800;
+        }
+        .terms-box strong { color: #172033; display: block; margin-bottom: 4px; font-size: 8px; }
+
+        /* SIGNATURES */
+        .sig-row {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 20px; margin-top: 14px;
+        }
+        .sig-box { border-top: 1.5px dotted #f3dfcc; padding-top: 6px; text-align: center; font-weight: 1000; color: #667085; font-size: 9px; }
+
+        /* FOOTER BAND */
+        .ticket-footer {
+            background: #172033;
+            padding: 8px 14px;
+            display: flex; flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: rgba(255,255,255,.7); font-size: 7.5px; font-weight: 800;
+            text-align: center;
+        }
+        .ticket-footer strong { color: #ff7a18; }
+
+        /* PERFORATED SEPARATOR */
+        .perf-sep {
+            position: relative; margin: 6px 0;
+            display: flex; align-items: center;
+        }
+        .perf-line { flex: 1; border-top: 1.5px dashed #f3dfcc; }
+        .perf-circle {
+            width: 16px; height: 16px; border-radius: 50%;
+            background: #f0f0f0; border: 1.5px solid #f3dfcc;
+            margin: 0 -8px; flex-shrink: 0;
+        }
+
+        /* ---- PRINT ---- */
+        @@media print {
+            body { padding: 0; background: #fff; }
+            .actions { display: none; }
+            .ticket-page {
+                width: 105mm;
+                box-shadow: none;
+                border-radius: 0;
+            }
+            @@page {
+                size: A6;
+                margin: 4mm;
+            }
+        }
+
+        @@media (max-width: 400px) {
+            .seat-group-body { grid-template-columns: 1fr; }
+            .trip-totals-row { flex-direction: column; }
+            .trip-total-cell { border-right: none; border-bottom: 1px solid #f3dfcc; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="actions">
+    <button class="btn btn-print" onclick="window.print()">🖨️ طباعة / PDF</button>
+    <a class="btn btn-back" href="/Bookings/Details/@Model.BookingID">← رجوع</a>
+</div>
+
+<div class="ticket-page">
+
+    <!-- HEADER -->
+    <div class="ticket-header">
+        <div class="logo-circle">
+            <span class="logo-text">AM</span>
+        </div>
+
+        <div class="ticket-title">
+            <h1>تذكرة انتقالات</h1>
+            <p>AM Travel · الفؤاد ترافيل</p>
+            <p style="font-size:7.5px;margin-top:2px;opacity:.85;">@tripTypeLabel</p>
+        </div>
+
+        <div class="ticket-code-box">
+            <small>Booking Code</small>
+            <strong>@Model.Code</strong>
+        </div>
+    </div>
+
+    <!-- META STRIP -->
+    <div class="meta-strip">
+        <span>تاريخ الطباعة: <strong>@today</strong> &nbsp;|&nbsp; منشئ الحجز: <strong>@Model.CreatedBy</strong> &nbsp;|&nbsp; رقم الحجز: <strong>@Model.Code</strong></span>
+    </div>
+
+    <!-- BODY -->
+    <div class="ticket-body">
+
+        <!-- CLIENT INFO -->
+        <div class="client-row">
+            <div class="client-field full">
+                <small>اسم العميل</small>
+                <span>@Model.ClientName</span>
+            </div>
+            <div class="client-field">
+                <small>رقم الهاتف</small>
+                <span>@mainPhone</span>
+            </div>
+            <div class="client-field">
+                <small>نوع التذكرة</small>
+                <span>@tripTypeLabel</span>
+            </div>
+        </div>
+
+        <!-- GO TRIP -->
+        @if (goTrip != null)
+        {
+            var goSeats = goTrip.BookedSeats ?? new List<BookingSeatDTO>();
+            var goGroups = goSeats
+                .GroupBy(x => new
+                {
+                    x.SeatType,
+                    x.SeatPrice,
+                    From = string.IsNullOrWhiteSpace(x.FromLocation) ? goTrip.FromLocation : x.FromLocation,
+                    To = string.IsNullOrWhiteSpace(x.ToLocation) ? goTrip.ToLocation : x.ToLocation
+                })
+                .Select(g => new
+                {
+                    Type = g.Key.SeatType,
+                    Price = g.Key.SeatPrice,
+                    From = g.Key.From,
+                    To = g.Key.To,
+                    Count = g.Count(),
+                    Total = g.Sum(x => x.SeatPrice),
+                    Seats = g
+                        .OrderBy(x => x.RowNumber)
+                        .ThenBy(x => x.ColumnNumber)
+                        .Select(x => string.IsNullOrWhiteSpace(x.SeatLabel) ? x.SeatNumber.ToString() : x.SeatLabel)
+                        .ToList()
+                })
+                .OrderBy(x => x.Type.ToString())
+                .ThenBy(x => x.Price)
+                .ToList();
+
+            <div class="sec-title">
+                🚌 رحلة الذهاب
+                <span class="badge">Go Trip</span>
+            </div>
+
+            <div class="trip-card">
+                <div class="trip-card-head">
+                    <div class="trip-bus-info">
+                        <div class="trip-dir-badge go-badge">🚌 ذهاب</div>
+                        <h4>@goTrip.BusName @(string.IsNullOrWhiteSpace(goTrip.PlateNumber) ? "" : $"· {goTrip.PlateNumber}")</h4>
+                        <p>التاريخ: @goTrip.TripDate.ToString("yyyy/MM/dd") · المقاعد: @goSeats.Count</p>
+                    </div>
+                    <div class="trip-total-badge">@goTrip.Total.ToString("N2")</div>
+                </div>
+
+                <div class="route-display" dir="ltr">
+                    <span class="route-node" dir="auto">@(string.IsNullOrWhiteSpace(goTrip.FromLocation) ? "-" : goTrip.FromLocation)</span>
+                    <span class="route-arrow-big" dir="ltr">→</span>
+                    <span class="route-node" dir="auto">@(string.IsNullOrWhiteSpace(goTrip.ToLocation) ? "-" : goTrip.ToLocation)</span>
+                    <span class="route-date" dir="rtl">📅 @goTrip.TripDate.ToString("yyyy/MM/dd")</span>
+                </div>
+
+                <div class="seats-area">
+                    <div class="seats-title">ملخص المقاعد</div>
+                    <div class="seat-groups">
+                        @foreach (var g in goGroups)
+                        {
+                            var isVipGroup = g.Type.ToString().Equals("VIP", StringComparison.OrdinalIgnoreCase);
+                            <div class="seat-group-card">
+                                <div class="seat-group-head">
+                                    <div>
+                                        <div class="seat-group-title">
+                                            <span>@g.Type</span>
+                                            <span class="seat-chip @(isVipGroup ? "vip" : "normal")">@g.Count مقعد</span>
+                                        </div>
+                                        <div class="seat-group-route">
+                                            <span class="route-mini-node" dir="auto">@(string.IsNullOrWhiteSpace(g.From) ? goTrip.FromLocation : g.From)</span>
+                                            <span class="route-mini-arrow" dir="ltr">→</span>
+                                            <span class="route-mini-node" dir="auto">@(string.IsNullOrWhiteSpace(g.To) ? goTrip.ToLocation : g.To)</span>
+                                        </div>
+                                    </div>
+                                    <div class="seat-group-total">@g.Total.ToString("N2")</div>
+                                </div>
+                                <div class="seat-group-body">
+                                    <div class="seat-list">
+                                        @foreach (var seatLabel in g.Seats)
+                                        {
+                                            <span class="seat-chip @(isVipGroup ? "vip" : "normal")">@seatLabel</span>
+                                        }
+                                    </div>
+                                    <div class="seat-metric">
+                                        <small>سعر المقعد</small>
+                                        <strong>@g.Price.ToString("N2")</strong>
+                                    </div>
+                                    <div class="seat-metric">
+                                        <small>الإجمالي</small>
+                                        <strong>@g.Total.ToString("N2")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="trip-totals-row">
+                    <div class="trip-total-cell">
+                        <small>عدد المقاعد</small>
+                        <strong>@goSeats.Count</strong>
+                    </div>
+                    @foreach (var g in goGroups)
+                    {
+                        <div class="trip-total-cell">
+                            <small>@g.Type · @g.Count × @g.Price.ToString("N2")</small>
+                            <strong>@g.Total.ToString("N2")</strong>
+                        </div>
+                    }
+                    <div class="trip-total-cell">
+                        <small>إجمالي الذهاب</small>
+                        <strong style="color:#ff7a18;">@goTrip.Total.ToString("N2")</strong>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- PERFORATED SEPARATOR -->
+        @if (goTrip != null && returnTrip != null)
+        {
+            <div class="perf-sep">
+                <div class="perf-circle"></div>
+                <div class="perf-line"></div>
+                <div class="perf-circle"></div>
+            </div>
+        }
+
+        <!-- RETURN TRIP -->
+        @if (returnTrip != null)
+        {
+            var rtSeats = returnTrip.BookedSeats ?? new List<BookingSeatDTO>();
+            var rtGroups = rtSeats
+                .GroupBy(x => new
+                {
+                    x.SeatType,
+                    x.SeatPrice,
+                    From = string.IsNullOrWhiteSpace(x.FromLocation) ? returnTrip.FromLocation : x.FromLocation,
+                    To = string.IsNullOrWhiteSpace(x.ToLocation) ? returnTrip.ToLocation : x.ToLocation
+                })
+                .Select(g => new
+                {
+                    Type = g.Key.SeatType,
+                    Price = g.Key.SeatPrice,
+                    From = g.Key.From,
+                    To = g.Key.To,
+                    Count = g.Count(),
+                    Total = g.Sum(x => x.SeatPrice),
+                    Seats = g
+                        .OrderBy(x => x.RowNumber)
+                        .ThenBy(x => x.ColumnNumber)
+                        .Select(x => string.IsNullOrWhiteSpace(x.SeatLabel) ? x.SeatNumber.ToString() : x.SeatLabel)
+                        .ToList()
+                })
+                .OrderBy(x => x.Type.ToString())
+                .ThenBy(x => x.Price)
+                .ToList();
+
+            <div class="sec-title">
+                🔄 رحلة العودة
+                <span class="badge">Return Trip</span>
+            </div>
+
+            <div class="trip-card">
+                <div class="trip-card-head">
+                    <div class="trip-bus-info">
+                        <div class="trip-dir-badge return-badge">🔄 عودة</div>
+                        <h4>@returnTrip.BusName @(string.IsNullOrWhiteSpace(returnTrip.PlateNumber) ? "" : $"· {returnTrip.PlateNumber}")</h4>
+                        <p>التاريخ: @returnTrip.TripDate.ToString("yyyy/MM/dd") · المقاعد: @rtSeats.Count</p>
+                    </div>
+                    <div class="trip-total-badge">@returnTrip.Total.ToString("N2")</div>
+                </div>
+
+                <div class="route-display" dir="ltr">
+                    <span class="route-node" dir="auto">@(string.IsNullOrWhiteSpace(returnTrip.FromLocation) ? "-" : returnTrip.FromLocation)</span>
+                    <span class="route-arrow-big" dir="ltr">→</span>
+                    <span class="route-node" dir="auto">@(string.IsNullOrWhiteSpace(returnTrip.ToLocation) ? "-" : returnTrip.ToLocation)</span>
+                    <span class="route-date" dir="rtl">📅 @returnTrip.TripDate.ToString("yyyy/MM/dd")</span>
+                </div>
+
+                <div class="seats-area">
+                    <div class="seats-title">ملخص المقاعد</div>
+                    <div class="seat-groups">
+                        @foreach (var g in rtGroups)
+                        {
+                            var isVipGroup = g.Type.ToString().Equals("VIP", StringComparison.OrdinalIgnoreCase);
+                            <div class="seat-group-card">
+                                <div class="seat-group-head">
+                                    <div>
+                                        <div class="seat-group-title">
+                                            <span>@g.Type</span>
+                                            <span class="seat-chip @(isVipGroup ? "vip" : "normal")">@g.Count مقعد</span>
+                                        </div>
+                                        <div class="seat-group-route">
+                                            <span class="route-mini-node" dir="auto">@(string.IsNullOrWhiteSpace(g.From) ? returnTrip.FromLocation : g.From)</span>
+                                            <span class="route-mini-arrow" dir="ltr">→</span>
+                                            <span class="route-mini-node" dir="auto">@(string.IsNullOrWhiteSpace(g.To) ? returnTrip.ToLocation : g.To)</span>
+                                        </div>
+                                    </div>
+                                    <div class="seat-group-total">@g.Total.ToString("N2")</div>
+                                </div>
+                                <div class="seat-group-body">
+                                    <div class="seat-list">
+                                        @foreach (var seatLabel in g.Seats)
+                                        {
+                                            <span class="seat-chip @(isVipGroup ? "vip" : "normal")">@seatLabel</span>
+                                        }
+                                    </div>
+                                    <div class="seat-metric">
+                                        <small>سعر المقعد</small>
+                                        <strong>@g.Price.ToString("N2")</strong>
+                                    </div>
+                                    <div class="seat-metric">
+                                        <small>الإجمالي</small>
+                                        <strong>@g.Total.ToString("N2")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="trip-totals-row">
+                    <div class="trip-total-cell">
+                        <small>عدد المقاعد</small>
+                        <strong>@rtSeats.Count</strong>
+                    </div>
+                    @foreach (var g in rtGroups)
+                    {
+                        <div class="trip-total-cell">
+                            <small>@g.Type · @g.Count × @g.Price.ToString("N2")</small>
+                            <strong>@g.Total.ToString("N2")</strong>
+                        </div>
+                    }
+                    <div class="trip-total-cell">
+                        <small>إجمالي العودة</small>
+                        <strong style="color:#ff7a18;">@returnTrip.Total.ToString("N2")</strong>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- FINANCIALS -->
+        <div class="sec-title">
+            💰 الحسابات المالية
+            <span class="badge">Financials</span>
+        </div>
+        <table class="fin-table">
+            <thead>
+                <tr>
+                    <th>إجمالي الانتقالات</th>
+                    <th>الخصم</th>
+                    <th>المدفوع</th>
+                    <th>المتبقي</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="highlight">@Model.TransportationTotal.ToString("N2")</td>
+                    <td>@Model.Discount.ToString("N2")</td>
+                    <td>@Model.PaidAmount.ToString("N2")</td>
+                    <td class="@(Model.RemainingAmount > 0 ? "remain-bad" : "remain-ok")">@Model.RemainingAmount.ToString("N2")</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- NOTES -->
+        @if (!string.IsNullOrWhiteSpace(Model.Notes))
+        {
+            <div class="sec-title" style="margin-top:10px;">📝 ملاحظات</div>
+            <div class="notes-box">@Model.Notes</div>
+        }
+
+        <!-- TERMS -->
+        <div class="terms-box">
+            <strong>الشروط والأحكام الخاصة بالحجز:</strong>
+            يجب الحضور مع البطاقة الشخصية لكل بالغ وشهادة ميلاد الأطفال عند الطلب، والاحتفاظ بهذه التذكرة طوال الرحلة.<br/>
+            الإلغاء قبل 7 يوماً: استرداد كامل · بعد 7 يوماً: خصم 50%.
+        </div>
+
+        <!-- SIGNATURES -->
+        <div class="sig-row">
+            <div class="sig-box">توقيع العميل</div>
+            <div class="sig-box">توقيع الموظف</div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="ticket-footer">
+        <span><strong>AM Travel · الفؤاد ترافيل</strong></span>
+        <span>أسيوط – شارع النميس الرئيسي أمام بوابة نادي الواي بجوار محل سانت كلوز للهداية</span>
+        <span>📞 <strong>01558902881 – 01066178170 – 01028494157 – 01061761944</strong></span>
+    </div>
+
+</div>
+
+
+<script>
+    function fitTicketToA6() {
+        const ticket = document.querySelector('.ticket-page');
+        if (!ticket) return;
+
+        ticket.style.setProperty('--ticket-print-scale', '1');
+
+        const a6WidthPx = 105 * 3.7795275591;
+        const a6HeightPx = 148 * 3.7795275591;
+
+        const scaleX = a6WidthPx / ticket.scrollWidth;
+        const scaleY = a6HeightPx / ticket.scrollHeight;
+
+        const scale = Math.min(scaleX, scaleY, 1);
+        ticket.style.setProperty('--ticket-print-scale', scale);
+    }
+
+    window.addEventListener('beforeprint', fitTicketToA6);
+</script>
+
+</body>
+</html>

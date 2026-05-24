@@ -1,0 +1,894 @@
+@using BusinessLayer.DTOs.Company
+@using DataLayer.Models
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> L
+@model BusinessLayer.DTOs.CompanyBookSeat.CompanySeatAccountingPageDTO
+
+@{
+    ViewData["Title"] = L["CSA_PageTitle"];
+
+    var account = Model.Account;
+    var companyId = Model.CompanyId;
+    var dateFrom = Model.DateFrom?.ToString("yyyy-MM-dd");
+    var dateTo = Model.DateTo?.ToString("yyyy-MM-dd");
+
+    var currentName = ViewBag.Name as string ?? User.Identity?.Name ?? "Account";
+
+    var role = User.IsInRole("Admin") ? "Administrator Account" :
+               User.IsInRole("Helper") ? "Helper Account" :
+               User.IsInRole("Viewer") ? "Viewer Account" :
+               "User Account";
+
+    var initials = currentName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(x => x[0])
+        .Aggregate("", (a, b) => a + b)
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials)) initials = "AM";
+
+    var selectedCompanyId = Model.CompanyId ?? Model.Account?.CompanyId;
+    var selectedCompanyIdText = selectedCompanyId?.ToString();
+}
+
+<style>
+    :root {
+        --or: #ff7a18;
+        --or2: #ffad42;
+        --dk: #172033;
+        --mu: #667085;
+        --ln: #f0d8c2;
+        --sf: #fff7ed;
+        --sf2: #fffaf5;
+        --gr: #079455;
+        --re: #dc2626;
+        --vi: #7c3aed;
+        --card: #fff;
+        --card-border: #f0d8c2;
+        --card-shadow: rgba(255,122,24,.09);
+        --text: #172033;
+        --sub: #667085;
+        --input: #fffaf5;
+        --hero-bg: linear-gradient(135deg,#ff7a18,#ffad42);
+        --hero-glow: rgba(255,122,24,.18);
+    }
+
+    html[data-theme="dark"] {
+        --card: #1a2236;
+        --card-border: #283148;
+        --card-shadow: rgba(0,0,0,.35);
+        --text: #dce3ed;
+        --sub: #9aaabb;
+        --input: #212c3f;
+        --ln: #283148;
+        --sf2: #212c3f;
+        --dk: #dce3ed;
+        --mu: #9aaabb;
+        --sf: #1e2940;
+        --gr: #34d399;
+        --re: #f87171;
+        --vi: #a78bfa;
+        --hero-bg: linear-gradient(135deg,#c45c0a,#d97c2a);
+        --hero-glow: rgba(196,92,10,.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    .dashboard-page,
+    .csa-page {
+        display: grid;
+        gap: 22px;
+        min-width: 0;
+    }
+
+    .panel,
+    .dashboard-filter-card,
+    .table-card {
+        min-width: 0;
+        max-width: 100%;
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 30px;
+        padding: 22px;
+        box-shadow: 0 18px 42px var(--card-shadow);
+        transition: background .3s,border-color .3s;
+    }
+
+    /* HERO */
+    .dashboard-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: #fff;
+        background: var(--hero-bg);
+        box-shadow: 0 24px 70px var(--hero-glow);
+    }
+
+        .dashboard-hero:before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%,rgba(255,255,255,.16),transparent 26%);
+            pointer-events: none;
+        }
+
+        .dashboard-hero:after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            bottom: -110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.10);
+        }
+
+    .dashboard-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .dashboard-title { display: grid; gap: 10px; }
+
+    .dashboard-badge {
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: #fff;
+    }
+
+    .dashboard-title h1 {
+        margin: 0;
+        font-size: clamp(26px,4vw,42px);
+        line-height: 1.1;
+        letter-spacing: -1px;
+        color: #fff;
+    }
+
+    .dashboard-title p {
+        margin: 0;
+        color: rgba(255,255,255,.92);
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    .dashboard-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        flex-shrink: 0;
+    }
+
+        .dashboard-avatar-wrap:before {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .dashboard-avatar-wrap:after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: db-spin 4s linear infinite;
+        }
+
+    .dashboard-avatar {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%,rgba(255,255,255,.9),rgba(255,255,255,.72)),linear-gradient(135deg,#fff,#fff3e6);
+        color: #ff7a18;
+        font-size: 42px;
+        font-weight: 1000;
+        text-transform: uppercase;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .dashboard-avatar-status {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    @@keyframes db-spin { to { transform: rotate(360deg); } }
+
+    .dashboard-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .dashboard-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 900;
+        transition: .2s ease;
+        cursor: pointer;
+        border: 0;
+        font-size: 14px;
+    }
+
+        .dashboard-btn:hover { transform: translateY(-2px); }
+
+    .btn-glass {
+        background: rgba(255,255,255,.16);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.28);
+    }
+
+    /* THEME TOGGLE in hero */
+    .hero-tools {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 14px;
+        flex-wrap: wrap;
+    }
+
+    .theme-btn {
+        min-height: 38px;
+        padding: 8px 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,.16);
+        border: 1px solid rgba(255,255,255,.28);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: .2s ease;
+    }
+
+        .theme-btn:hover { background: rgba(255,255,255,.28); }
+
+    .lang-btn {
+        min-height: 38px;
+        padding: 8px 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,.16);
+        border: 1px solid rgba(255,255,255,.28);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: .2s ease;
+        text-decoration: none;
+    }
+
+        .lang-btn:hover, .lang-btn.active { background: rgba(255,255,255,.28); }
+
+    /* SUMMARY */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 14px;
+    }
+
+    .summary-card {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 16px 38px var(--card-shadow);
+        transition: background .3s,border-color .3s;
+    }
+
+        .summary-card small {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--sub);
+            font-weight: 900;
+            font-size: 13px;
+            transition: color .3s;
+        }
+
+        .summary-card strong {
+            display: block;
+            color: var(--text);
+            font-size: 20px;
+            word-break: break-word;
+            transition: color .3s;
+        }
+
+    /* FORM */
+    .panel-title {
+        margin: 0 0 16px;
+        font-size: 20px;
+        font-weight: 1000;
+        color: var(--dk);
+        transition: color .3s;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto auto auto;
+        gap: 13px;
+        align-items: end;
+    }
+
+    .field label {
+        display: block;
+        color: var(--mu);
+        font-size: 13px;
+        font-weight: 1000;
+        margin-bottom: 6px;
+        transition: color .3s;
+    }
+
+    .fc {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid var(--ln);
+        background: var(--input);
+        border-radius: 14px;
+        padding: 0 13px;
+        outline: none;
+        font-weight: 900;
+        color: var(--dk);
+        font-size: 14px;
+        transition: border-color .2s,background .3s,color .3s;
+    }
+
+        .fc:focus {
+            border-color: var(--or);
+            box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+            background: var(--card);
+        }
+
+        .fc option { background: #fff; color: #172033; }
+
+    /* BUTTONS */
+    .btn {
+        min-height: 42px;
+        padding: 9px 16px;
+        border-radius: 14px;
+        font-weight: 1000;
+        border: 0;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+        transition: .15s;
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+        .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+        background: linear-gradient(135deg,var(--or),var(--or2));
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(255,122,24,.2);
+    }
+
+    .btn-light {
+        background: var(--input);
+        color: var(--text);
+        border: 1px solid var(--ln);
+    }
+
+    .btn-danger {
+        background: rgba(220,38,38,.12);
+        color: var(--re);
+        border: 1px solid rgba(220,38,38,.2);
+    }
+
+    .btn-success {
+        background: rgba(7,148,85,.12);
+        color: var(--gr);
+        border: 1px solid rgba(7,148,85,.2);
+    }
+
+    .btn-sm { min-height: 34px; padding: 6px 11px; font-size: 12px; }
+
+    /* ALERTS */
+    .alert { border-radius: 14px; padding: 12px 16px; font-weight: 900; margin-bottom: 10px; }
+    .alert-ok  { background: rgba(7,148,85,.12); color: var(--gr); border: 1px solid rgba(7,148,85,.25); }
+    .alert-err { background: rgba(220,38,38,.12); color: var(--re); border: 1px solid rgba(220,38,38,.25); }
+    .ok  { color: var(--gr) !important; font-weight: 1000; }
+    .bad { color: var(--re) !important; font-weight: 1000; }
+
+    /* TABLE SCROLL */
+    .table-scroll-wrap { width: 100%; max-width: 100%; min-width: 0; overflow: hidden; border-radius: 24px; }
+
+    .tw {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        display: block;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        direction: ltr;
+        padding-bottom: 14px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-gutter: stable;
+        scroll-behavior: smooth;
+    }
+
+        .tw::-webkit-scrollbar { height: 14px; }
+        .tw::-webkit-scrollbar-track { background: var(--input); border-radius: 999px; border: 1px solid var(--ln); }
+        .tw::-webkit-scrollbar-thumb { background: linear-gradient(135deg,var(--or),var(--or2)); border-radius: 999px; border: 2px solid var(--input); }
+        .tw::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg,#ff8f33,#ffbb5c); }
+        .tw { scrollbar-width: thin; scrollbar-color: var(--or) var(--input); }
+
+        .tw table {
+            direction: ltr;
+            width: 1850px !important;
+            min-width: 1850px !important;
+            max-width: none !important;
+            table-layout: auto;
+            border-collapse: separate;
+            border-spacing: 0 6px;
+        }
+
+            .tw table.payment-table {
+                width: 1050px !important;
+                min-width: 1050px !important;
+                max-width: none !important;
+            }
+
+        .tw th {
+            text-align: left;
+            color: var(--mu);
+            font-size: 11px;
+            font-weight: 1000;
+            padding: 0 12px 8px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            transition: color .3s;
+        }
+
+        .tw td {
+            padding: 12px 13px;
+            background: var(--sf2);
+            border-top: 1px solid var(--ln);
+            border-bottom: 1px solid var(--ln);
+            color: var(--text);
+            font-weight: 850;
+            vertical-align: middle;
+            font-size: 13px;
+            transition: background .3s,color .3s,border-color .3s;
+            white-space: nowrap;
+            text-align: left;
+        }
+
+            .tw td:first-child { border-left: 1px solid var(--ln); border-radius: 14px 0 0 14px; }
+            .tw td:last-child  { border-right: 1px solid var(--ln); border-radius: 0 14px 14px 0; }
+            .tw tbody tr:hover td { background: var(--card); }
+
+    /* ROUTE FIX */
+    .route-cell { direction: ltr !important; unicode-bidi: isolate; white-space: nowrap; }
+        .route-cell .route-text { display: inline-flex; align-items: center; gap: 7px; direction: ltr; unicode-bidi: isolate; }
+        .route-cell bdi  { direction: auto; unicode-bidi: isolate; }
+        .route-cell .route-arrow { direction: ltr; color: var(--mu); font-weight: 1000; }
+
+    /* TAGS */
+    .tag { padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 1000; display: inline-block; }
+    .tag-in   { background: rgba(7,148,85,.12); color: var(--gr); }
+    .tag-out  { background: rgba(124,58,237,.12); color: var(--vi); }
+    .tag-trip { background: rgba(255,122,24,.12); color: var(--or); }
+
+    .empty-msg {
+        text-align: center;
+        color: var(--mu);
+        font-weight: 1000;
+        padding: 26px;
+        border: 1px dashed var(--ln);
+        border-radius: 20px;
+        background: var(--sf2);
+        margin: 0;
+        font-size: 13px;
+        transition: background .3s,border-color .3s,color .3s;
+    }
+
+    .table-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 14px;
+    }
+
+    .pay-form, .ir { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+
+    .mi {
+        width: 105px;
+        min-height: 34px;
+        border: 1px solid var(--ln);
+        border-radius: 10px;
+        padding: 0 9px;
+        background: var(--card);
+        color: var(--dk);
+        font-weight: 900;
+        transition: background .3s, color .3s, border-color .3s;
+    }
+
+    .pay-form .mi { width: 120px; }
+
+    /* RESPONSIVE */
+    @@media(max-width:1050px) {
+        .filter-grid   { grid-template-columns: 1fr 1fr; }
+        .summary-grid  { grid-template-columns: 1fr 1fr; }
+    }
+
+    @@media(max-width:650px) {
+        .dashboard-hero { padding: 24px; border-radius: 24px; }
+        .dashboard-actions { flex-direction: column; }
+        .dashboard-btn { width: 100%; }
+        .dashboard-avatar-wrap { width: 112px; height: 112px; border-radius: 32px; }
+        .dashboard-avatar { width: 88px; height: 88px; font-size: 34px; border-radius: 27px; }
+        .filter-grid, .summary-grid { grid-template-columns: 1fr; }
+        .btn { width: 100%; justify-content: center; }
+    }
+</style>
+
+<div class="dashboard-page csa-page">
+    <section class="dashboard-hero">
+        <div class="dashboard-hero-inner">
+            <div class="dashboard-title">
+                <span class="dashboard-badge">@L["CSA_Badge"]</span>
+                <h1>@L["CSA_Heading"]</h1>
+                <p>@L["CSA_WelcomeBack"] @currentName. @L["CSA_Subtitle"]</p>
+            </div>
+
+            <div class="dashboard-avatar-wrap" title="@currentName">
+                <div class="dashboard-avatar">@initials</div>
+                <span class="dashboard-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="dashboard-actions">
+            <a class="dashboard-btn btn-glass" asp-controller="Transportation" asp-action="SeatBookingBound">@L["CSA_BtnSeatBooking"]</a>
+            <a class="dashboard-btn btn-glass" asp-controller="Transportation" asp-action="Trips">@L["CSA_BtnTrips"]</a>
+            <a class="dashboard-btn btn-glass" asp-controller="Transportation" asp-action="Index">@L["CSA_BtnCompanyTrips"]</a>
+        </div>
+
+    </section>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-ok">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-err">@TempData["Error"]</div>
+    }
+
+    <section class="dashboard-filter-card">
+        <h2 class="panel-title">@L["CSA_FilterTitle"]</h2>
+
+        <form asp-controller="Transportation" asp-action="CompanySeatAccounting" method="get" class="filter-grid">
+            <div class="field">
+                <label>@L["CSA_LblCompany"]</label>
+                <select class="fc" name="companyId" required>
+                    <option value="">@L["CSA_SelectCompany"]</option>
+                    @foreach (var c in Model.Companies)
+                    {
+                        if (string.Equals(selectedCompanyIdText, c.Value, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@c.Value" selected="selected">@c.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@c.Value">@c.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="field">
+                <label>@L["CSA_LblDateFrom"]</label>
+                <input class="fc" type="date" name="dateFrom" value="@dateFrom" />
+            </div>
+
+            <div class="field">
+                <label>@L["CSA_LblDateTo"]</label>
+                <input class="fc" type="date" name="dateTo" value="@dateTo" />
+            </div>
+
+            <button class="btn btn-primary" type="submit">@L["CSA_BtnView"]</button>
+
+            @if (selectedCompanyId.HasValue && selectedCompanyId.Value != Guid.Empty)
+            {
+                <a class="btn btn-success"
+                   target="_blank"
+                   asp-controller="Transportation"
+                   asp-action="ExportCompanySeatAccountingExcel"
+                   asp-route-companyId="@selectedCompanyId"
+                   asp-route-dateFrom="@dateFrom"
+                   asp-route-dateTo="@dateTo">
+                    @L["CSA_BtnExcel"]
+                </a>
+
+                <a class="btn btn-light"
+                   target="_blank"
+                   asp-controller="Transportation"
+                   asp-action="ExportCompanySeatAccountingPdf"
+                   asp-route-companyId="@selectedCompanyId"
+                   asp-route-dateFrom="@dateFrom"
+                   asp-route-dateTo="@dateTo">
+                    @L["CSA_BtnPdf"]
+                </a>
+            }
+        </form>
+    </section>
+
+    @if (account == null)
+    {
+        <section class="panel">
+            <p class="empty-msg">@L["CSA_SelectPrompt"]</p>
+        </section>
+    }
+    else
+    {
+        <section class="summary-grid">
+            <div class="summary-card">
+                <small>@L["CSA_SummaryInbound"]</small>
+                <strong class="ok">@account.InboundTotal.ToString("N2")</strong>
+            </div>
+            <div class="summary-card">
+                <small>@L["CSA_SummaryOutbound"]</small>
+                <strong class="bad">@account.OutboundTotal.ToString("N2")</strong>
+            </div>
+            <div class="summary-card">
+                <small>@L["CSA_SummaryTotalPaid"]</small>
+                <strong class="ok">@account.GrandTotalPaid.ToString("N2")</strong>
+            </div>
+            <div class="summary-card">
+                <small>@L["CSA_SummaryNetBalance"]</small>
+                <strong class="@(account.NetBalance >= 0 ? "ok" : "bad")">@account.NetBalance.ToString("N2")</strong>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="table-head">
+                <h2 class="panel-title" style="margin:0;">@L["CSA_TableTitle"] — @account.CompanyName</h2>
+
+                <form asp-controller="Transportation" asp-action="AddSeatPayment" method="post" class="pay-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="companyId" value="@account.CompanyId" />
+                    <input type="hidden" name="dateFrom" value="@dateFrom" />
+                    <input type="hidden" name="dateTo" value="@dateTo" />
+                    <input class="mi" type="number" name="amount" step="0.01" min="0.01" placeholder="@L["CSA_AddPaymentPH"]" required />
+                    <input class="mi" type="date" name="paidAt" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                    <input class="mi" name="notes" placeholder="@L["CSA_NotesPH"]" />
+                    <button class="btn btn-success btn-sm" type="submit">@L["CSA_BtnAddPayment"]</button>
+                </form>
+            </div>
+
+            @if (!account.TripGroups.Any())
+            {
+                <p class="empty-msg">@L["CSA_NoBookings"]</p>
+            }
+            else
+            {
+                <div class="table-scroll-wrap">
+                    <div class="tw">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>@L["CSA_ColDate"]</th>
+                                    <th>@L["CSA_ColDir"]</th>
+                                    <th>@L["CSA_ColType"]</th>
+                                    <th>@L["CSA_ColBus"]</th>
+                                    <th>@L["CSA_ColTripRoute"]</th>
+                                    <th>@L["CSA_ColSeatRoute"]</th>
+                                    <th>@L["CSA_ColSeats"]</th>
+                                    <th>@L["CSA_ColSeatLabels"]</th>
+                                    <th>@L["CSA_ColClient"]</th>
+                                    <th>@L["CSA_ColPhone"]</th>
+                                    <th>@L["CSA_ColPrice"]</th>
+                                    <th>@L["CSA_ColTotal"]</th>
+                                    <th>@L["CSA_ColPaid"]</th>
+                                    <th>@L["CSA_ColRemain"]</th>
+                                    <th>@L["CSA_ColUpdatePrice"]</th>
+                                    <th>@L["CSA_ColAddPayment"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var g in account.TripGroups)
+                                {
+                                    var rowKey = g.TripId ?? g.Seats.FirstOrDefault()?.BookingId ?? Guid.Empty;
+
+                                    var seatLabels = string.Join(", ",
+                                        g.Seats.Select(x =>
+                                            string.IsNullOrWhiteSpace(x.SeatLabel)
+                                                ? x.SeatsCount.ToString()
+                                                : x.SeatLabel));
+
+                                    var clients = string.Join(" | ",
+                                        g.Seats.Select(x => x.ClientName)
+                                            .Where(x => !string.IsNullOrWhiteSpace(x))
+                                            .Distinct());
+
+                                    var phones = string.Join(" | ",
+                                        g.Seats.Select(x => x.ClientPhone)
+                                            .Where(x => !string.IsNullOrWhiteSpace(x))
+                                            .Distinct());
+
+                                    <tr>
+                                        <td>@g.TripDate.ToString("yyyy-MM-dd")</td>
+
+                                        <td>
+                                            <span class="tag tag-trip">
+                                                @(
+                                                    g.TripDirection == TripDirection.Departure
+                                                        ? L["CSA_DirGo"].Value
+                                                        : g.TripDirection == TripDirection.Return
+                                                            ? L["CSA_DirReturn"].Value
+                                                            : L["CSA_DirExternal"].Value
+                                                )
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="tag @(g.BookingDirection == CompanySeatBookingDirection.Inbound ? "tag-in" : "tag-out")">
+                                                @g.BookingDirection
+                                            </span>
+                                        </td>
+
+                                        <td>@g.BusName</td>
+
+                                        <td class="route-cell">
+                                            <span class="route-text">
+                                                <bdi>@g.TripFromLocation</bdi>
+                                                <span class="route-arrow">→</span>
+                                                <bdi>@g.TripToLocation</bdi>
+                                            </span>
+                                        </td>
+
+                                        <td class="route-cell">
+                                            <span class="route-text">
+                                                <bdi>@g.FromLocation</bdi>
+                                                <span class="route-arrow">→</span>
+                                                <bdi>@g.ToLocation</bdi>
+                                            </span>
+                                        </td>
+
+                                        <td><b>@g.SeatsCount</b></td>
+                                        <td>@seatLabels</td>
+                                        <td>@(string.IsNullOrWhiteSpace(clients) ? "—" : clients)</td>
+                                        <td>@(string.IsNullOrWhiteSpace(phones) ? "—" : phones)</td>
+                                        <td>@g.PricePerSeat.ToString("N2")</td>
+                                        <td>@g.TotalPrice.ToString("N2")</td>
+                                        <td class="ok">@g.TotalPaid.ToString("N2")</td>
+                                        <td class="@(g.TotalRemaining > 0 ? "bad" : "ok")">@g.TotalRemaining.ToString("N2")</td>
+
+                                        <td>
+                                            <form asp-controller="Transportation" asp-action="UpdateSeatPrice" method="post" class="ir">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="companyId" value="@account.CompanyId" />
+                                                <input type="hidden" name="bookingGroupId" value="@rowKey" />
+                                                <input type="hidden" name="bookingDirection" value="@g.BookingDirection" />
+                                                <input type="hidden" name="dateFrom" value="@dateFrom" />
+                                                <input type="hidden" name="dateTo" value="@dateTo" />
+                                                <input class="mi" type="number" name="pricePerSeat" step="0.01" min="0" value="@g.PricePerSeat" required />
+                                                <button class="btn btn-light btn-sm" type="submit">@L["CSA_BtnSave"]</button>
+                                            </form>
+                                        </td>
+
+                                        <td>
+                                            <form asp-controller="Transportation" asp-action="AddSeatPayment" method="post" class="ir">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="companyId" value="@account.CompanyId" />
+                                                <input type="hidden" name="tripId" value="@g.TripId" />
+                                                <input type="hidden" name="dateFrom" value="@dateFrom" />
+                                                <input type="hidden" name="dateTo" value="@dateTo" />
+                                                <input class="mi" type="number" name="amount" step="0.01" min="0.01" placeholder="@L["CSA_AmountPH"]" required />
+                                                <input type="hidden" name="paidAt" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                                <button class="btn btn-primary btn-sm" type="submit">@L["CSA_BtnPay"]</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </section>
+
+        <section class="panel">
+            <h2 class="panel-title">@L["CSA_PaymentsTitle"]</h2>
+
+            @if (!account.Payments.Any())
+            {
+                <p class="empty-msg">@L["CSA_NoPayments"]</p>
+            }
+            else
+            {
+                <div class="table-scroll-wrap">
+                    <div class="tw">
+                        <table class="payment-table">
+                            <thead>
+                                <tr>
+                                    <th>@L["CSA_PayColDate"]</th>
+                                    <th>@L["CSA_PayColAmount"]</th>
+                                    <th>@L["CSA_PayColTrip"]</th>
+                                    <th>@L["CSA_PayColNotes"]</th>
+                                    <th>@L["CSA_PayColDelete"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in account.Payments)
+                                {
+                                    <tr>
+                                        <td>@p.PaidAt.ToString("yyyy-MM-dd")</td>
+                                        <td class="ok"><b>@p.Amount.ToString("N2")</b></td>
+                                        <td>@(p.TripInfo ?? L["CSA_GeneralPayment"].Value)</td>
+                                        <td>@(p.Notes ?? "—")</td>
+                                        <td>
+                                            <form asp-controller="Transportation"
+                                                  asp-action="DeleteSeatPayment"
+                                                  method="post"
+                                                  onsubmit="return confirm('@L["CSA_ConfirmDelete"]');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="companyId" value="@account.CompanyId" />
+                                                <input type="hidden" name="paymentId" value="@p.PaymentId" />
+                                                <input type="hidden" name="dateFrom" value="@dateFrom" />
+                                                <input type="hidden" name="dateTo" value="@dateTo" />
+                                                <button class="btn btn-danger btn-sm" type="submit">@L["CSA_BtnDelete"]</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </section>
+    }
+</div>

@@ -1,0 +1,616 @@
+﻿@using DataLayer.Models
+
+@model List<BusinessLayer.DTOs.Trip.TripSeatStatusDTO>
+
+@{
+    ViewData["Title"] = L["Seats_Title"];
+
+    var tripId = Context.Request.Query["tripId"].ToString();
+
+    var rows = Model.Any() ? Model.Max(x => x.RowNumber) : 0;
+    var cols = Model.Any() ? Model.Max(x => x.ColumnNumber) : 0;
+
+    var firstSeat = Model.FirstOrDefault();
+    var generalRouteFrom = string.IsNullOrWhiteSpace(firstSeat?.GeneralRouteFrom) ? "-" : firstSeat.GeneralRouteFrom;
+    var generalRouteTo   = string.IsNullOrWhiteSpace(firstSeat?.GeneralRouteTo)   ? "-" : firstSeat.GeneralRouteTo;
+    var generalTripRoute = string.IsNullOrWhiteSpace(firstSeat?.TripRouteText)    ? "-" : firstSeat.TripRouteText;
+
+    var seatsMap = Model.ToDictionary(x => $"{x.RowNumber}_{x.ColumnNumber}", x => x);
+
+    var bookings = Model
+        .Where(x => x.IsReserved)
+        .GroupBy(x => x.IsCompanyBooking
+            ? $"C_{(string.IsNullOrWhiteSpace(x.CompanyBookingGroupKey) ? x.CompanySeatBookingId.ToString() : x.CompanyBookingGroupKey)}"
+            : $"B_{x.BookingId}")
+        .Select(g => new
+        {
+            First = g.First(),
+            Seats = g.OrderBy(x => x.RowNumber).ThenBy(x => x.ColumnNumber).ToList()
+        })
+        .OrderBy(x => x.First.IsCompanyBooking)
+        .ThenBy(x => x.First.CompanyName)
+        .ThenBy(x => x.First.ReservedByClient)
+        .ToList();
+
+    var totalSeats     = Model.Count(x => x.IsActive && (x.SeatType == SeatType.Normal || x.SeatType == SeatType.VIP));
+    var reservedSeats  = Model.Count(x => x.IsReserved);
+    var availableSeats = Math.Max(0, totalSeats - reservedSeats);
+
+    string userName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName   = userName.Trim().Replace("  ", " ");
+    var initials    = string.Join("", cleanName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0])).ToUpper();
+    if (string.IsNullOrWhiteSpace(initials)) initials = "AM";
+
+    var busWidth = (cols * 70) + ((cols > 1 ? cols - 1 : 0) * 8) + 98;
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Helper: translates hardcoded English strings from Manager into
+    // the current UI language — NO Model/Function changes needed
+    // ═══════════════════════════════════════════════════════════════════════
+    string TranslateRoute(string? raw) => raw?.Trim() switch
+    {
+        "Go"         => L["Seats_RouteGo"].Value,
+        "Return"     => L["Seats_RouteReturn"].Value,
+        "Departure"  => L["Seats_RouteGo"].Value,
+        _            => raw ?? "-"
+    };
+
+    string TranslateTripType(string? raw) => raw?.Trim() switch
+    {
+        "Go"                                  => L["Seats_TripTypeGo"].Value,
+        "Return"                              => L["Seats_TripTypeReturn"].Value,
+        "Departure"                           => L["Seats_TripTypeGo"].Value,
+        "RoundTrip"                           => L["Seats_TripTypeRound"].Value,
+        "Inbound"                             => L["Seats_RouteGo"].Value,
+        "Outbound"                            => L["Seats_RouteReturn"].Value,
+        var s when s != null
+            && s.Contains("Round", StringComparison.OrdinalIgnoreCase)
+                                              => L["Seats_TripTypeRound"].Value,
+        _                                    => raw ?? "-"
+    };
+}
+
+<style>
+    :root {
+        --ts-hero-bg:          linear-gradient(135deg, #ff7a18, #ffad42);
+        --ts-hero-glow:        rgba(255,122,24,.18);
+        --ts-hero-text:        #fff;
+        --ts-hero-sub:         rgba(255,255,255,.92);
+        --ts-btn-glass-bg:     rgba(255,255,255,.16);
+        --ts-route-bg:         #172033;
+        --ts-route-border:     #334155;
+        --ts-route-text:       #fff;
+        --ts-route-label:      #94a3b8;
+        --ts-route-pill-bg:    rgba(255,122,24,.16);
+        --ts-route-pill-txt:   #ffad42;
+        --ts-route-pill-bdr:   rgba(255,173,66,.25);
+        --ts-stat-bg:          #172033;
+        --ts-stat-border:      #334155;
+        --ts-stat-text:        #fff;
+        --ts-stat-label:       #94a3b8;
+        --ts-panel-bg:         #172033;
+        --ts-panel-border:     #334155;
+        --ts-panel-text:       #fff;
+        --ts-legend-bg:        #1f2b40;
+        --ts-legend-border:    #334155;
+        --ts-legend-txt:       #94a3b8;
+        --ts-meta-txt:         #9fb4d1;
+        --ts-grid-bg:          #1a2236;
+        --ts-grid-border:      #283148;
+        --ts-cell-bg:          #212c3f;
+        --ts-cell-border:      #3a4d66;
+        --ts-rail-bg:          #3a4d66;
+        --ts-body-bg:          #1a2236;
+        --ts-body-inner:       #1e2840;
+        --ts-book-bg:          #1f2b40;
+        --ts-book-border:      #334155;
+        --ts-book-text:        #fff;
+        --ts-book-meta:        #94a3b8;
+        --ts-book-sub:         #dce3ed;
+        --ts-phone-bg:         #0f172a;
+        --ts-phone-border:     #334155;
+        --ts-phone-txt:        #dce3ed;
+        --ts-money-bg:         #0f172a;
+        --ts-money-border:     #27364f;
+        --ts-money-label:      #94a3b8;
+        --ts-details-border:   #3b4b66;
+        --ts-details-txt:      #ffad42;
+        --ts-route-pill2-bg:   rgba(255,255,255,.06);
+        --ts-route-pill2-bdr:  rgba(255,255,255,.09);
+        --ts-route-pill2-txt:  #dce3ed;
+    }
+
+    html[data-theme="dark"] {
+        --ts-hero-bg:        linear-gradient(135deg, #c45c0a, #d97c2a);
+        --ts-hero-glow:      rgba(196,92,10,.22);
+        --ts-hero-text:      #f5f0eb;
+        --ts-hero-sub:       rgba(245,240,235,.85);
+        --ts-route-bg:       #1e2b3f;
+        --ts-route-border:   #2c3b55;
+        --ts-stat-bg:        #1e2b3f;
+        --ts-stat-border:    #2c3b55;
+    }
+
+    .ts-page { display: grid; gap: 22px; }
+
+    /* ── Hero ────────────────────────────────────────────────────────────── */
+    .ts-hero { position: relative; overflow: hidden; border-radius: 32px; padding: 38px; color: var(--ts-hero-text); background: var(--ts-hero-bg); box-shadow: 0 24px 70px var(--ts-hero-glow); }
+    .ts-hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.20), transparent 28%); pointer-events: none; }
+    .ts-hero::after  { content: ""; position: absolute; width: 270px; height: 270px; right: -95px; bottom: -115px; border-radius: 50%; background: rgba(255,255,255,.12); pointer-events: none; }
+    .ts-hero-inner { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .ts-badge { width: fit-content; padding: 8px 16px; border-radius: 999px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.28); font-weight: 1000; color: var(--ts-hero-text); }
+    .ts-hero h1 { margin: 18px 0 0; font-size: clamp(42px,6vw,66px); line-height: 1; letter-spacing: -1.5px; color: var(--ts-hero-text); }
+    .ts-hero p  { margin: 16px 0 0; font-size: 18px; font-weight: 700; color: var(--ts-hero-sub); }
+    .ts-avatar-wrap { position: relative; width: 150px; height: 150px; border-radius: 42px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22); display: grid; place-items: center; flex-shrink: 0; }
+    .ts-avatar-wrap::before { content: ""; position: absolute; inset: -8px; border-radius: 48px; border: 3px solid rgba(255,255,255,.22); }
+    .ts-avatar-wrap::after  { content: ""; position: absolute; inset: -8px; border-radius: 48px; border: 3px solid transparent; border-top-color: #fff; border-right-color: rgba(255,255,255,.72); animation: ts-spin 4s linear infinite; }
+    @@keyframes ts-spin { to { transform: rotate(360deg); } }
+    .ts-avatar { position: relative; z-index: 2; width: 112px; height: 112px; border-radius: 32px; background: #fff; color: #ff6a00; display: grid; place-items: center; font-size: 42px; font-weight: 1000; box-shadow: 0 18px 38px rgba(0,0,0,.14); }
+    .ts-avatar-status { position: absolute; right: 22px; bottom: 20px; z-index: 3; width: 20px; height: 20px; border-radius: 50%; background: #12b76a; border: 4px solid #fff; }
+    .ts-actions { position: relative; z-index: 2; display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+    .ts-btn { min-height: 46px; padding: 0 18px; border-radius: 16px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: none; white-space: nowrap; transition: .2s ease; }
+    .ts-btn:hover { transform: translateY(-2px); }
+    .ts-btn-white { background: #fff; color: #ff7a18; box-shadow: 0 14px 30px rgba(0,0,0,.12); }
+    .ts-btn-glass { background: var(--ts-btn-glass-bg); border: 1px solid rgba(255,255,255,.28); color: var(--ts-hero-text); }
+
+    /* ── Route card ──────────────────────────────────────────────────────── */
+    .ts-route-card { background: var(--ts-route-bg); border: 1px solid var(--ts-route-border); border-radius: 22px; padding: 20px 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; transition: background .3s, border-color .3s; }
+    .ts-route-label { color: var(--ts-route-label); font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .ts-route-content { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .route-type-pill { background: var(--ts-route-pill-bg); color: var(--ts-route-pill-txt); border: 1px solid var(--ts-route-pill-bdr); border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 1000; white-space: nowrap; }
+    .route-line  { direction: ltr; unicode-bidi: isolate; display: inline-flex; align-items: center; gap: 8px; color: var(--ts-route-text); font-size: 20px; font-weight: 1000; flex-wrap: nowrap; }
+    .route-part  { direction: rtl; unicode-bidi: isolate; display: inline-block; }
+    .route-arrow { direction: ltr; unicode-bidi: isolate; display: inline-block; font-weight: 1000; opacity: .8; }
+
+    .ts-route-content{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:32px;
+}
+
+.route-side{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.route-center{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.route-date{
+    font-size:56px;
+    font-weight:1000;
+    color:#fff;
+    line-height:1;
+    letter-spacing:-2px;
+}
+
+.route-type-pill{
+    min-height:58px;
+    padding:0 24px;
+    border-radius:999px;
+    font-size:28px;
+    font-weight:1000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.route-line{
+    direction:ltr;
+    unicode-bidi:isolate;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    font-size:40px;
+    font-weight:1000;
+    color:#fff;
+    line-height:1;
+    white-space:nowrap;
+}
+
+.route-part{
+    direction:rtl;
+    unicode-bidi:isolate;
+    display:inline-block;
+}
+
+.route-arrow{
+    direction:ltr;
+    unicode-bidi:isolate;
+    display:inline-block;
+    font-size:36px;
+    opacity:.9;
+}
+
+
+    /* ── Summary ─────────────────────────────────────────────────────────── */
+    .ts-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .ts-stat { background: var(--ts-stat-bg); border: 1px solid var(--ts-stat-border); border-radius: 22px; padding: 20px; color: var(--ts-stat-text); transition: background .3s, border-color .3s; }
+    .ts-stat small  { display: block; color: var(--ts-stat-label); font-weight: 900; margin-bottom: 8px; font-size: 13px; }
+    .ts-stat strong { font-size: 28px; font-weight: 1000; }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .ts-layout { display: grid; grid-template-columns: minmax(360px, 640px) 1fr; gap: 22px; align-items: start; }
+    .ts-card { background: var(--ts-panel-bg); border: 1px solid var(--ts-panel-border); border-radius: 28px; padding: 22px; color: var(--ts-panel-text); }
+
+    /* ── Legend ──────────────────────────────────────────────────────────── */
+    .ts-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .ts-legend span { background: var(--ts-legend-bg); border: 1px solid var(--ts-legend-border); border-radius: 999px; padding: 7px 12px; color: var(--ts-legend-txt); font-weight: 900; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+    .ts-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .dot-orange { background: #ff7a18; } .dot-green { background: #22c55e; }
+    .dot-blue   { background: #38bdf8; } .dot-gray  { background: #475569; }
+    .dot-yellow { background: #fbbf24; }
+
+    /* ── Bus stage ───────────────────────────────────────────────────────── */
+    .bb-bus-stage, .bb-body-wrap, .bb-bus-body, .bb-meta, .bb-grid, .bb-cell { direction: ltr !important; }
+    .bb-bus-stage { width: max-content; max-width: 100%; margin: auto; display: grid; justify-items: center; position: relative; padding: 0 54px; overflow-x: auto; }
+    .bb-bus-nose  { width: var(--bb-bus-width); height: 92px; position: relative; border-radius: 60px 60px 20px 20px; background: linear-gradient(180deg,#ffb266 0%,#ff7a18 100%); border: 4px solid #ffcfaa; border-bottom: 0; z-index: 3; }
+    .bb-windshield{ position: absolute; left: 50%; top: 15px; transform: translateX(-50%); width: 62%; height: 42px; border-radius: 32px 32px 14px 14px; background: linear-gradient(135deg,#172033,#344054); }
+    .bb-headlight { position: absolute; bottom: 15px; width: 34px; height: 18px; border-radius: 999px; background: #fff7d6; }
+    .bb-headlight.left  { left: 32px; } .bb-headlight.right { right: 32px; }
+    .bb-body-wrap { position: relative; width: var(--bb-bus-width); }
+    .bb-bus-body  { width: var(--bb-bus-width); padding: 22px; background: var(--ts-body-bg); border-left: 4px solid #ffcfaa; border-right: 4px solid #ffcfaa; border-bottom: 4px solid #ffcfaa; border-radius: 0 0 42px 42px; box-shadow: inset 0 0 0 8px var(--ts-body-inner); position: relative; z-index: 2; }
+    .bb-side-rail { position: absolute; top: 26px; bottom: 46px; width: 13px; border-radius: 999px; background: var(--ts-rail-bg); z-index: 5; }
+    .bb-side-rail.left  { left: 10px; } .bb-side-rail.right { right: 10px; }
+    .bb-wheel { position: absolute; width: 34px; height: 86px; border-radius: 18px; background: linear-gradient(180deg,#111827,#344054); border: 5px solid #475467; z-index: 1; }
+    .bb-wheel.left.top    { left: -22px; top: 72px; } .bb-wheel.left.bottom { left: -22px; bottom: 72px; }
+    .bb-wheel.right.top   { right: -22px; top: 72px; } .bb-wheel.right.bottom { right: -22px; bottom: 72px; }
+    .bb-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding: 0 28px; color: var(--ts-meta-txt); font-size: 12px; font-weight: 1000; text-transform: uppercase; }
+    .bb-grid { display: grid; gap: var(--bb-cell-gap); grid-template-columns: repeat(var(--bb-cols), var(--bb-cell-size)); width: max-content; margin: auto; padding: 14px; border-radius: 28px; background: var(--ts-grid-bg); border: 1px solid var(--ts-grid-border); position: relative; z-index: 4; }
+    .bb-cell { width: var(--bb-cell-size); height: calc(var(--bb-cell-size) * .82); border-radius: calc(var(--bb-cell-size) * .22); border: 1px dashed var(--ts-cell-border); background: var(--ts-cell-bg); display: grid; place-items: center; font-weight: 1000; position: relative; font-size: clamp(10px, calc(var(--bb-cell-size) * .22), 15px); user-select: none; text-decoration: none; color: #dce3ed; box-sizing: border-box; }
+    .bb-cell.empty::after    { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #3a4d66; }
+    .bb-cell.seat            { background: linear-gradient(180deg,#ff9340,#ff6a00); color: #fff; border: none; }
+    .bb-cell.vip             { background: linear-gradient(180deg,#ffd166,#ff9f1c); color: #172033; border: none; }
+    .bb-cell.reserved        { background: linear-gradient(180deg,#22c55e,#15803d); color: #fff; border: none; cursor: pointer; }
+    .bb-cell.company-reserved{ background: linear-gradient(180deg,#38bdf8,#0369a1); color: #fff; border: none; cursor: pointer; }
+    .bb-cell.driver          { background: #0f172a; color: #fff; border: none; }
+    .bb-cell.assistant       { background: #7c3aed; color: #fff; border: none; }
+    .bb-cell.wc              { background: rgba(21,112,239,.15); color: #60abf8; border-color: rgba(96,171,248,.4); }
+    .bb-cell.disabled-object { opacity: .45; filter: grayscale(.35); }
+    .seat-status-form { margin: 0; padding: 0; width: var(--bb-cell-size); height: calc(var(--bb-cell-size) * .82); }
+    .seat-status-form button.bb-cell { border: 0; cursor: pointer; font-family: inherit; }
+
+    /* ── Booking list ────────────────────────────────────────────────────── */
+    .booking-list { display: grid; gap: 16px; max-height: 780px; overflow-y: auto; padding-inline-end: 6px; }
+    .booking-list::-webkit-scrollbar       { width: 5px; }
+    .booking-list::-webkit-scrollbar-track { background: rgba(255,255,255,.06); border-radius: 99px; }
+    .booking-list::-webkit-scrollbar-thumb { background: #ff7a18; border-radius: 99px; }
+    .booking-item { background: var(--ts-book-bg); border: 1px solid var(--ts-book-border); border-radius: 20px; padding: 18px; display: grid; gap: 14px; }
+    .booking-head   { display: flex; justify-content: space-between; gap: 10px; align-items: start; flex-wrap: wrap; }
+    .booking-head h3{ margin: 0; font-size: 18px; font-weight: 1000; color: var(--ts-book-text); }
+    .code-pill     { background: rgba(255,122,24,.15); color: #ffad42; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 1000; white-space: nowrap; flex-shrink: 0; }
+    .company-pill  { background: rgba(56,189,248,.15); color: #38bdf8; }
+    .booking-meta  { color: var(--ts-book-meta); font-weight: 800; display: grid; gap: 8px; font-size: 14px; }
+    .meta-row      { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+    .meta-label    { color: var(--ts-book-meta); white-space: nowrap; flex-shrink: 0; }
+    .meta-value    { color: var(--ts-book-sub); }
+    .route-pill    { direction: ltr; unicode-bidi: isolate; display: inline-flex; align-items: center; gap: 8px; background: var(--ts-route-pill2-bg); border: 1px solid var(--ts-route-pill2-bdr); border-radius: 999px; padding: 6px 12px; color: var(--ts-route-pill2-txt); font-weight: 900; white-space: nowrap; }
+
+    /* ── Phones ──────────────────────────────────────────────────────────── */
+    .phone-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+    .phone-pill { background: var(--ts-phone-bg); border: 1px solid var(--ts-phone-border); border-radius: 14px; padding: 9px 16px; color: var(--ts-phone-txt); font-size: 15px; font-weight: 900; display: inline-flex; align-items: center; gap: 8px; direction: ltr; unicode-bidi: isolate; letter-spacing: .04em; }
+    .phone-pill::before { content: "📞"; font-size: 14px; }
+
+    /* ── Money ───────────────────────────────────────────────────────────── */
+    .money-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .money-box  { background: var(--ts-money-bg); border: 1px solid var(--ts-money-border); border-radius: 14px; padding: 12px 14px; }
+    .money-box small  { display: block; color: var(--ts-money-label); margin-bottom: 6px; font-weight: 800; font-size: 12px; }
+    .money-box strong { color: var(--ts-book-text); font-weight: 1000; font-size: 16px; }
+    .money-box .danger  { color: #f87171 !important; }
+    .money-box .success { color: #34d399 !important; }
+    .details-btn { min-height: 40px; border-radius: 14px; padding: 0 16px; border: 1px solid var(--ts-details-border); color: var(--ts-details-txt); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; transition: .2s ease; }
+    .details-btn:hover { transform: translateY(-1px); }
+
+    @@media (max-width: 1100px) {
+        .ts-layout  { grid-template-columns: 1fr; }
+        .ts-summary { grid-template-columns: repeat(3,1fr); }
+        .money-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @@media (max-width: 650px) {
+        .ts-summary { grid-template-columns: 1fr; }
+        .money-grid { grid-template-columns: 1fr; }
+        .ts-actions { flex-direction: column; }
+        .ts-btn     { width: 100%; }
+        .ts-route-card { flex-direction: column; align-items: flex-start; }
+        .ts-avatar-wrap { width: 112px; height: 112px; border-radius: 32px; }
+        .ts-avatar-wrap::before, .ts-avatar-wrap::after { border-radius: 38px; }
+        .ts-avatar { width: 88px; height: 88px; font-size: 34px; border-radius: 27px; }
+    }
+</style>
+
+<div class="ts-page">
+
+    @* ── Hero ── *@
+    <section class="ts-hero">
+        <div class="ts-hero-inner">
+            <div>
+                <span class="ts-badge">@L["Seats_Badge"]</span>
+                <h1>@L["Seats_Heading"]</h1>
+                <p>@L["Seats_Subtitle"]</p>
+            </div>
+            <div class="ts-avatar-wrap">
+                <div class="ts-avatar">@initials</div>
+                <span class="ts-avatar-status"></span>
+            </div>
+        </div>
+        <div class="ts-actions">
+            <a class="ts-btn ts-btn-white" asp-action="Trips">@L["Seats_BackToTrips"]</a>
+            <a class="ts-btn ts-btn-glass" asp-action="Buses">@L["Seats_Buses"]</a>
+            <a class="ts-btn ts-btn-glass" asp-action="Companies">@L["Seats_Companies"]</a>
+            <a class="ts-btn ts-btn-glass" asp-action="DownloadTripSeatsPdf" asp-route-tripId="@tripId" target="_blank">@L["Seats_DownloadPdf"]</a>
+        </div>
+    </section>
+
+    @* ── Route card ── *@
+    <section class="ts-route-card">
+        <span class="ts-route-label">@L["Seats_GeneralRoute"]</span>
+        <div class="ts-route-content">
+
+            <div class="route-side">
+                <span class="route-type-pill">
+                    @TranslateRoute(generalTripRoute)
+                </span>
+            </div>
+
+            <div class="route-center">
+                <span class="route-date">
+                    @Model.FirstOrDefault()?.TripDate.ToString("dd/MM/yyyy")
+                </span>
+            </div>
+
+            <div class="route-side route-line">
+                <span class="route-part">@generalRouteFrom</span>
+                <span class="route-arrow">→</span>
+                <span class="route-part">@generalRouteTo</span>
+            </div>
+
+        </div>
+    </section>
+
+    @* ── Summary ── *@
+    <section class="ts-summary">
+        <div class="ts-stat"><small>@L["Seats_TotalSeats"]</small><strong>@totalSeats</strong></div>
+        <div class="ts-stat"><small>@L["Seats_Reserved"]</small><strong>@reservedSeats</strong></div>
+        <div class="ts-stat"><small>@L["Seats_Available"]</small><strong>@availableSeats</strong></div>
+    </section>
+
+    @* ── Layout ── *@
+    <section class="ts-layout">
+
+        @* Bus stage *@
+        <div class="ts-card">
+            <div class="ts-legend">
+                <span><i class="ts-dot dot-orange"></i>@L["Seats_LegendAvailable"]</span>
+                <span><i class="ts-dot dot-green"></i>@L["Seats_LegendClient"]</span>
+                <span><i class="ts-dot dot-blue"></i>@L["Seats_LegendCompany"]</span>
+                <span><i class="ts-dot dot-yellow"></i>@L["Seats_LegendVIP"]</span>
+                <span><i class="ts-dot dot-gray"></i>@L["Seats_LegendDisabled"]</span>
+            </div>
+
+            <div class="bb-bus-stage"
+                 style="--bb-cols:@cols; --bb-cell-size:70px; --bb-cell-gap:8px; --bb-bus-width:@(busWidth)px;">
+                <div class="bb-bus-nose">
+                    <div class="bb-windshield"></div>
+                    <div class="bb-headlight left"></div>
+                    <div class="bb-headlight right"></div>
+                </div>
+                <div class="bb-body-wrap">
+                    <div class="bb-wheel left top"></div><div class="bb-wheel left bottom"></div>
+                    <div class="bb-wheel right top"></div><div class="bb-wheel right bottom"></div>
+                    <div class="bb-bus-body">
+                        <div class="bb-side-rail left"></div>
+                        <div class="bb-side-rail right"></div>
+                        <div class="bb-meta">
+                            <span>@L["Seats_FrontEntrance"]</span>
+                            <span>@rows × @cols</span>
+                        </div>
+                        <div class="bb-grid">
+                            @for (var r = 1; r <= rows; r++)
+                            {
+                                for (var c = 1; c <= cols; c++)
+                                {
+                                    var key = $"{r}_{c}";
+                                    seatsMap.TryGetValue(key, out var seat);
+                                    if (seat == null) { <div class="bb-cell empty"></div> }
+                                    else
+                                    {
+                                        var seatText = string.IsNullOrWhiteSpace(seat.SeatLabel) ? seat.SeatNumber.ToString() : seat.SeatLabel;
+                                        var css =
+                                            seat.SeatType == SeatType.Driver    ? "driver" :
+                                            seat.SeatType == SeatType.Assistant ? "assistant" :
+                                            seat.SeatType == SeatType.Bathroom  ? "wc" :
+                                            seat.IsReserved && seat.IsCompanyBooking ? "company-reserved" :
+                                            seat.IsReserved ? "reserved" :
+                                            seat.SeatType == SeatType.VIP ? "vip" : "seat";
+                                        if (!seat.IsActive) css += " disabled-object";
+
+                                        if (seat.IsReserved)
+                                        {
+                                            if (seat.IsCompanyBooking && seat.CompanySeatBookingId.HasValue)
+                                            { <a class="bb-cell @css" title="@($"{seat.CompanyName} - {seat.ReservedByClient}")" asp-action="CompanySeatBookingDetails" asp-route-id="@seat.CompanySeatBookingId">@seatText</a> }
+                                            else if (seat.BookingId.HasValue)
+                                            { <a class="bb-cell @css" title="@($"{seat.ReservedByClient} - {seat.BookingCode}")" asp-controller="Bookings" asp-action="Details" asp-route-id="@seat.BookingId">@seatText</a> }
+                                            else { <div class="bb-cell @css">@seatText</div> }
+                                        }
+                                        else
+                                        {
+                                            if (seat.SeatType == SeatType.Normal || seat.SeatType == SeatType.VIP || seat.SeatType == SeatType.Bathroom)
+                                            {
+                                                <form asp-action="ChangeSeatStatus" method="post" class="seat-status-form" title="@seatText">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="seatId"   value="@seat.SeatId" />
+                                                    <input type="hidden" name="tripId"   value="@tripId" />
+                                                    <input type="hidden" name="isActive" value="@(!seat.IsActive)" />
+                                                    <button type="submit" class="bb-cell @css" onclick="return confirm('@L["Seats_ChangeSeatConfirm"]');">
+                                                        @(seat.SeatType == SeatType.Bathroom ? "WC" : seatText)
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <div class="bb-cell @css" title="@seatText">
+                                                    @(seat.SeatType == SeatType.Driver ? "DRV" : seat.SeatType == SeatType.Assistant ? "AST" : seat.SeatType == SeatType.Bathroom ? "WC" : seatText)
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Booking list *@
+        <div class="ts-card">
+            <h2 style="margin: 0 0 18px;">@L["Seats_ReservedBookings"]</h2>
+
+            <div class="booking-list">
+                @if (!bookings.Any())
+                {
+                    <div class="booking-item">
+                        <div class="booking-head"><h3>@L["Seats_NoBookings"]</h3></div>
+                    </div>
+                }
+                else
+                {
+                    foreach (var booking in bookings)
+                    {
+                        var b = booking.First;
+
+                        var seatsText = string.Join(", ", booking.Seats.Select(x =>
+                            string.IsNullOrWhiteSpace(x.SeatLabel) ? x.SeatNumber.ToString() : x.SeatLabel));
+
+                        var phones = (b.PhoneNumbersText ?? string.Empty)
+                            .Split(new[] { '-', ',', '/', '|' }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(p => p.Trim()).Where(p => !string.IsNullOrWhiteSpace(p)).Distinct().ToList();
+
+                        var transportTotal = booking.Seats.Sum(x => x.TransportationTotal);
+                        var grandTotal     = b.IsCompanyBooking ? booking.Seats.Sum(x => x.GrandTotal)      : b.GrandTotal;
+                        var remaining      = b.IsCompanyBooking ? booking.Seats.Sum(x => x.RemainingAmount) : b.RemainingAmount;
+
+                        @* ── Translate all English strings from Manager ── *@
+                        var bookingTypeRaw = !string.IsNullOrWhiteSpace(b.TripTypeText) ? b.TripTypeText
+                            : b.IsCompanyBooking ? "Company"
+                            : b.HasHotel && b.HasTransportation ? "HotelTransport"
+                            : b.HasHotel ? "Hotel" : "Transport";
+
+                        var bookingTypeDisplay = bookingTypeRaw switch
+                        {
+                            "Company"        => L["Seats_TypeCompany"].Value,
+                            "HotelTransport" => L["Seats_TypeHotelTransport"].Value,
+                            "Hotel"          => L["Seats_TypeHotel"].Value,
+                            "Transport"      => L["Seats_TypeTransport"].Value,
+                            _                => TranslateTripType(bookingTypeRaw)
+                        };
+
+                        @* TripRouteText: "Go" / "Return" from Manager → translated *@
+                        var tripRouteDisplay = TranslateRoute(b.TripRouteText);
+
+                        @* SeatRouteFrom / SeatRouteTo: location strings — not translated *@
+                        var seatRouteFrom = string.IsNullOrWhiteSpace(b.SeatRouteFrom) ? "-" : b.SeatRouteFrom;
+                        var seatRouteTo   = string.IsNullOrWhiteSpace(b.SeatRouteTo)   ? "-" : b.SeatRouteTo;
+
+                        <div class="booking-item">
+
+                            @* Head *@
+                            <div class="booking-head">
+                                <h3>@(b.ReservedByClient ?? "-")</h3>
+                                <span class="code-pill @(b.IsCompanyBooking ? "company-pill" : "")">
+                                    @(b.IsCompanyBooking ? L["Seats_CompanyBookingPill"].Value : b.BookingCode)
+                                </span>
+                            </div>
+
+                            @* Meta *@
+                            <div class="booking-meta">
+
+                                <div class="meta-row">
+                                    <span class="meta-label">@L["Seats_SeatsLabel"]:</span>
+                                    <span class="meta-value">@seatsText</span>
+                                </div>
+
+                                <div class="meta-row">
+                                    <span class="meta-label">@L["Seats_TypeLabel"]:</span>
+                                    <span class="meta-value">@bookingTypeDisplay</span>
+                                </div>
+
+                                <div class="meta-row">
+                                    <span class="meta-label">@L["Seats_TripRoute"]:</span>
+                                    @* ← مترجم من "Go"/"Return" للغة الحالية *@
+                                    <span class="meta-value">@tripRouteDisplay</span>
+                                </div>
+
+                                <div class="meta-row">
+                                    <span class="meta-label">@L["Seats_BookingRoute"]:</span>
+                                    <span class="route-pill">
+                                        <span class="route-part">@seatRouteFrom</span>
+                                        <span class="route-arrow">→</span>
+                                        <span class="route-part">@seatRouteTo</span>
+                                    </span>
+                                </div>
+
+                                @if (b.IsCompanyBooking && !string.IsNullOrWhiteSpace(b.CompanyName))
+                                {
+                                    <div class="meta-row">
+                                        <span class="meta-label">@L["Seats_CompanyLabel"]:</span>
+                                        <span class="meta-value">@b.CompanyName</span>
+                                    </div>
+                                }
+
+                                <div class="meta-row">
+                                    <span class="meta-label">@L["Seats_PhonesLabel"]:</span>
+                                </div>
+
+                                @if (phones.Any())
+                                {
+                                    <div class="phone-list">
+                                        @foreach (var phone in phones)
+                                        {
+                                            <span class="phone-pill">@phone</span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="meta-row"><span class="meta-value">-</span></div>
+                                }
+
+                            </div>
+
+                            @* Money *@
+                            <div class="money-grid">
+                                <div class="money-box"><small>@L["Seats_Hotel"]</small><strong>@b.HotelTotal.ToString("N2")</strong></div>
+                                <div class="money-box"><small>@L["Seats_Transportation"]</small><strong>@transportTotal.ToString("N2")</strong></div>
+                                <div class="money-box"><small>@L["Seats_Total"]</small><strong>@grandTotal.ToString("N2")</strong></div>
+                                <div class="money-box"><small>@L["Seats_Paid"]</small><strong class="success">@b.PaidAmount.ToString("N2")</strong></div>
+                                <div class="money-box"><small>@L["Seats_Remaining"]</small><strong class="@(remaining > 0 ? "danger" : "success")">@remaining.ToString("N2")</strong></div>
+                                <div class="money-box"><small>@L["Seats_Discount"]</small><strong>@b.Discount.ToString("N2")</strong></div>
+                            </div>
+
+                            @* Action *@
+                            @if (b.IsCompanyBooking && b.CompanySeatBookingId.HasValue)
+                            {
+                                <a class="details-btn" asp-action="CompanySeatBookingDetails" asp-route-id="@b.CompanySeatBookingId">@L["Seats_OpenCompanyBooking"]</a>
+                            }
+                            else if (b.BookingId.HasValue)
+                            {
+                                <a class="details-btn" asp-controller="Bookings" asp-action="Details" asp-route-id="@b.BookingId">@L["Seats_OpenBookingDetails"]</a>
+                            }
+
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+    </section>
+
+</div>

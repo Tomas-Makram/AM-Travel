@@ -1,0 +1,4693 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Nav_Home" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="Nav_Login" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Nav_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Nav_DailyTrips" xml:space="preserve">
+    <value>الرحلات اليومية</value>
+  </data>
+  <data name="Nav_Bookings" xml:space="preserve">
+    <value>الحجوزات</value>
+  </data>
+  <data name="Nav_NewBooking" xml:space="preserve">
+    <value>حجز جديد</value>
+  </data>
+  <data name="Nav_Works" xml:space="preserve">
+    <value>الأعمال</value>
+  </data>
+  <data name="Nav_TodayWorks" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="Nav_Companies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="Nav_Buses" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="Nav_Trips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="Nav_MyAccount" xml:space="preserve">
+    <value>حسابي</value>
+  </data>
+  <data name="Nav_EditFields" xml:space="preserve">
+    <value>تعديل البيانات</value>
+  </data>
+  <data name="Nav_ChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Nav_ReportWorks" xml:space="preserve">
+    <value>تقرير الأعمال</value>
+  </data>
+  <data name="Nav_Users" xml:space="preserve">
+    <value>المستخدمون</value>
+  </data>
+  <data name="Nav_Logout" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="Nav_Workspace" xml:space="preserve">
+    <value>مساحة العمل</value>
+  </data>
+  <data name="Nav_Transportation" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="Nav_Account" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+  <data name="Nav_Administration" xml:space="preserve">
+    <value>الإدارة</value>
+  </data>
+  <data name="Sidebar_Language" xml:space="preserve">
+    <value>اللغة</value>
+  </data>
+  <data name="Sidebar_Theme" xml:space="preserve">
+    <value>المظهر</value>
+  </data>
+  <data name="Sidebar_Light" xml:space="preserve">
+    <value>فاتح</value>
+  </data>
+  <data name="Sidebar_Dark" xml:space="preserve">
+    <value>داكن</value>
+  </data>
+  <data name="Sidebar_Logout" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="Sidebar_LoginBtn" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Sidebar_BrandMini" xml:space="preserve">
+    <value>نظام السياحة الداخلية</value>
+  </data>
+  <data name="Pref_Language" xml:space="preserve">
+    <value>اللغة</value>
+  </data>
+  <data name="Pref_Theme" xml:space="preserve">
+    <value>المظهر</value>
+  </data>
+  <data name="Pref_Light" xml:space="preserve">
+    <value>فاتح</value>
+  </data>
+  <data name="Pref_Dark" xml:space="preserve">
+    <value>داكن</value>
+  </data>
+  <data name="Account_Title" xml:space="preserve">
+    <value>حسابي</value>
+  </data>
+  <data name="Account_Badge" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+  <data name="Account_Subtitle" xml:space="preserve">
+    <value>إدارة ملفك الشخصي وكلمة المرور وحالة الحساب.</value>
+  </data>
+  <data name="Account_EditProfile" xml:space="preserve">
+    <value>تعديل الملف الشخصي</value>
+  </data>
+  <data name="Account_ChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Account_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Account_Username" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="Account_Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Account_AccountStatus" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+  <data name="Account_LoginStatus" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Account_Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Account_Inactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Account_Online" xml:space="preserve">
+    <value>متصل</value>
+  </data>
+  <data name="Account_Offline" xml:space="preserve">
+    <value>غير متصل</value>
+  </data>
+  <data name="Account_ProfileDetails" xml:space="preserve">
+    <value>تفاصيل الملف الشخصي</value>
+  </data>
+  <data name="Account_ProfileSubtitle" xml:space="preserve">
+    <value>معلوماتك الرئيسية في نظام AM Travel.</value>
+  </data>
+  <data name="Account_FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="Account_PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Account_NationalId" xml:space="preserve">
+    <value>الرقم القومي</value>
+  </data>
+  <data name="Account_JoinDate" xml:space="preserve">
+    <value>تاريخ الانضمام</value>
+  </data>
+  <data name="Account_LastLogin" xml:space="preserve">
+    <value>آخر دخول</value>
+  </data>
+  <data name="Account_NotSet" xml:space="preserve">
+    <value>غير محدد</value>
+  </data>
+  <data name="Pwd_Title" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Pwd_Badge" xml:space="preserve">
+    <value>مركز الأمان</value>
+  </data>
+  <data name="Pwd_Subtitle" xml:space="preserve">
+    <value>حافظ على أمان حسابك في AM Travel بتحديث كلمة المرور بانتظام.</value>
+  </data>
+  <data name="Pwd_WelcomeBack" xml:space="preserve">
+    <value>مرحباً</value>
+  </data>
+  <data name="Pwd_MyAccount" xml:space="preserve">
+    <value>حسابي</value>
+  </data>
+  <data name="Pwd_EditProfile" xml:space="preserve">
+    <value>تعديل الملف الشخصي</value>
+  </data>
+  <data name="Pwd_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Pwd_FormTitle" xml:space="preserve">
+    <value>بيانات كلمة المرور</value>
+  </data>
+  <data name="Pwd_FormSubtitle" xml:space="preserve">
+    <value>أدخل كلمة المرور الحالية ثم اختر كلمة مرور جديدة.</value>
+  </data>
+  <data name="Pwd_OldPassword" xml:space="preserve">
+    <value>كلمة المرور الحالية</value>
+  </data>
+  <data name="Pwd_OldPlaceholder" xml:space="preserve">
+    <value>أدخل كلمة المرور الحالية</value>
+  </data>
+  <data name="Pwd_NewPassword" xml:space="preserve">
+    <value>كلمة المرور الجديدة</value>
+  </data>
+  <data name="Pwd_NewPlaceholder" xml:space="preserve">
+    <value>أدخل كلمة المرور الجديدة</value>
+  </data>
+  <data name="Pwd_ConfirmPassword" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="Pwd_ConfirmPlaceholder" xml:space="preserve">
+    <value>أعد إدخال كلمة المرور الجديدة</value>
+  </data>
+  <data name="Pwd_Submit" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Pwd_TipsTitle" xml:space="preserve">
+    <value>نصائح لكلمة المرور</value>
+  </data>
+  <data name="Pwd_TipsSubtitle" xml:space="preserve">
+    <value>كلمة المرور القوية تقلل من احتمالية اختراق الحساب وتحافظ على بيانات العملاء والحجوزات.</value>
+  </data>
+  <data name="Pwd_Tip1" xml:space="preserve">
+    <value>استخدم 8 أحرف على الأقل.</value>
+  </data>
+  <data name="Pwd_Tip2" xml:space="preserve">
+    <value>اخلط بين الحروف الكبيرة والصغيرة والأرقام والرموز.</value>
+  </data>
+  <data name="Pwd_Tip3" xml:space="preserve">
+    <value>لا تستخدم رقم هاتفك أو اسمك ككلمة مرور.</value>
+  </data>
+  <data name="Pwd_StrengthLabel" xml:space="preserve">
+    <value>قوة كلمة المرور</value>
+  </data>
+  <data name="Pwd_StrengthEmpty" xml:space="preserve">
+    <value>فارغة</value>
+  </data>
+  <data name="Pwd_StrengthWeak" xml:space="preserve">
+    <value>ضعيفة</value>
+  </data>
+  <data name="Pwd_StrengthGood" xml:space="preserve">
+    <value>جيدة</value>
+  </data>
+  <data name="Pwd_StrengthStrong" xml:space="preserve">
+    <value>قوية</value>
+  </data>
+  <data name="Edit_Title" xml:space="preserve">
+    <value>تعديل الحساب</value>
+  </data>
+  <data name="Edit_Badge" xml:space="preserve">
+    <value>تعديل الحساب</value>
+  </data>
+  <data name="Edit_Heading" xml:space="preserve">
+    <value>تحديث بياناتك</value>
+  </data>
+  <data name="Edit_Subtitle" xml:space="preserve">
+    <value>أدر ملفك الشخصي ورقم هاتفك ورقمك القومي بأمان داخل نظام AM Travel.</value>
+  </data>
+  <data name="Edit_WelcomeBack" xml:space="preserve">
+    <value>مرحباً</value>
+  </data>
+  <data name="Edit_MyAccount" xml:space="preserve">
+    <value>حسابي</value>
+  </data>
+  <data name="Edit_ChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Edit_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Edit_FormTitle" xml:space="preserve">
+    <value>بيانات الحساب</value>
+  </data>
+  <data name="Edit_FormSubtitle" xml:space="preserve">
+    <value>عدّل الحقول التي تريد تغييرها فقط، ثم احفظ التغييرات.</value>
+  </data>
+  <data name="Edit_FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="Edit_FullNamePH" xml:space="preserve">
+    <value>أدخل اسمك الكامل</value>
+  </data>
+  <data name="Edit_PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Edit_PhoneNumberPH" xml:space="preserve">
+    <value>01xxxxxxxxx</value>
+  </data>
+  <data name="Edit_NationalId" xml:space="preserve">
+    <value>الرقم القومي</value>
+  </data>
+  <data name="Edit_NationalIdPH" xml:space="preserve">
+    <value>أدخل الرقم القومي</value>
+  </data>
+  <data name="Edit_Submit" xml:space="preserve">
+    <value>حفظ التغييرات</value>
+  </data>
+  <data name="Edit_NotesTitle" xml:space="preserve">
+    <value>ملاحظات مهمة</value>
+  </data>
+  <data name="Edit_NotesSubtitle" xml:space="preserve">
+    <value>تأكد من إدخال بيانات صحيحة لأن هذه البيانات مرتبطة بعمليات الحجز وإدارة الحساب داخل النظام.</value>
+  </data>
+  <data name="Edit_Note1" xml:space="preserve">
+    <value>رقم الهاتف يجب أن يكون صحيحاً حتى لا يحدث خطأ في التواصل أو متابعة الحجز.</value>
+  </data>
+  <data name="Edit_Note2" xml:space="preserve">
+    <value>الرقم القومي مهم للتحقق من هوية صاحب الحساب داخل النظام.</value>
+  </data>
+  <data name="Edit_Note3" xml:space="preserve">
+    <value>لا تنسَ الضغط على حفظ التغييرات قبل مغادرة الصفحة.</value>
+  </data>
+  <data name="CU_Title" xml:space="preserve">
+    <value>إنشاء مستخدم</value>
+  </data>
+  <data name="CU_Badge" xml:space="preserve">
+    <value>لوحة الإدارة</value>
+  </data>
+  <data name="CU_Heading" xml:space="preserve">
+    <value>إنشاء مستخدم جديد</value>
+  </data>
+  <data name="CU_Subtitle" xml:space="preserve">
+    <value>أضف حساباً جديداً في AM Travel وعيّن الدور المناسب للمستخدم.</value>
+  </data>
+  <data name="CU_UsersManagement" xml:space="preserve">
+    <value>إدارة المستخدمين</value>
+  </data>
+  <data name="CU_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="CU_FormTitle" xml:space="preserve">
+    <value>بيانات الحساب</value>
+  </data>
+  <data name="CU_FormSubtitle" xml:space="preserve">
+    <value>أدخل بيانات المستخدم بعناية قبل إنشاء الحساب.</value>
+  </data>
+  <data name="CU_FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="CU_FullNamePH" xml:space="preserve">
+    <value>أدخل الاسم الكامل</value>
+  </data>
+  <data name="CU_Username" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="CU_UsernamePH" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="CU_PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="CU_PhoneNumberPH" xml:space="preserve">
+    <value>01xxxxxxxxx</value>
+  </data>
+  <data name="CU_NationalId" xml:space="preserve">
+    <value>الرقم القومي</value>
+  </data>
+  <data name="CU_NationalIdPH" xml:space="preserve">
+    <value>الرقم القومي</value>
+  </data>
+  <data name="CU_AccountType" xml:space="preserve">
+    <value>نوع الحساب</value>
+  </data>
+  <data name="CU_Password" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="CU_PasswordPH" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="CU_ConfirmPassword" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="CU_ConfirmPasswordPH" xml:space="preserve">
+    <value>تأكيد كلمة المرور</value>
+  </data>
+  <data name="CU_Submit" xml:space="preserve">
+    <value>إنشاء المستخدم</value>
+  </data>
+  <data name="CU_NotesTitle" xml:space="preserve">
+    <value>ملاحظات مهمة</value>
+  </data>
+  <data name="CU_NotesSubtitle" xml:space="preserve">
+    <value>تأكد من عدم تكرار اسم المستخدم أو رقم الهاتف أو الرقم القومي قبل إنشاء الحساب.</value>
+  </data>
+  <data name="CU_Note1" xml:space="preserve">
+    <value>حساب Admin لا يتم إنشاؤه من هنا إذا كان موجوداً بالفعل.</value>
+  </data>
+  <data name="CU_Note2" xml:space="preserve">
+    <value>اختر Helper للمستخدم الذي يستطيع إدارة الحجوزات بدون حذفها.</value>
+  </data>
+  <data name="CU_Note3" xml:space="preserve">
+    <value>اختر Viewer للمستخدم الذي يحتاج فقط لمشاهدة البيانات حسب الصلاحيات.</value>
+  </data>
+  <data name="CU_RoleGuideTitle" xml:space="preserve">
+    <value>دليل الأدوار</value>
+  </data>
+  <data name="CU_RoleGuideText" xml:space="preserve">
+    <value>Admin يملك صلاحيات كاملة. Helper يدير الحجوزات. Viewer لديه وصول قراءة محدود.</value>
+  </data>
+  <data name="Users_Title" xml:space="preserve">
+    <value>المستخدمون</value>
+  </data>
+  <data name="Users_Badge" xml:space="preserve">
+    <value>لوحة الإدارة</value>
+  </data>
+  <data name="Users_Heading" xml:space="preserve">
+    <value>إدارة المستخدمين</value>
+  </data>
+  <data name="Users_Subtitle" xml:space="preserve">
+    <value>إدارة مستخدمي AM Travel وحالة التفعيل والحظر وعمليات إعادة تعيين كلمة المرور.</value>
+  </data>
+  <data name="Users_CreateUser" xml:space="preserve">
+    <value>إنشاء مستخدم</value>
+  </data>
+  <data name="Users_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Users_SearchTitle" xml:space="preserve">
+    <value>بحث المستخدمين</value>
+  </data>
+  <data name="Users_SearchPH" xml:space="preserve">
+    <value>بحث: هاتف، رقم قومي، اسم مستخدم، اسم، دور...</value>
+  </data>
+  <data name="Users_ColUser" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Users_ColRole" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Users_ColActivation" xml:space="preserve">
+    <value>التفعيل</value>
+  </data>
+  <data name="Users_ColBlock" xml:space="preserve">
+    <value>حالة الحظر</value>
+  </data>
+  <data name="Users_ColJoinDate" xml:space="preserve">
+    <value>تاريخ الانضمام</value>
+  </data>
+  <data name="Users_ColLastLogin" xml:space="preserve">
+    <value>آخر دخول</value>
+  </data>
+  <data name="Users_ColActions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="Users_MetaUsername" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="Users_MetaPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="Users_MetaNational" xml:space="preserve">
+    <value>الرقم القومي</value>
+  </data>
+  <data name="Users_Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Users_Inactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Users_Blocked" xml:space="preserve">
+    <value>محظور</value>
+  </data>
+  <data name="Users_Unblocked" xml:space="preserve">
+    <value>غير محظور</value>
+  </data>
+  <data name="Users_Deactivate" xml:space="preserve">
+    <value>إلغاء التفعيل</value>
+  </data>
+  <data name="Users_Activate" xml:space="preserve">
+    <value>تفعيل</value>
+  </data>
+  <data name="Users_Block" xml:space="preserve">
+    <value>حظر</value>
+  </data>
+  <data name="Users_Unblock" xml:space="preserve">
+    <value>رفع الحظر</value>
+  </data>
+  <data name="Users_ChangePwd" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Users_NotLoggedYet" xml:space="preserve">
+    <value>لم يسجل دخولاً بعد</value>
+  </data>
+  <data name="Users_NoResults" xml:space="preserve">
+    <value>لا يوجد مستخدمون مطابقون لبحثك.</value>
+  </data>
+  <data name="Users_ModalBadge" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Users_ModalSubtitle" xml:space="preserve">
+    <value>راجع بيانات الحساب ثم أدخل كلمة المرور الجديدة.</value>
+  </data>
+  <data name="Users_ModalFullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="Users_ModalUsername" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="Users_ModalAccountType" xml:space="preserve">
+    <value>نوع الحساب</value>
+  </data>
+  <data name="Users_ModalPhone" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Users_ModalNational" xml:space="preserve">
+    <value>الرقم القومي</value>
+  </data>
+  <data name="Users_ModalJoinDate" xml:space="preserve">
+    <value>تاريخ الانضمام</value>
+  </data>
+  <data name="Users_ModalLastLogin" xml:space="preserve">
+    <value>آخر دخول</value>
+  </data>
+  <data name="Users_ModalNewPwd" xml:space="preserve">
+    <value>كلمة المرور الجديدة</value>
+  </data>
+  <data name="Users_ModalNewPwdPH" xml:space="preserve">
+    <value>أدخل كلمة المرور الجديدة</value>
+  </data>
+  <data name="Users_ModalCancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Users_ModalConfirm" xml:space="preserve">
+    <value>نعم، تغيير كلمة المرور</value>
+  </data>
+  <data name="Users_NotSet" xml:space="preserve">
+    <value>غير محدد</value>
+  </data>
+  <data name="Login_Title" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Login_BrandTagline" xml:space="preserve">
+    <value>نظام السياحة الداخلية</value>
+  </data>
+  <data name="Login_Welcome" xml:space="preserve">
+    <value>مرحباً بعودتك</value>
+  </data>
+  <data name="Login_WelcomeSub" xml:space="preserve">
+    <value>سجّل دخولك للوصول إلى الحجوزات وبيانات الحسابات وأدوات المستخدمين والعمليات اليومية عبر لوحة تحكم AM Travel الآمنة.</value>
+  </data>
+  <data name="Login_MiniBadge" xml:space="preserve">
+    <value>منطقة الدخول</value>
+  </data>
+  <data name="Login_FormTitle" xml:space="preserve">
+    <value>تسجيل الدخول إلى حسابك</value>
+  </data>
+  <data name="Login_FormSubtitle" xml:space="preserve">
+    <value>استخدم اسم المستخدم أو رقم الهاتف أو الرقم القومي مع كلمة المرور.</value>
+  </data>
+  <data name="Login_IdentifierLabel" xml:space="preserve">
+    <value>اسم المستخدم، الهاتف، أو الرقم القومي</value>
+  </data>
+  <data name="Login_IdentifierPH" xml:space="preserve">
+    <value>admin / 01xxxxxxxxx / الرقم القومي</value>
+  </data>
+  <data name="Login_PasswordLabel" xml:space="preserve">
+    <value>كلمة المرور</value>
+  </data>
+  <data name="Login_PasswordPH" xml:space="preserve">
+    <value>أدخل كلمة المرور</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>إظهار كلمة المرور</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>إخفاء كلمة المرور</value>
+  </data>
+  <data name="Login_Submit" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Login_BackTo" xml:space="preserve">
+    <value>العودة إلى</value>
+  </data>
+  <data name="Login_HomeLink" xml:space="preserve">
+    <value>الصفحة الرئيسية</value>
+  </data>
+  <data name="Dash_Title" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Dash_Badge" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Dash_Heading" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Dash_Subtitle" xml:space="preserve">
+    <value>إدارة عمل اليوم ومتابعة العملاء والتصدير وعمليات AM Travel.</value>
+  </data>
+  <data name="Dash_WelcomeBack" xml:space="preserve">
+    <value>مرحباً</value>
+  </data>
+  <data name="Dash_ExcelBtn" xml:space="preserve">
+    <value>تحميل Excel</value>
+  </data>
+  <data name="Dash_PdfBtn" xml:space="preserve">
+    <value>تحميل PDF</value>
+  </data>
+  <data name="Dash_Username" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="Dash_Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Dash_RegisteredWork" xml:space="preserve">
+    <value>العمل المسجل</value>
+  </data>
+  <data name="Dash_TotalRemaining" xml:space="preserve">
+    <value>إجمالي المتبقي</value>
+  </data>
+  <data name="Dash_FilterDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Dash_FilterType" xml:space="preserve">
+    <value>نوع الحجز</value>
+  </data>
+  <data name="Dash_FilterAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Dash_FilterHotel" xml:space="preserve">
+    <value>فندق فقط</value>
+  </data>
+  <data name="Dash_FilterTransport" xml:space="preserve">
+    <value>نقل فقط</value>
+  </data>
+  <data name="Dash_FilterBoth" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="Dash_FilterScope" xml:space="preserve">
+    <value>النطاق</value>
+  </data>
+  <data name="Dash_FilterAllWork" xml:space="preserve">
+    <value>عرض كل العمل المسجل</value>
+  </data>
+  <data name="Dash_FilterApply" xml:space="preserve">
+    <value>تطبيق</value>
+  </data>
+  <data name="Dash_FilterToday" xml:space="preserve">
+    <value>اليوم</value>
+  </data>
+  <data name="Dash_TableBadge" xml:space="preserve">
+    <value>العمل اليومي</value>
+  </data>
+  <data name="Dash_TableTitle" xml:space="preserve">
+    <value>العمل المسجل</value>
+  </data>
+  <data name="Dash_ColCode" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="Dash_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="Dash_ColPhones" xml:space="preserve">
+    <value>الهواتف</value>
+  </data>
+  <data name="Dash_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="Dash_ColHotel" xml:space="preserve">
+    <value>الفندق</value>
+  </data>
+  <data name="Dash_ColCheckIn" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Dash_ColCheckOut" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="Dash_ColPayment" xml:space="preserve">
+    <value>الدفع</value>
+  </data>
+  <data name="Dash_ColHotelTotal" xml:space="preserve">
+    <value>إجمالي الفندق</value>
+  </data>
+  <data name="Dash_ColTransport" xml:space="preserve">
+    <value>النقل</value>
+  </data>
+  <data name="Dash_ColDiscount" xml:space="preserve">
+    <value>الخصم</value>
+  </data>
+  <data name="Dash_ColGrandTotal" xml:space="preserve">
+    <value>الإجمالي الكلي</value>
+  </data>
+  <data name="Dash_ColPaid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="Dash_ColRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="Dash_ColNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="Dash_ColCreatedBy" xml:space="preserve">
+    <value>أنشأه</value>
+  </data>
+  <data name="Dash_ColActions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="Dash_NoWork" xml:space="preserve">
+    <value>لا يوجد عمل مسجل لهذا التاريخ.</value>
+  </data>
+  <data name="Dash_NoPhone" xml:space="preserve">
+    <value>لا يوجد هاتف</value>
+  </data>
+  <data name="Dash_TypeHotelTransport" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="Dash_TypeHotel" xml:space="preserve">
+    <value>فندق فقط</value>
+  </data>
+  <data name="Dash_TypeTransport" xml:space="preserve">
+    <value>نقل فقط</value>
+  </data>
+  <data name="Dash_TypeNA" xml:space="preserve">
+    <value>غير محدد</value>
+  </data>
+  <data name="Dash_BtnDetails" xml:space="preserve">
+    <value>التفاصيل</value>
+  </data>
+  <data name="Dash_BtnTicket" xml:space="preserve">
+    <value>التذكرة</value>
+  </data>
+  <data name="Dash_BtnEdit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="Err_BackDashboard" xml:space="preserve">
+    <value>العودة للوحة التحكم</value>
+  </data>
+  <data name="Err_BackHome" xml:space="preserve">
+    <value>العودة للرئيسية</value>
+  </data>
+  <data name="Err_403_Title" xml:space="preserve">
+    <value>تم رفض الوصول</value>
+  </data>
+  <data name="Err_403_Heading" xml:space="preserve">
+    <value>وصول مرفوض</value>
+  </data>
+  <data name="Err_403_Body" xml:space="preserve">
+    <value>ليس لديك صلاحية لفتح هذه الصفحة.</value>
+  </data>
+  <data name="Err_404_Title" xml:space="preserve">
+    <value>الصفحة غير موجودة</value>
+  </data>
+  <data name="Err_404_Heading" xml:space="preserve">
+    <value>هذا المسار غير موجود.</value>
+  </data>
+  <data name="Err_404_Body" xml:space="preserve">
+    <value>الصفحة التي طلبتها غير موجودة.</value>
+  </data>
+  <data name="Err_500_Title" xml:space="preserve">
+    <value>خطأ في الخادم</value>
+  </data>
+  <data name="Err_500_Heading" xml:space="preserve">
+    <value>حدث خطأ ما.</value>
+  </data>
+  <data name="Err_500_Body" xml:space="preserve">
+    <value>يرجى المحاولة مرة أخرى لاحقاً.</value>
+  </data>
+  <data name="Err_429_Title" xml:space="preserve">
+    <value>طلبات كثيرة جداً</value>
+  </data>
+  <data name="Err_429_Heading" xml:space="preserve">
+    <value>طلبات كثيرة جداً</value>
+  </data>
+  <data name="Err_429_Wait" xml:space="preserve">
+    <value>يرجى الانتظار</value>
+  </data>
+  <data name="Err_429_Seconds" xml:space="preserve">
+    <value>ثانية قبل المحاولة مرة أخرى.</value>
+  </data>
+  <data name="Err_429_TryAgain" xml:space="preserve">
+    <value>حاول مجدداً</value>
+  </data>
+  <data name="Home_Title" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="Home_LogoTagline" xml:space="preserve">
+    <value>الفؤاد ترافيل للسياحة الداخلية</value>
+  </data>
+  <data name="Home_OpenDashboard" xml:space="preserve">
+    <value>فتح لوحة التحكم</value>
+  </data>
+  <data name="Home_Logout" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="Home_Login" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Home_ArabicNote" xml:space="preserve">
+    <value>الفؤاد ترافيل هي وجهتك لتنظيم الرحلات الداخلية وحجوزات الفنادق بأسلوب منظم وسهل. نساعدك على اختيار برنامج مناسب، متابعة الحجز، والوصول إلى تجربة سفر مريحة من أسيوط إلى أجمل مدن مصر السياحية.</value>
+  </data>
+  <data name="Home_Facebook" xml:space="preserve">
+    <value>صفحة فيسبوك</value>
+  </data>
+  <data name="Home_Instagram" xml:space="preserve">
+    <value>إنستغرام</value>
+  </data>
+  <data name="Home_QuickAlways" xml:space="preserve">
+    <value>دائماً</value>
+  </data>
+  <data name="Home_QuickOpen" xml:space="preserve">
+    <value>مفتوح</value>
+  </data>
+  <data name="Home_QuickOnline" xml:space="preserve">
+    <value>أونلاين</value>
+  </data>
+  <data name="Home_QuickBooking" xml:space="preserve">
+    <value>حجز</value>
+  </data>
+  <data name="Home_SlideHotelTitle" xml:space="preserve">
+    <value>حجز فندقي</value>
+  </data>
+  <data name="Home_SlideHotelSub" xml:space="preserve">
+    <value>إقامة مريحة وخطط سفر منظمة.</value>
+  </data>
+  <data name="Home_SlideTourTitle" xml:space="preserve">
+    <value>السياحة الداخلية</value>
+  </data>
+  <data name="Home_SlideTourSub" xml:space="preserve">
+    <value>برامج رائعة للغردقة ومرسى علم وأكثر.</value>
+  </data>
+  <data name="Home_SlideMemTitle" xml:space="preserve">
+    <value>ذكريات السفر</value>
+  </data>
+  <data name="Home_SlideMemSub" xml:space="preserve">
+    <value>لحظات مصممة بعناية واهتمام.</value>
+  </data>
+  <data name="Home_SlideVideoTitle" xml:space="preserve">
+    <value>تجربة AM Travel</value>
+  </data>
+  <data name="Home_SlideVideoSub" xml:space="preserve">
+    <value>شاهد أبرز لحظات أجواء سفرنا.</value>
+  </data>
+  <data name="Home_AboutBadge" xml:space="preserve">
+    <value>لماذا AM Travel؟</value>
+  </data>
+  <data name="Home_AboutHeading" xml:space="preserve">
+    <value>نظام سياحي منظم وتجربة حجز أكثر احترافية</value>
+  </data>
+  <data name="Home_AboutSub" xml:space="preserve">
+    <value>الصفحة مصممة لتعكس هوية شركة سياحة حقيقية: تفاصيل واضحة، وسائل تواصل مباشرة، وعرض جذاب.</value>
+  </data>
+  <data name="Home_Card1Title" xml:space="preserve">
+    <value>حجز الفنادق</value>
+  </data>
+  <data name="Home_Card1Body" xml:space="preserve">
+    <value>تنظيم حجوزات الفنادق ومتابعة تفاصيل العملاء والرحلات بطريقة سهلة وواضحة.</value>
+  </data>
+  <data name="Home_Card2Title" xml:space="preserve">
+    <value>السياحة الداخلية</value>
+  </data>
+  <data name="Home_Card2Body" xml:space="preserve">
+    <value>رحلات داخلية منسقة لمدن مصر السياحية مع اهتمام بالتفاصيل وتجربة العميل.</value>
+  </data>
+  <data name="Home_Card3Title" xml:space="preserve">
+    <value>الحجز الإلكتروني</value>
+  </data>
+  <data name="Home_Card3Body" xml:space="preserve">
+    <value>تواصل سريع وحجز أونلاين مع متابعة مستمرة للحالة والتفاصيل.</value>
+  </data>
+  <data name="Home_ContactBadge" xml:space="preserve">
+    <value>بيانات التواصل</value>
+  </data>
+  <data name="Home_ContactHeading" xml:space="preserve">
+    <value>تواصل مع AM Travel</value>
+  </data>
+  <data name="Home_ContactSub" xml:space="preserve">
+    <value>بيانات التواصل الرسمية وموقع الشركة وروابط السوشيال ميديا.</value>
+  </data>
+  <data name="Home_LocationTitle" xml:space="preserve">
+    <value>موقع الشركة</value>
+  </data>
+  <data name="Home_LocationAddr" xml:space="preserve">
+    <value>شارع النميس، قسم ثان أسيوط، محافظة أسيوط 71111</value>
+  </data>
+  <data name="Home_LocationDetail" xml:space="preserve">
+    <value>اسيوط - شارع النميس امام نادي الواي بجوار سانت كلوز، Asyut, Egypt</value>
+  </data>
+  <data name="Home_AlwaysOpen" xml:space="preserve">
+    <value>مفتوح دائماً</value>
+  </data>
+  <data name="Home_OpenMaps" xml:space="preserve">
+    <value>افتح في خرائط جوجل</value>
+  </data>
+  <data name="Home_PhoneTitle" xml:space="preserve">
+    <value>أرقام الهاتف</value>
+  </data>
+  <data name="Home_EmailTitle" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="Home_FacebookTitle" xml:space="preserve">
+    <value>فيسبوك</value>
+  </data>
+  <data name="Home_FacebookSub" xml:space="preserve">
+    <value>صفحة · وكالة سفر</value>
+  </data>
+  <data name="Home_InstagramTitle" xml:space="preserve">
+    <value>إنستغرام</value>
+  </data>
+  <data name="Home_GalleryBadge" xml:space="preserve">
+    <value>معرض الصور</value>
+  </data>
+  <data name="Home_GalleryHeading" xml:space="preserve">
+    <value>لحظات من AM Travel</value>
+  </data>
+  <data name="Work_CreateTitle" xml:space="preserve">
+    <value>إنشاء عمل</value>
+  </data>
+  <data name="Work_CreateBadge" xml:space="preserve">
+    <value>عمل جديد</value>
+  </data>
+  <data name="Work_CreateHeading" xml:space="preserve">
+    <value>إنشاء عمل</value>
+  </data>
+  <data name="Work_CreateSubtitle" xml:space="preserve">
+    <value>سجّل معاملة عميل وحدد تاريخ الإجراء التالي.</value>
+  </data>
+  <data name="Work_AllWorks" xml:space="preserve">
+    <value>كل الأعمال</value>
+  </data>
+  <data name="Work_TodayWorks" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="Work_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Work_NameClient" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+  <data name="Work_NameClientPH" xml:space="preserve">
+    <value>أدخل اسم العميل</value>
+  </data>
+  <data name="Work_PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Work_PhonePH" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Work_ClientType" xml:space="preserve">
+    <value>نوع العميل</value>
+  </data>
+  <data name="Work_DayUpdated" xml:space="preserve">
+    <value>تاريخ الإجراء التالي</value>
+  </data>
+  <data name="Work_Notes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="Work_NotesPH" xml:space="preserve">
+    <value>اكتب الملاحظات هنا...</value>
+  </data>
+  <data name="Work_SubmitCreate" xml:space="preserve">
+    <value>إنشاء العمل</value>
+  </data>
+  <data name="Work_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Work_EditTitle" xml:space="preserve">
+    <value>تعديل العمل</value>
+  </data>
+  <data name="Work_EditBadge" xml:space="preserve">
+    <value>تعديل العمل</value>
+  </data>
+  <data name="Work_EditHeading" xml:space="preserve">
+    <value>تحديث العمل</value>
+  </data>
+  <data name="Work_EditSubtitle" xml:space="preserve">
+    <value>حدّث تفاصيل معاملة العميل وتاريخ الإجراء التالي.</value>
+  </data>
+  <data name="Work_SubmitEdit" xml:space="preserve">
+    <value>حفظ التغييرات</value>
+  </data>
+  <data name="WL_Title" xml:space="preserve">
+    <value>الأعمال</value>
+  </data>
+  <data name="WL_Badge" xml:space="preserve">
+    <value>الأعمال</value>
+  </data>
+  <data name="WL_Heading" xml:space="preserve">
+    <value>أعمال العملاء</value>
+  </data>
+  <data name="WL_Subtitle" xml:space="preserve">
+    <value>إدارة معاملات العملاء اليومية والملاحظات وتواريخ الإجراء التالية.</value>
+  </data>
+  <data name="WL_NewWork" xml:space="preserve">
+    <value>عمل جديد</value>
+  </data>
+  <data name="WL_TodayWorks" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="WL_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="WL_TotalWorks" xml:space="preserve">
+    <value>إجمالي الأعمال</value>
+  </data>
+  <data name="WL_TodayWorksCard" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="WL_ScheduledWorks" xml:space="preserve">
+    <value>الأعمال المجدولة</value>
+  </data>
+  <data name="WL_FilterSearch" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="WL_FilterSearchPH" xml:space="preserve">
+    <value>رقم الهاتف أو اسم العميل</value>
+  </data>
+  <data name="WL_FilterDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="WL_FilterStars" xml:space="preserve">
+    <value>النجوم</value>
+  </data>
+  <data name="WL_FilterAllStars" xml:space="preserve">
+    <value>كل النجوم</value>
+  </data>
+  <data name="WL_FilterApply" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="WL_FilterReset" xml:space="preserve">
+    <value>إعادة تعيين</value>
+  </data>
+  <data name="WL_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="WL_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="WL_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="WL_ColCreated" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="WL_ColNextAction" xml:space="preserve">
+    <value>الإجراء التالي</value>
+  </data>
+  <data name="WL_ColNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="WL_ColUser" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="WL_ColActions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="WL_EditBtn" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="WL_DeleteBtn" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="WL_NoWorks" xml:space="preserve">
+    <value>لا توجد أعمال.</value>
+  </data>
+  <data name="WT_Title" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="WT_Badge" xml:space="preserve">
+    <value>اليوم</value>
+  </data>
+  <data name="WT_Heading" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="WT_Subtitle" xml:space="preserve">
+    <value>الأعمال المنشأة اليوم أو المجدولة لتُنجز اليوم.</value>
+  </data>
+  <data name="WT_NewWork" xml:space="preserve">
+    <value>عمل جديد</value>
+  </data>
+  <data name="WT_AllWorks" xml:space="preserve">
+    <value>كل الأعمال</value>
+  </data>
+  <data name="WT_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="WT_TotalToday" xml:space="preserve">
+    <value>إجمالي أعمال اليوم</value>
+  </data>
+  <data name="WT_CreatedScheduled" xml:space="preserve">
+    <value>منشأة أو مجدولة اليوم</value>
+  </data>
+  <data name="WT_ScheduledWorks" xml:space="preserve">
+    <value>الأعمال المجدولة</value>
+  </data>
+  <data name="WT_FilterSearch" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="WT_FilterSearchPH" xml:space="preserve">
+    <value>رقم الهاتف أو اسم العميل</value>
+  </data>
+  <data name="WT_FilterStars" xml:space="preserve">
+    <value>النجوم</value>
+  </data>
+  <data name="WT_FilterAllStars" xml:space="preserve">
+    <value>كل النجوم</value>
+  </data>
+  <data name="WT_FilterApply" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="WT_FilterReset" xml:space="preserve">
+    <value>إعادة تعيين</value>
+  </data>
+  <data name="WT_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="WT_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="WT_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="WT_ColCreated" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="WT_ColNextAction" xml:space="preserve">
+    <value>الإجراء التالي</value>
+  </data>
+  <data name="WT_ColNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="WT_ColUser" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="WT_ColActions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="WT_EditBtn" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="WT_DeleteBtn" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="WT_DeleteConfirm" xml:space="preserve">
+    <value>هل تريد حذف هذا العمل نهائياً؟</value>
+  </data>
+  <data name="WT_NoWorks" xml:space="preserve">
+    <value>لا توجد أعمال لليوم.</value>
+  </data>
+  <data name="WR_Title" xml:space="preserve">
+    <value>تقرير الأعمال</value>
+  </data>
+  <data name="WR_Badge" xml:space="preserve">
+    <value>تقرير الأعمال</value>
+  </data>
+  <data name="WR_Heading" xml:space="preserve">
+    <value>تقرير أعمال المستخدمين</value>
+  </data>
+  <data name="WR_Subtitle" xml:space="preserve">
+    <value>عرض أعمال أي مستخدم. يمكن للمسؤول عرض جميع البيانات لكن تعديل أو حذف أعماله فقط.</value>
+  </data>
+  <data name="WR_NewWork" xml:space="preserve">
+    <value>عمل جديد</value>
+  </data>
+  <data name="WR_MyWorks" xml:space="preserve">
+    <value>أعمالي</value>
+  </data>
+  <data name="WR_TodayWorks" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="WR_TotalWorks" xml:space="preserve">
+    <value>إجمالي الأعمال</value>
+  </data>
+  <data name="WR_TodayWorksCard" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="WR_ScheduledWorks" xml:space="preserve">
+    <value>الأعمال المجدولة</value>
+  </data>
+  <data name="WR_FilterUser" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="WR_FilterAllUsers" xml:space="preserve">
+    <value>كل المستخدمين</value>
+  </data>
+  <data name="WR_FilterSearch" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="WR_FilterSearchPH" xml:space="preserve">
+    <value>رقم الهاتف أو اسم العميل</value>
+  </data>
+  <data name="WR_FilterDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="WR_FilterStars" xml:space="preserve">
+    <value>النجوم</value>
+  </data>
+  <data name="WR_FilterAllStars" xml:space="preserve">
+    <value>كل النجوم</value>
+  </data>
+  <data name="WR_FilterApply" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="WR_FilterReset" xml:space="preserve">
+    <value>إعادة تعيين</value>
+  </data>
+  <data name="WR_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="WR_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="WR_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="WR_ColCreated" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="WR_ColNextAction" xml:space="preserve">
+    <value>الإجراء التالي</value>
+  </data>
+  <data name="WR_ColNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="WR_ColUser" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="WR_ColStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="WR_ColActions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="WR_PillMyWork" xml:space="preserve">
+    <value>عملي</value>
+  </data>
+  <data name="WR_PillReadOnly" xml:space="preserve">
+    <value>قراءة فقط</value>
+  </data>
+  <data name="WR_PillNoActions" xml:space="preserve">
+    <value>لا إجراءات</value>
+  </data>
+  <data name="WR_EditBtn" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="WR_DeleteBtn" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="WR_DeleteConfirm" xml:space="preserve">
+    <value>هل تريد حذف هذا العمل نهائياً؟</value>
+  </data>
+  <data name="WR_NoWorks" xml:space="preserve">
+    <value>لا توجد أعمال.</value>
+  </data>
+  <data name="Layout_SectionWorkspace" xml:space="preserve">
+    <value>مساحة العمل</value>
+  </data>
+  <data name="Layout_SectionTransport" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="Layout_SectionAccount" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+  <data name="Layout_SectionAdmin" xml:space="preserve">
+    <value>الإدارة</value>
+  </data>
+  <data name="Layout_NavHome" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="Layout_NavLogin" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Layout_NavDashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="Layout_NavDailyTrips" xml:space="preserve">
+    <value>الرحلات اليومية</value>
+  </data>
+  <data name="Layout_NavBookings" xml:space="preserve">
+    <value>الحجوزات</value>
+  </data>
+  <data name="Layout_NavNewBooking" xml:space="preserve">
+    <value>حجز جديد</value>
+  </data>
+  <data name="Layout_NavWorks" xml:space="preserve">
+    <value>الأعمال</value>
+  </data>
+  <data name="Layout_NavTodayWorks" xml:space="preserve">
+    <value>أعمال اليوم</value>
+  </data>
+  <data name="Layout_NavCompanies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="Layout_NavBuses" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="Layout_NavTrips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="Layout_NavMyAccount" xml:space="preserve">
+    <value>حسابي</value>
+  </data>
+  <data name="Layout_NavEditFields" xml:space="preserve">
+    <value>تعديل البيانات</value>
+  </data>
+  <data name="Layout_NavChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Layout_NavReportWorks" xml:space="preserve">
+    <value>تقرير الأعمال</value>
+  </data>
+  <data name="Layout_NavUsers" xml:space="preserve">
+    <value>المستخدمون</value>
+  </data>
+  <data name="Layout_PrefLanguage" xml:space="preserve">
+    <value>اللغة</value>
+  </data>
+  <data name="Layout_PrefTheme" xml:space="preserve">
+    <value>المظهر</value>
+  </data>
+  <data name="Layout_ThemeLight" xml:space="preserve">
+    <value>فاتح</value>
+  </data>
+  <data name="Layout_ThemeDark" xml:space="preserve">
+    <value>داكن</value>
+  </data>
+  <data name="Layout_Logout" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="Layout_LoginBtn" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Layout_BrandSubtitle" xml:space="preserve">
+    <value>نظام السياحة
+الداخلية</value>
+  </data>
+  <data name="Co_Title" xml:space="preserve">
+    <value>شركات النقل</value>
+  </data>
+  <data name="Co_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="Co_Heading" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="Co_Subtitle" xml:space="preserve">
+    <value>إدارة شركات النقل وأرقام الهواتف وحالة التفعيل.</value>
+  </data>
+  <data name="Co_NewCompany" xml:space="preserve">
+    <value>شركة جديدة</value>
+  </data>
+  <data name="Co_Buses" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="Co_Trips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="Co_FilterLabel" xml:space="preserve">
+    <value>بحث بالاسم أو رقم الهاتف</value>
+  </data>
+  <data name="Co_FilterPH" xml:space="preserve">
+    <value>بحث باسم الشركة أو الهاتف...</value>
+  </data>
+  <data name="Co_FilterStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Co_StatusAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Co_StatusActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Co_StatusInactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Co_FilterApply" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="Co_FilterReset" xml:space="preserve">
+    <value>إعادة تعيين</value>
+  </data>
+  <data name="Co_ColCompany" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="Co_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="Co_ColNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="Co_ColStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Co_ColActions" xml:space="preserve">
+    <value>الإجراءات</value>
+  </data>
+  <data name="Co_PillActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Co_PillInactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Co_BtnSetInactive" xml:space="preserve">
+    <value>تعطيل</value>
+  </data>
+  <data name="Co_BtnSetActive" xml:space="preserve">
+    <value>تفعيل</value>
+  </data>
+  <data name="Co_BtnEdit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="Co_BtnDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="Co_DeleteConfirm" xml:space="preserve">
+    <value>هل تريد حذف هذه الشركة نهائياً؟</value>
+  </data>
+  <data name="Co_NoResults" xml:space="preserve">
+    <value>لا توجد شركات.</value>
+  </data>
+  <data name="CoEdit_Title" xml:space="preserve">
+    <value>تعديل الشركة</value>
+  </data>
+  <data name="CoEdit_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="CoEdit_Heading" xml:space="preserve">
+    <value>تعديل الشركة</value>
+  </data>
+  <data name="CoEdit_Subtitle" xml:space="preserve">
+    <value>تحديث رقم هاتف الشركة والملاحظات وحالة التفعيل.</value>
+  </data>
+  <data name="CoEdit_Companies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="CoEdit_Buses" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="CoEdit_Trips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="CoEdit_Name" xml:space="preserve">
+    <value>اسم الشركة</value>
+  </data>
+  <data name="CoEdit_NamePH" xml:space="preserve">
+    <value>اسم الشركة</value>
+  </data>
+  <data name="CoEdit_Phone" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="CoEdit_PhonePH" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="CoEdit_IsActive" xml:space="preserve">
+    <value>حالة التفعيل</value>
+  </data>
+  <data name="CoEdit_Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="CoEdit_Inactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="CoEdit_Notes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="CoEdit_NotesPH" xml:space="preserve">
+    <value>اكتب الملاحظات هنا...</value>
+  </data>
+  <data name="CoEdit_Submit" xml:space="preserve">
+    <value>حفظ التغييرات</value>
+  </data>
+  <data name="CoEdit_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="CoCreate_Title" xml:space="preserve">
+    <value>إنشاء شركة</value>
+  </data>
+  <data name="CoCreate_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="CoCreate_Heading" xml:space="preserve">
+    <value>إنشاء شركة</value>
+  </data>
+  <data name="CoCreate_Subtitle" xml:space="preserve">
+    <value>أضف شركة نقل مع رقم الهاتف والملاحظات.</value>
+  </data>
+  <data name="CoCreate_Companies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="CoCreate_Buses" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="CoCreate_Trips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="CoCreate_Name" xml:space="preserve">
+    <value>اسم الشركة</value>
+  </data>
+  <data name="CoCreate_NamePH" xml:space="preserve">
+    <value>اسم الشركة</value>
+  </data>
+  <data name="CoCreate_Phone" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="CoCreate_PhonePH" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="CoCreate_Notes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="CoCreate_NotesPH" xml:space="preserve">
+    <value>اكتب الملاحظات هنا...</value>
+  </data>
+  <data name="CoCreate_Submit" xml:space="preserve">
+    <value>إنشاء الشركة</value>
+  </data>
+  <data name="CoCreate_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Bus_Title" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="Bus_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="Bus_Heading" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="Bus_Subtitle" xml:space="preserve">
+    <value>إدارة الحافلات والحالة وأرقام اللوحات والمسارات والتصاميم المحفوظة.</value>
+  </data>
+  <data name="Bus_CreateNew" xml:space="preserve">
+    <value>إنشاء حافلة جديدة</value>
+  </data>
+  <data name="Bus_Trips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="Bus_FilterName" xml:space="preserve">
+    <value>بحث بالاسم أو رقم اللوحة</value>
+  </data>
+  <data name="Bus_FilterNamePH" xml:space="preserve">
+    <value>اسم الحافلة أو رقم اللوحة...</value>
+  </data>
+  <data name="Bus_FilterStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Bus_FilterAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Bus_FilterActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Bus_FilterInactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Bus_FilterTripType" xml:space="preserve">
+    <value>نوع الرحلة</value>
+  </data>
+  <data name="Bus_FilterAllTrips" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Bus_FilterGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="Bus_FilterReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="Bus_FilterLocation" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="Bus_FilterAllLoc" xml:space="preserve">
+    <value>كل المواقع</value>
+  </data>
+  <data name="Bus_FilterApply" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="Bus_FilterReset" xml:space="preserve">
+    <value>إعادة تعيين</value>
+  </data>
+  <data name="Bus_ColSeats" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="Bus_PillActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Bus_PillInactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="Bus_BtnShow" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="Bus_BtnDetails" xml:space="preserve">
+    <value>التفاصيل</value>
+  </data>
+  <data name="Bus_NoPlate" xml:space="preserve">
+    <value>لا يوجد رقم لوحة</value>
+  </data>
+  <data name="Bus_RouteGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="Bus_RouteReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="Bus_NoBuses" xml:space="preserve">
+    <value>لا توجد حافلات.</value>
+  </data>
+  <data name="Bus_ModalTitle" xml:space="preserve">
+    <value>تصميم الحافلة</value>
+  </data>
+  <data name="Bus_ModalGoRoute" xml:space="preserve">
+    <value>مسار الذهاب</value>
+  </data>
+  <data name="Bus_ModalReturnRoute" xml:space="preserve">
+    <value>مسار العودة</value>
+  </data>
+  <data name="Bus_ModalFrontEntry" xml:space="preserve">
+    <value>المدخل الأمامي</value>
+  </data>
+  <data name="Bus_ModalCancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Bus_ModalSave" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="Bus_MenuSetActive" xml:space="preserve">
+    <value>تفعيل</value>
+  </data>
+  <data name="Bus_MenuSetInactive" xml:space="preserve">
+    <value>تعطيل</value>
+  </data>
+  <data name="Bus_ConfirmAllSeats" xml:space="preserve">
+    <value>جميع مقاعد الركاب غير نشطة. سيتم تعطيل الحافلة. هل تريد المتابعة؟</value>
+  </data>
+  <data name="Bus_SaveFailed" xml:space="preserve">
+    <value>فشل حفظ تصميم الحافلة.</value>
+  </data>
+  <data name="CBus_Title" xml:space="preserve">
+    <value>إنشاء تصميم حافلة</value>
+  </data>
+  <data name="CBus_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="CBus_Heading" xml:space="preserve">
+    <value>إنشاء حافلة</value>
+  </data>
+  <data name="CBus_Subtitle" xml:space="preserve">
+    <value>ارسم المقاعد والمقاعد VIP والمساعد والسائق والممر والأبواب والحمام يدوياً.</value>
+  </data>
+  <data name="CBus_BackToBuses" xml:space="preserve">
+    <value>العودة للحافلات</value>
+  </data>
+  <data name="CBus_Trips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="CBus_FieldName" xml:space="preserve">
+    <value>اسم الحافلة</value>
+  </data>
+  <data name="CBus_FieldNamePH" xml:space="preserve">
+    <value>مثال: مرسيدس VIP</value>
+  </data>
+  <data name="CBus_FieldPlate" xml:space="preserve">
+    <value>رقم اللوحة</value>
+  </data>
+  <data name="CBus_FieldPlatePH" xml:space="preserve">
+    <value>اختياري</value>
+  </data>
+  <data name="CBus_FieldFrom" xml:space="preserve">
+    <value>من موقع</value>
+  </data>
+  <data name="CBus_FieldFromPH" xml:space="preserve">
+    <value>مثال: القاهرة</value>
+  </data>
+  <data name="CBus_FieldTo" xml:space="preserve">
+    <value>إلى موقع</value>
+  </data>
+  <data name="CBus_FieldToPH" xml:space="preserve">
+    <value>مثال: شرم الشيخ</value>
+  </data>
+  <data name="CBus_FieldSeats" xml:space="preserve">
+    <value>إجمالي المقاعد</value>
+  </data>
+  <data name="CBus_FieldRows" xml:space="preserve">
+    <value>صفوف الحافلة</value>
+  </data>
+  <data name="CBus_FieldCols" xml:space="preserve">
+    <value>أعمدة الحافلة</value>
+  </data>
+  <data name="CBus_FieldNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="CBus_FieldNotesPH" xml:space="preserve">
+    <value>ملاحظات الحافلة...</value>
+  </data>
+  <data name="CBus_Submit" xml:space="preserve">
+    <value>إنشاء الحافلة</value>
+  </data>
+  <data name="CBus_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="CBus_ToolNormal" xml:space="preserve">
+    <value>مقعد عادي</value>
+  </data>
+  <data name="CBus_ToolVIP" xml:space="preserve">
+    <value>مقعد VIP</value>
+  </data>
+  <data name="CBus_ToolDriver" xml:space="preserve">
+    <value>مقعد السائق</value>
+  </data>
+  <data name="CBus_ToolAssistant" xml:space="preserve">
+    <value>مقعد المساعد</value>
+  </data>
+  <data name="CBus_ToolAisle" xml:space="preserve">
+    <value>الممر</value>
+  </data>
+  <data name="CBus_ToolDoor" xml:space="preserve">
+    <value>الباب</value>
+  </data>
+  <data name="CBus_ToolBathroom" xml:space="preserve">
+    <value>الحمام</value>
+  </data>
+  <data name="CBus_ToolEmpty" xml:space="preserve">
+    <value>فارغ</value>
+  </data>
+  <data name="CBus_BtnAutoAisle" xml:space="preserve">
+    <value>ممر تلقائي</value>
+  </data>
+  <data name="CBus_BtnMirror" xml:space="preserve">
+    <value>عكس اليسار لليمين</value>
+  </data>
+  <data name="CBus_BtnRenumber" xml:space="preserve">
+    <value>إعادة ترقيم المقاعد</value>
+  </data>
+  <data name="CBus_BtnRebuild" xml:space="preserve">
+    <value>إعادة بناء الشبكة</value>
+  </data>
+  <data name="CBus_BtnClear" xml:space="preserve">
+    <value>مسح</value>
+  </data>
+  <data name="CBus_HintText" xml:space="preserve">
+    <value>كليك شمال للرسم. كليك يمين على أي عنصر لتغيير Active / Inactive.</value>
+  </data>
+  <data name="CBus_SizeNote" xml:space="preserve">
+    <value>زيادة الصفوف أو الأعمدة لن تحذف التصميم الحالي.</value>
+  </data>
+  <data name="CBus_FrontEntry" xml:space="preserve">
+    <value>المدخل الأمامي</value>
+  </data>
+  <data name="CBus_MenuSetActive" xml:space="preserve">
+    <value>تفعيل</value>
+  </data>
+  <data name="CBus_MenuSetInactive" xml:space="preserve">
+    <value>تعطيل</value>
+  </data>
+  <data name="CBus_AlertDoorEdge" xml:space="preserve">
+    <value>يمكن وضع الباب فقط في العمود الأول أو الأخير.</value>
+  </data>
+  <data name="CBus_AlertDoorType" xml:space="preserve">
+    <value>يمكن إضافة الباب فقط على خلية عادية/VIP/فارغة جانبية.</value>
+  </data>
+  <data name="CBus_AlertNoSeats" xml:space="preserve">
+    <value>يجب رسم مقعد ركاب واحد على الأقل.</value>
+  </data>
+  <data name="EBus_Title" xml:space="preserve">
+    <value>تعديل تصميم الحافلة</value>
+  </data>
+  <data name="EBus_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="EBus_Heading" xml:space="preserve">
+    <value>تعديل الحافلة</value>
+  </data>
+  <data name="EBus_Subtitle" xml:space="preserve">
+    <value>تعديل اسم الحافلة ورقم اللوحة والملاحظات والحالة والتصميم الكامل.</value>
+  </data>
+  <data name="EBus_BackToBuses" xml:space="preserve">
+    <value>العودة للحافلات</value>
+  </data>
+  <data name="EBus_Trips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="EBus_FieldName" xml:space="preserve">
+    <value>اسم الحافلة</value>
+  </data>
+  <data name="EBus_FieldPlate" xml:space="preserve">
+    <value>رقم اللوحة</value>
+  </data>
+  <data name="EBus_FieldFrom" xml:space="preserve">
+    <value>من موقع</value>
+  </data>
+  <data name="EBus_FieldTo" xml:space="preserve">
+    <value>إلى موقع</value>
+  </data>
+  <data name="EBus_FieldSeats" xml:space="preserve">
+    <value>إجمالي المقاعد</value>
+  </data>
+  <data name="EBus_FieldStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="EBus_StatusActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="EBus_StatusInactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="EBus_FieldRows" xml:space="preserve">
+    <value>صفوف الحافلة</value>
+  </data>
+  <data name="EBus_FieldCols" xml:space="preserve">
+    <value>أعمدة الحافلة</value>
+  </data>
+  <data name="EBus_FieldNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="EBus_Submit" xml:space="preserve">
+    <value>حفظ التغييرات</value>
+  </data>
+  <data name="EBus_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="EBus_ToolNormal" xml:space="preserve">
+    <value>مقعد عادي</value>
+  </data>
+  <data name="EBus_ToolVIP" xml:space="preserve">
+    <value>مقعد VIP</value>
+  </data>
+  <data name="EBus_ToolDriver" xml:space="preserve">
+    <value>مقعد السائق</value>
+  </data>
+  <data name="EBus_ToolAssistant" xml:space="preserve">
+    <value>مقعد المساعد</value>
+  </data>
+  <data name="EBus_ToolAisle" xml:space="preserve">
+    <value>الممر</value>
+  </data>
+  <data name="EBus_ToolDoor" xml:space="preserve">
+    <value>الباب</value>
+  </data>
+  <data name="EBus_ToolBathroom" xml:space="preserve">
+    <value>الحمام</value>
+  </data>
+  <data name="EBus_ToolEmpty" xml:space="preserve">
+    <value>فارغ</value>
+  </data>
+  <data name="EBus_BtnAutoAisle" xml:space="preserve">
+    <value>ممر تلقائي</value>
+  </data>
+  <data name="EBus_BtnMirror" xml:space="preserve">
+    <value>عكس اليسار لليمين</value>
+  </data>
+  <data name="EBus_BtnRenumber" xml:space="preserve">
+    <value>إعادة ترقيم المقاعد</value>
+  </data>
+  <data name="EBus_BtnRebuild" xml:space="preserve">
+    <value>إعادة بناء الشبكة</value>
+  </data>
+  <data name="EBus_BtnClear" xml:space="preserve">
+    <value>مسح</value>
+  </data>
+  <data name="EBus_HintText" xml:space="preserve">
+    <value>كليك شمال للرسم. كليك يمين على أي عنصر لتغيير Active / Inactive. زيادة الصفوف أو الأعمدة لن تحذف التصميم الحالي.</value>
+  </data>
+  <data name="EBus_FrontEntry" xml:space="preserve">
+    <value>المدخل الأمامي</value>
+  </data>
+  <data name="EBus_MenuSetActive" xml:space="preserve">
+    <value>تفعيل</value>
+  </data>
+  <data name="EBus_MenuSetInactive" xml:space="preserve">
+    <value>تعطيل</value>
+  </data>
+  <data name="EBus_AlertDoorEdge" xml:space="preserve">
+    <value>يمكن وضع الباب فقط في العمود الأول أو الأخير.</value>
+  </data>
+  <data name="EBus_AlertDoorType" xml:space="preserve">
+    <value>يمكن إضافة الباب فقط على خلية عادية/VIP/فارغة جانبية.</value>
+  </data>
+  <data name="EBus_AlertNoSeats" xml:space="preserve">
+    <value>يجب رسم مقعد ركاب واحد على الأقل.</value>
+  </data>
+  <data name="BD_Title" xml:space="preserve">
+    <value>تفاصيل الحافلة</value>
+  </data>
+  <data name="BD_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="BD_NoPlate" xml:space="preserve">
+    <value>لا يوجد رقم لوحة</value>
+  </data>
+  <data name="BD_BackToBuses" xml:space="preserve">
+    <value>العودة للحافلات</value>
+  </data>
+  <data name="BD_EditBus" xml:space="preserve">
+    <value>تعديل الحافلة</value>
+  </data>
+  <data name="BD_BtnSetInactive" xml:space="preserve">
+    <value>تعطيل</value>
+  </data>
+  <data name="BD_BtnSetActive" xml:space="preserve">
+    <value>تفعيل</value>
+  </data>
+  <data name="BD_BtnDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="BD_DeleteConfirm" xml:space="preserve">
+    <value>هل تريد حذف هذه الحافلة نهائياً؟</value>
+  </data>
+  <data name="BD_InfoName" xml:space="preserve">
+    <value>اسم الحافلة</value>
+  </data>
+  <data name="BD_InfoPlate" xml:space="preserve">
+    <value>رقم اللوحة</value>
+  </data>
+  <data name="BD_InfoSeats" xml:space="preserve">
+    <value>إجمالي المقاعد</value>
+  </data>
+  <data name="BD_InfoStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="BD_InfoRows" xml:space="preserve">
+    <value>الصفوف</value>
+  </data>
+  <data name="BD_InfoCols" xml:space="preserve">
+    <value>الأعمدة</value>
+  </data>
+  <data name="BD_InfoNotes" xml:space="preserve">
+    <value>الملاحظات</value>
+  </data>
+  <data name="BD_PillActive" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="BD_PillInactive" xml:space="preserve">
+    <value>غير نشط</value>
+  </data>
+  <data name="BD_FrontEntry" xml:space="preserve">
+    <value>المدخل الأمامي</value>
+  </data>
+  <data name="Trips_Title" xml:space="preserve">
+    <value>رحلات الحافلات</value>
+  </data>
+  <data name="Trips_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="Trips_Heading" xml:space="preserve">
+    <value>رحلات الحافلات</value>
+  </data>
+  <data name="Trips_Subtitle" xml:space="preserve">
+    <value>إنشاء رحلات يومية ومراقبة المقاعد المحجوزة والمتاحة.</value>
+  </data>
+  <data name="Trips_Buses" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="Trips_Companies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="Trips_CreateBus" xml:space="preserve">
+    <value>الحافلة</value>
+  </data>
+  <data name="Trips_CreateBusPH" xml:space="preserve">
+    <value>اختر الحافلة</value>
+  </data>
+  <data name="Trips_CreateDate" xml:space="preserve">
+    <value>تاريخ الرحلة</value>
+  </data>
+  <data name="Trips_CreateFrom" xml:space="preserve">
+    <value>من</value>
+  </data>
+  <data name="Trips_CreateFromPH" xml:space="preserve">
+    <value>موقع الانطلاق</value>
+  </data>
+  <data name="Trips_CreateTo" xml:space="preserve">
+    <value>إلى</value>
+  </data>
+  <data name="Trips_CreateToPH" xml:space="preserve">
+    <value>موقع الوصول</value>
+  </data>
+  <data name="Trips_CreateSubmit" xml:space="preserve">
+    <value>إنشاء الرحلة</value>
+  </data>
+  <data name="Trips_FilterDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Trips_FilterApply" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="Trips_FilterReset" xml:space="preserve">
+    <value>إعادة تعيين</value>
+  </data>
+  <data name="Trips_ColDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Trips_ColCompany" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="Trips_ColBus" xml:space="preserve">
+    <value>الحافلة</value>
+  </data>
+  <data name="Trips_ColSeats" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="Trips_ColReserved" xml:space="preserve">
+    <value>المحجوزة</value>
+  </data>
+  <data name="Trips_ColAvailable" xml:space="preserve">
+    <value>المتاحة</value>
+  </data>
+  <data name="Trips_ColStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Trips_ColSeatsMap" xml:space="preserve">
+    <value>خريطة المقاعد</value>
+  </data>
+  <data name="Trips_PillClosed" xml:space="preserve">
+    <value>مغلقة</value>
+  </data>
+  <data name="Trips_PillOpen" xml:space="preserve">
+    <value>مفتوحة</value>
+  </data>
+  <data name="Trips_BtnOpenSeats" xml:space="preserve">
+    <value>عرض المقاعد</value>
+  </data>
+  <data name="Trips_NoTrips" xml:space="preserve">
+    <value>لا توجد رحلات.</value>
+  </data>
+  <data name="Bus_Companies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="Trips_ColPlate" xml:space="preserve">
+    <value>رقم اللوحة</value>
+  </data>
+  <data name="Trips_ColRoute" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="Trips_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="Trips_PillGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="Trips_PillReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="Trips_PillNotLinked" xml:space="preserve">
+    <value>غير مرتبط</value>
+  </data>
+  <data name="Seats_Title" xml:space="preserve">
+    <value>مقاعد الرحلة</value>
+  </data>
+  <data name="Seats_Badge" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="Seats_Heading" xml:space="preserve">
+    <value>مقاعد الرحلة</value>
+  </data>
+  <data name="Seats_Subtitle" xml:space="preserve">
+    <value>تخطيط الحافلة والمقاعد المحجوزة وأرقام الهواتف وتفاصيل الدفع.</value>
+  </data>
+  <data name="Seats_BackToTrips" xml:space="preserve">
+    <value>العودة للرحلات</value>
+  </data>
+  <data name="Seats_Buses" xml:space="preserve">
+    <value>الحافلات</value>
+  </data>
+  <data name="Seats_Companies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="Seats_TotalSeats" xml:space="preserve">
+    <value>إجمالي المقاعد</value>
+  </data>
+  <data name="Seats_Reserved" xml:space="preserve">
+    <value>محجوز</value>
+  </data>
+  <data name="Seats_Available" xml:space="preserve">
+    <value>متاح</value>
+  </data>
+  <data name="Seats_LegendAvailable" xml:space="preserve">
+    <value>متاح</value>
+  </data>
+  <data name="Seats_LegendClient" xml:space="preserve">
+    <value>حجز عميل</value>
+  </data>
+  <data name="Seats_LegendCompany" xml:space="preserve">
+    <value>حجز شركة</value>
+  </data>
+  <data name="Seats_LegendVIP" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="Seats_LegendDisabled" xml:space="preserve">
+    <value>معطل / فارغ</value>
+  </data>
+  <data name="Seats_FrontEntrance" xml:space="preserve">
+    <value>المدخل الأمامي</value>
+  </data>
+  <data name="Seats_ChangeSeatConfirm" xml:space="preserve">
+    <value>هل تريد تغيير حالة هذا المقعد؟</value>
+  </data>
+  <data name="Seats_ReservedBookings" xml:space="preserve">
+    <value>الحجوزات المحجوزة</value>
+  </data>
+  <data name="Seats_NoBookings" xml:space="preserve">
+    <value>لا توجد حجوزات</value>
+  </data>
+  <data name="Seats_SeatsLabel" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="Seats_PhonesLabel" xml:space="preserve">
+    <value>الهواتف</value>
+  </data>
+  <data name="Seats_TypeLabel" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="Seats_CompanyLabel" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="Seats_TypeHotelTransport" xml:space="preserve">
+    <value>فندق + مواصلات</value>
+  </data>
+  <data name="Seats_TypeHotel" xml:space="preserve">
+    <value>فندق</value>
+  </data>
+  <data name="Seats_TypeTransport" xml:space="preserve">
+    <value>مواصلات</value>
+  </data>
+  <data name="Seats_TypeCompany" xml:space="preserve">
+    <value>مواصلات شركة</value>
+  </data>
+  <data name="Seats_Hotel" xml:space="preserve">
+    <value>الفندق</value>
+  </data>
+  <data name="Seats_Transportation" xml:space="preserve">
+    <value>المواصلات</value>
+  </data>
+  <data name="Seats_Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="Seats_Paid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="Seats_Remaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="Seats_Discount" xml:space="preserve">
+    <value>الخصم</value>
+  </data>
+  <data name="Seats_OpenCompanyBooking" xml:space="preserve">
+    <value>فتح حجز الشركة</value>
+  </data>
+  <data name="Seats_OpenBookingDetails" xml:space="preserve">
+    <value>فتح تفاصيل الحجز</value>
+  </data>
+  <data name="Seats_CompanyBookingPill" xml:space="preserve">
+    <value>حجز شركة</value>
+  </data>
+  <data name="Seats_NoPhonesText" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="Seats_GeneralRoute" xml:space="preserve">
+    <value>مسار الرحلة العام</value>
+  </data>
+  <data name="Seats_TripRoute" xml:space="preserve">
+    <value>مسار الرحلة</value>
+  </data>
+  <data name="Seats_BookingRoute" xml:space="preserve">
+    <value>مسار الحجز</value>
+  </data>
+  <data name="Seats_GoTrip" xml:space="preserve">
+    <value>رحلة الذهاب</value>
+  </data>
+  <data name="Seats_GoTripDate" xml:space="preserve">
+    <value>تاريخ الذهاب</value>
+  </data>
+  <data name="Seats_GoSeat" xml:space="preserve">
+    <value>مقعد الذهاب</value>
+  </data>
+  <data name="Seats_GoRoute" xml:space="preserve">
+    <value>مسار الذهاب</value>
+  </data>
+  <data name="Seats_ReturnTrip" xml:space="preserve">
+    <value>رحلة العودة</value>
+  </data>
+  <data name="Seats_ReturnTripDate" xml:space="preserve">
+    <value>تاريخ العودة</value>
+  </data>
+  <data name="Seats_ReturnSeat" xml:space="preserve">
+    <value>مقعد العودة</value>
+  </data>
+  <data name="Seats_ReturnRoute" xml:space="preserve">
+    <value>مسار العودة</value>
+  </data>
+  <data name="Seats_NoGoTrip" xml:space="preserve">
+    <value>لا توجد رحلة ذهاب</value>
+  </data>
+  <data name="Seats_NoReturnTrip" xml:space="preserve">
+    <value>لا توجد رحلة عودة</value>
+  </data>
+  <data name="Seats_TripDate" xml:space="preserve">
+    <value>تاريخ الرحلة</value>
+  </data>
+  <data name="Seats_OneWay" xml:space="preserve">
+    <value>ذهاب فقط</value>
+  </data>
+  <data name="Seats_RoundTrip" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="Seats_TripInfo" xml:space="preserve">
+    <value>معلومات الرحلة</value>
+  </data>
+  <data name="Go_GeneralTripRoute" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="Return_GeneralTripRoute" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="Seats_RouteGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="Seats_RouteReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="Seats_TripTypeGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="Seats_TripTypeReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="Seats_TripTypeRound" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="Seats_TripTypeDep" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CTIndex_Title" xml:space="preserve">
+    <value>حجز رحلات الشركة</value>
+  </data>
+  <data name="CTIndex_Badge" xml:space="preserve">
+    <value>رحلات الشركة</value>
+  </data>
+  <data name="CTIndex_Heading" xml:space="preserve">
+    <value>رحلات الشركة</value>
+  </data>
+  <data name="CTIndex_Subtitle" xml:space="preserve">
+    <value>اربط الرحلات بالشركات وتابع الجدول اليومي.</value>
+  </data>
+  <data name="CTIndex_BtnDailyWork" xml:space="preserve">
+    <value>العمل اليومي</value>
+  </data>
+  <data name="CTIndex_BtnDashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="CTIndex_BtnAccounting" xml:space="preserve">
+    <value>الحسابات</value>
+  </data>
+  <data name="CTIndex_Company" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="CTIndex_SelectCompany" xml:space="preserve">
+    <value>-- اختر الشركة --</value>
+  </data>
+  <data name="CTIndex_TripDate" xml:space="preserve">
+    <value>تاريخ الرحلة</value>
+  </data>
+  <data name="CTIndex_TripType" xml:space="preserve">
+    <value>نوع الرحلة</value>
+  </data>
+  <data name="CTIndex_TripTypeGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CTIndex_TripTypeReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="CTIndex_TripTypeRound" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="CTIndex_BtnLoad" xml:space="preserve">
+    <value>عرض الرحلات</value>
+  </data>
+  <data name="CTIndex_BtnLink" xml:space="preserve">
+    <value>ربط بالشركة</value>
+  </data>
+  <data name="CTIndex_AvailTitle" xml:space="preserve">
+    <value>الرحلات المتاحة</value>
+  </data>
+  <data name="CTIndex_LinkedTitle" xml:space="preserve">
+    <value>الرحلات المربوطة اليوم</value>
+  </data>
+  <data name="CTIndex_ColDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="CTIndex_ColDirection" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="CTIndex_ColBus" xml:space="preserve">
+    <value>الحافلة</value>
+  </data>
+  <data name="CTIndex_ColRoute" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="CTIndex_ColTotal" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="CTIndex_ColReserved" xml:space="preserve">
+    <value>المحجوز</value>
+  </data>
+  <data name="CTIndex_ColAvailable" xml:space="preserve">
+    <value>المتاح</value>
+  </data>
+  <data name="CTIndex_ColPrice" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="CTIndex_ColPaid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="CTIndex_ColRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="CTIndex_ColDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="CTIndex_BtnDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="CTIndex_SelectDateFirst" xml:space="preserve">
+    <value>اختر التاريخ أولا.</value>
+  </data>
+  <data name="CTIndex_NoTrips" xml:space="preserve">
+    <value>لا توجد رحلات متاحة حسب الاختيار الحالي.</value>
+  </data>
+  <data name="CTIndex_SelectBoth" xml:space="preserve">
+    <value>اختر الشركة والتاريخ لعرض الرحلات المربوطة.</value>
+  </data>
+  <data name="CTIndex_NoLinked" xml:space="preserve">
+    <value>لا توجد رحلات مرتبطة في التاريخ المختار.</value>
+  </data>
+  <data name="CTIndex_ErrNoCompany" xml:space="preserve">
+    <value>اختر الشركة.</value>
+  </data>
+  <data name="CTIndex_ErrNoDep" xml:space="preserve">
+    <value>اختر Trip الذهاب.</value>
+  </data>
+  <data name="CTIndex_ErrNoRet" xml:space="preserve">
+    <value>اختر Trip العودة.</value>
+  </data>
+  <data name="CTIndex_ErrNoBoth" xml:space="preserve">
+    <value>اختر Trip الذهاب و Trip العودة.</value>
+  </data>
+  <data name="CTIndex_ConfirmDelete" xml:space="preserve">
+    <value>حذف الربط؟ لو ذهاب وعودة سيتم حذف الرحلتين.</value>
+  </data>
+  <data name="CTAcct_Title" xml:space="preserve">
+    <value>حسابات الشركات</value>
+  </data>
+  <data name="CTAcct_Badge" xml:space="preserve">
+    <value>رحلات الشركة</value>
+  </data>
+  <data name="CTAcct_Heading" xml:space="preserve">
+    <value>حسابات الشركات</value>
+  </data>
+  <data name="CTAcct_Subtitle" xml:space="preserve">
+    <value>ابحث في الرحلات وادر الأسعار والمدفوعات وصدّر التقارير.</value>
+  </data>
+  <data name="CTAcct_BtnDailyWork" xml:space="preserve">
+    <value>العمل اليومي</value>
+  </data>
+  <data name="CTAcct_BtnBooking" xml:space="preserve">
+    <value>حجز الرحلات</value>
+  </data>
+  <data name="CTAcct_Company" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="CTAcct_AllCompanies" xml:space="preserve">
+    <value>كل الشركات</value>
+  </data>
+  <data name="CTAcct_DateFrom" xml:space="preserve">
+    <value>من تاريخ</value>
+  </data>
+  <data name="CTAcct_DateTo" xml:space="preserve">
+    <value>إلى تاريخ</value>
+  </data>
+  <data name="CTAcct_Location" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="CTAcct_AllLocations" xml:space="preserve">
+    <value>كل المواقع</value>
+  </data>
+  <data name="CTAcct_PaymentStatus" xml:space="preserve">
+    <value>حالة الدفع</value>
+  </data>
+  <data name="CTAcct_All" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="CTAcct_Paid" xml:space="preserve">
+    <value>مدفوع</value>
+  </data>
+  <data name="CTAcct_Unpaid" xml:space="preserve">
+    <value>غير مدفوع / متبقي</value>
+  </data>
+  <data name="CTAcct_TripType" xml:space="preserve">
+    <value>نوع الرحلة</value>
+  </data>
+  <data name="CTAcct_TripTypeAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="CTAcct_TripTypeGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CTAcct_TripTypeReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="CTAcct_TripTypeRound" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="CTAcct_BtnSearch" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="CTAcct_BtnExcel" xml:space="preserve">
+    <value>Excel</value>
+  </data>
+  <data name="CTAcct_BtnPDF" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="CTAcct_TotalPrice" xml:space="preserve">
+    <value>إجمالي السعر</value>
+  </data>
+  <data name="CTAcct_TotalPaid" xml:space="preserve">
+    <value>إجمالي المدفوع</value>
+  </data>
+  <data name="CTAcct_TotalRemaining" xml:space="preserve">
+    <value>إجمالي المتبقي</value>
+  </data>
+  <data name="CTAcct_ColDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="CTAcct_ColDirection" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="CTAcct_ColBus" xml:space="preserve">
+    <value>الحافلة</value>
+  </data>
+  <data name="CTAcct_ColRoute" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="CTAcct_ColSeats" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="CTAcct_ColPrice" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="CTAcct_ColPaid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="CTAcct_ColRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="CTAcct_ColUpdatePrice" xml:space="preserve">
+    <value>تحديث السعر</value>
+  </data>
+  <data name="CTAcct_ColAddPayment" xml:space="preserve">
+    <value>إضافة دفعة</value>
+  </data>
+  <data name="CTAcct_BtnSave" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="CTAcct_BtnPay" xml:space="preserve">
+    <value>دفع</value>
+  </data>
+  <data name="CTAcct_NoData" xml:space="preserve">
+    <value>لا توجد بيانات حسابات للعرض.</value>
+  </data>
+  <data name="CTAcct_ErrNoCompany" xml:space="preserve">
+    <value>اختر الشركة أولا.</value>
+  </data>
+  <data name="CTIndex_MetaTotal" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="CTIndex_MetaReserved" xml:space="preserve">
+    <value>المحجوز</value>
+  </data>
+  <data name="CTIndex_MetaAvailable" xml:space="preserve">
+    <value>المتاح</value>
+  </data>
+  <data name="Layout_NavCompanyBuses" xml:space="preserve">
+    <value>حجز حافلات الشركة</value>
+  </data>
+  <data name="CTIndex_WelcomeBack" xml:space="preserve">
+    <value>مرحباً،</value>
+  </data>
+  <data name="CTIndex_SubtitleFull" xml:space="preserve">
+    <value>إدارة حجز رحلات الشركات. اربط الرحلات وتابع جدول اليوم.</value>
+  </data>
+  <data name="CTIndex_BtnLoad2" xml:space="preserve">
+    <value>عرض الرحلات</value>
+  </data>
+  <data name="CTIndex_BtnAttach" xml:space="preserve">
+    <value>ربط بالشركة</value>
+  </data>
+  <data name="CTIndex_AvailTrips" xml:space="preserve">
+    <value>الرحلات المتاحة</value>
+  </data>
+  <data name="CTIndex_LinkedTrips" xml:space="preserve">
+    <value>الرحلات المربوطة اليوم</value>
+  </data>
+  <data name="CTIndex_SelectFirst" xml:space="preserve">
+    <value>اختر الشركة والتاريخ ثم اضغط عرض الرحلات.</value>
+  </data>
+  <data name="CTIndex_NoAvail" xml:space="preserve">
+    <value>لا توجد رحلات متاحة.</value>
+  </data>
+  <data name="CTIndex_SelectCoFirst" xml:space="preserve">
+    <value>اختر الشركة لعرض الرحلات المربوطة.</value>
+  </data>
+  <data name="CTIndex_NoLinkedTrips" xml:space="preserve">
+    <value>لا توجد رحلات مربوطة في التاريخ المختار.</value>
+  </data>
+  <data name="CTIndex_RoundTrip" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="CTIndex_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="CTIndex_ColLocation" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="CTIndex_ColAction" xml:space="preserve">
+    <value>الإجراء</value>
+  </data>
+  <data name="CTIndex_BtnDeleteLink" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="CTIndex_GoLabel" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CTIndex_ReturnLabel" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="CTIndex_ErrSelectCoFirst" xml:space="preserve">
+    <value>اختر الشركة أولاً ثم اضغط عرض الرحلات.</value>
+  </data>
+  <data name="CTIndex_ErrSelectDate" xml:space="preserve">
+    <value>اختر تاريخ الرحلة أولاً.</value>
+  </data>
+  <data name="CTIndex_ErrInvalidData" xml:space="preserve">
+    <value>بيانات الرحلة غير صحيحة.</value>
+  </data>
+  <data name="CTIndex_ErrNotDep" xml:space="preserve">
+    <value>هذه ليست رحلة ذهاب.</value>
+  </data>
+  <data name="CTIndex_ErrNotRet" xml:space="preserve">
+    <value>هذه ليست رحلة عودة.</value>
+  </data>
+  <data name="CTIndex_ErrInvalidDir" xml:space="preserve">
+    <value>نوع اتجاه الرحلة غير صحيح.</value>
+  </data>
+  <data name="CTIndex_ConfirmDel" xml:space="preserve">
+    <value>حذف الربط بين الرحلة والشركة؟  لو ذهاب وعودة سيتم حذف الرحلتين.</value>
+  </data>
+  <data name="CTIndex_ErrIncomplete" xml:space="preserve">
+    <value>بيانات الحذف غير مكتملة.</value>
+  </data>
+  <data name="Seats_DownloadPdf" xml:space="preserve">
+    <value>تنزيل PDF الركاب</value>
+  </data>
+  <data name="CSD_Title" xml:space="preserve">
+    <value>تفاصيل حجز مقعد الشركة</value>
+  </data>
+  <data name="CSD_Badge" xml:space="preserve">
+    <value>حجز الشركة</value>
+  </data>
+  <data name="CSD_Heading" xml:space="preserve">
+    <value>حجز مقعد الشركة</value>
+  </data>
+  <data name="CSD_Subtitle" xml:space="preserve">
+    <value>تفاصيل حجز مقعد مواصلات الشركة.</value>
+  </data>
+  <data name="CSD_BackToTrips" xml:space="preserve">
+    <value>العودة للرحلات</value>
+  </data>
+  <data name="CSD_CompanyTrips" xml:space="preserve">
+    <value>رحلات الشركة</value>
+  </data>
+  <data name="CSD_BookingInfo" xml:space="preserve">
+    <value>معلومات الحجز</value>
+  </data>
+  <data name="CSD_Company" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="CSD_CompanyPhone" xml:space="preserve">
+    <value>هاتف الشركة</value>
+  </data>
+  <data name="CSD_ClientName" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+  <data name="CSD_ClientPhone" xml:space="preserve">
+    <value>هاتف العميل</value>
+  </data>
+  <data name="CSD_TripType" xml:space="preserve">
+    <value>نوع الرحلة</value>
+  </data>
+  <data name="CSD_BookingDir" xml:space="preserve">
+    <value>اتجاه الحجز</value>
+  </data>
+  <data name="CSD_GoRoute" xml:space="preserve">
+    <value>مسار الذهاب</value>
+  </data>
+  <data name="CSD_GoTripDate" xml:space="preserve">
+    <value>تاريخ رحلة الذهاب</value>
+  </data>
+  <data name="CSD_GoBus" xml:space="preserve">
+    <value>حافلة الذهاب</value>
+  </data>
+  <data name="CSD_GoPlate" xml:space="preserve">
+    <value>لوحة حافلة الذهاب</value>
+  </data>
+  <data name="CSD_GoSeat" xml:space="preserve">
+    <value>مقعد الذهاب</value>
+  </data>
+  <data name="CSD_ReturnRoute" xml:space="preserve">
+    <value>مسار العودة</value>
+  </data>
+  <data name="CSD_ReturnTripDate" xml:space="preserve">
+    <value>تاريخ رحلة العودة</value>
+  </data>
+  <data name="CSD_ReturnBus" xml:space="preserve">
+    <value>حافلة العودة</value>
+  </data>
+  <data name="CSD_ReturnPlate" xml:space="preserve">
+    <value>لوحة حافلة العودة</value>
+  </data>
+  <data name="CSD_ReturnSeat" xml:space="preserve">
+    <value>مقعد العودة</value>
+  </data>
+  <data name="CSD_Transfer" xml:space="preserve">
+    <value>تحويل</value>
+  </data>
+  <data name="CSD_Yes" xml:space="preserve">
+    <value>نعم</value>
+  </data>
+  <data name="CSD_No" xml:space="preserve">
+    <value>لا</value>
+  </data>
+  <data name="CSD_CreatedAt" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="CSD_Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="CSD_PaymentDetails" xml:space="preserve">
+    <value>تفاصيل الدفع</value>
+  </data>
+  <data name="CSD_PricePerSeat" xml:space="preserve">
+    <value>سعر المقعد</value>
+  </data>
+  <data name="CSD_Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="CSD_Paid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="CSD_Remaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="CSD_DirInbound" xml:space="preserve">
+    <value>وارد</value>
+  </data>
+  <data name="CSD_DirOutbound" xml:space="preserve">
+    <value>صادر</value>
+  </data>
+  <data name="CSD_DirGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CSD_DirReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="CSD_DirRound" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="CTAcct_WelcomeBack" xml:space="preserve">
+    <value>مرحباً،</value>
+  </data>
+  <data name="CTAcct_BtnDashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="CTAcct_FilterTitle" xml:space="preserve">
+    <value>فلاتر البحث</value>
+  </data>
+  <data name="CTAcct_ColCompany" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="CTAcct_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="CTAcct_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="CTAcct_ColPlate" xml:space="preserve">
+    <value>اللوحة</value>
+  </data>
+  <data name="CTAcct_ColLocation" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="CTAcct_ColTotal" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="CTAcct_ColReserved" xml:space="preserve">
+    <value>المحجوز</value>
+  </data>
+  <data name="CTAcct_ColAvailable" xml:space="preserve">
+    <value>المتاح</value>
+  </data>
+  <data name="CTAcct_LblRoundTotalPrice" xml:space="preserve">
+    <value>إجمالي سعر الذهاب والعودة</value>
+  </data>
+  <data name="CTAcct_LblRoundTotalPaid" xml:space="preserve">
+    <value>إجمالي مدفوع الذهاب والعودة</value>
+  </data>
+  <data name="CTAcct_LblRoundNote" xml:space="preserve">
+    <value>يُقسَّم تلقائياً على الذهاب والعودة</value>
+  </data>
+  <data name="CTAcct_LblPlate" xml:space="preserve">
+    <value>اللوحة:</value>
+  </data>
+  <data name="CTAcct_LblTotal" xml:space="preserve">
+    <value>الإجمالي:</value>
+  </data>
+  <data name="CTAcct_RoundLabel" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="CTAcct_GoLabel" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CTAcct_ReturnLabel" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="CTAcct_Showing" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="CTAcct_Of" xml:space="preserve">
+    <value>من</value>
+  </data>
+  <data name="CTAcct_Groups" xml:space="preserve">
+    <value>مجموعات</value>
+  </data>
+  <data name="CTAcct_Trips" xml:space="preserve">
+    <value>رحلات</value>
+  </data>
+  <data name="Layout_NavCompanyTrips" xml:space="preserve">
+    <value>حجز مقاعد الشركات</value>
+  </data>
+  <data name="SB_AllCompanies" xml:space="preserve">
+    <value>كل الشركات</value>
+  </data>
+  <data name="SB_AvailTrip" xml:space="preserve">
+    <value>رحلة متاحة</value>
+  </data>
+  <data name="SB_Available" xml:space="preserve">
+    <value>المتاح</value>
+  </data>
+  <data name="SB_AvailableTrips" xml:space="preserve">
+    <value>الرحلات المتاحة</value>
+  </data>
+  <data name="SB_Badge" xml:space="preserve">
+    <value>حجز مقاعد الشركات</value>
+  </data>
+  <data name="SB_BookDetails" xml:space="preserve">
+    <value>تفاصيل الحجز</value>
+  </data>
+  <data name="SB_BookTitle" xml:space="preserve">
+    <value>حجز مقاعد للشركة</value>
+  </data>
+  <data name="SB_Bookings" xml:space="preserve">
+    <value>الحجوزات</value>
+  </data>
+  <data name="SB_BtnAccounting" xml:space="preserve">
+    <value>الحسابات</value>
+  </data>
+  <data name="SB_BtnCompanyTrips" xml:space="preserve">
+    <value>رحلات الشركات</value>
+  </data>
+  <data name="SB_BtnConfirm" xml:space="preserve">
+    <value>تأكيد الحجز</value>
+  </data>
+  <data name="SB_BtnDeleteSel" xml:space="preserve">
+    <value>حذف المحدد</value>
+  </data>
+  <data name="SB_BtnForceDelete" xml:space="preserve">
+    <value>حذف إجباري</value>
+  </data>
+  <data name="SB_BtnReset" xml:space="preserve">
+    <value>إعادة ضبط</value>
+  </data>
+  <data name="SB_BtnSearch" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="SB_BtnSelectAll" xml:space="preserve">
+    <value>تحديد الكل</value>
+  </data>
+  <data name="SB_BtnShowTransfer" xml:space="preserve">
+    <value>عرض مقاعد التحويل</value>
+  </data>
+  <data name="SB_BtnShowTrips" xml:space="preserve">
+    <value>عرض الرحلات</value>
+  </data>
+  <data name="SB_BtnTransfer" xml:space="preserve">
+    <value>تحويل المحدد</value>
+  </data>
+  <data name="SB_BtnTrips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="SB_CardActiveTab" xml:space="preserve">
+    <value>التبويب الحالي</value>
+  </data>
+  <data name="SB_CardBuses" xml:space="preserve">
+    <value>الأتوبيسات</value>
+  </data>
+  <data name="SB_CardLocations" xml:space="preserve">
+    <value>المواقع</value>
+  </data>
+  <data name="SB_CardSearchRows" xml:space="preserve">
+    <value>نتائج البحث</value>
+  </data>
+  <data name="SB_ClientInfo" xml:space="preserve">
+    <value>بيانات العميل</value>
+  </data>
+  <data name="SB_ClientName" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+  <data name="SB_ClientPhone" xml:space="preserve">
+    <value>هاتف العميل</value>
+  </data>
+  <data name="SB_ClientSeats" xml:space="preserve">
+    <value>مقاعد العملاء</value>
+  </data>
+  <data name="SB_ClientSeatsTitle" xml:space="preserve">
+    <value>مقاعد العملاء</value>
+  </data>
+  <data name="SB_ClientTripType" xml:space="preserve">
+    <value>نوع رحلة العميل</value>
+  </data>
+  <data name="SB_Clients" xml:space="preserve">
+    <value>العملاء</value>
+  </data>
+  <data name="SB_ColBus" xml:space="preserve">
+    <value>الأتوبيس</value>
+  </data>
+  <data name="SB_ColBusRoute" xml:space="preserve">
+    <value>خط الأتوبيس</value>
+  </data>
+  <data name="SB_ColCheck" xml:space="preserve">
+    <value>تحديد</value>
+  </data>
+  <data name="SB_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="SB_ColClientPhone" xml:space="preserve">
+    <value>هاتف العميل</value>
+  </data>
+  <data name="SB_ColCode" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="SB_ColCompClient" xml:space="preserve">
+    <value>عميل الشركة</value>
+  </data>
+  <data name="SB_ColCompPhone" xml:space="preserve">
+    <value>هاتف الشركة</value>
+  </data>
+  <data name="SB_ColDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="SB_ColDirection" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="SB_ColPaidTrip" xml:space="preserve">
+    <value>المدفوع للرحلة</value>
+  </data>
+  <data name="SB_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="SB_ColPrice" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="SB_ColPriceSeat" xml:space="preserve">
+    <value>سعر المقعد</value>
+  </data>
+  <data name="SB_ColRemTrip" xml:space="preserve">
+    <value>المتبقي للرحلة</value>
+  </data>
+  <data name="SB_ColRoute" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="SB_ColSeat" xml:space="preserve">
+    <value>المقعد</value>
+  </data>
+  <data name="SB_ColSeatLoc" xml:space="preserve">
+    <value>مسار المقعد</value>
+  </data>
+  <data name="SB_ColStatus" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="SB_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="SB_CompSeatsTitle" xml:space="preserve">
+    <value>مقاعد الشركات</value>
+  </data>
+  <data name="SB_Companies" xml:space="preserve">
+    <value>الشركات</value>
+  </data>
+  <data name="SB_Company" xml:space="preserve">
+    <value>مقاعد الشركة</value>
+  </data>
+  <data name="SB_Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="SB_DateFrom" xml:space="preserve">
+    <value>من تاريخ</value>
+  </data>
+  <data name="SB_DateTo" xml:space="preserve">
+    <value>إلى تاريخ</value>
+  </data>
+  <data name="SB_Direction" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="SB_ExtCompany" xml:space="preserve">
+    <value>الشركة الخارجية</value>
+  </data>
+  <data name="SB_FallbackInfo" xml:space="preserve">
+    <value>,لم يتم العثور على رحلة مباشرة. يمكنك إنشاء رحلة جديدة لهذا الخط.</value>
+  </data>
+  <data name="SB_ForceBtnCancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="SB_ForceBtnConfirm" xml:space="preserve">
+    <value>تأكيد الحذف الإجباري</value>
+  </data>
+  <data name="SB_ForceLoading" xml:space="preserve">
+    <value>جاري تحميل الحجوزات...</value>
+  </data>
+  <data name="SB_ForceTitle" xml:space="preserve">
+    <value>حذف الحجوزات إجباريًا</value>
+  </data>
+  <data name="SB_FromLocation" xml:space="preserve">
+    <value>من مكان</value>
+  </data>
+  <data name="SB_Heading" xml:space="preserve">
+    <value>حجز مقاعد الشركات</value>
+  </data>
+  <data name="SB_HintDelete" xml:space="preserve">
+    <value>سيتم حذف الحجوزات المحددة إذا كان مسموحًا.</value>
+  </data>
+  <data name="SB_Location" xml:space="preserve">
+    <value>المكان</value>
+  </data>
+  <data name="SB_NewTrip" xml:space="preserve">
+    <value>إنشاء رحلة جديدة</value>
+  </data>
+  <data name="SB_NoResults" xml:space="preserve">
+    <value>لا توجد نتائج.</value>
+  </data>
+  <data name="SB_NoSeats" xml:space="preserve">
+    <value>لا توجد مقاعد.</value>
+  </data>
+  <data name="SB_NoSeatsWarning" xml:space="preserve">
+    <value>لا توجد مقاعد متاحة للتحويل.</value>
+  </data>
+  <data name="SB_NoTransferTrips" xml:space="preserve">
+    <value>لا توجد رحلات تحويل.</value>
+  </data>
+  <data name="SB_NoTrips" xml:space="preserve">
+    <value>لا توجد رحلات.</value>
+  </data>
+  <data name="SB_Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="SB_NotesOptional" xml:space="preserve">
+    <value>ملاحظات اختيارية</value>
+  </data>
+  <data name="SB_PayAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="SB_PayPaid" xml:space="preserve">
+    <value>مدفوع</value>
+  </data>
+  <data name="SB_PayPartial" xml:space="preserve">
+    <value>مدفوع جزئيًا</value>
+  </data>
+  <data name="SB_PayStatus" xml:space="preserve">
+    <value>حالة الدفع</value>
+  </data>
+  <data name="SB_PayUnpaid" xml:space="preserve">
+    <value>غير مدفوع</value>
+  </data>
+  <data name="SB_Plate" xml:space="preserve">
+    <value>اللوحة</value>
+  </data>
+  <data name="SB_PricePerSeat" xml:space="preserve">
+    <value>سعر المقعد</value>
+  </data>
+  <data name="SB_Required" xml:space="preserve">
+    <value>المطلوب</value>
+  </data>
+  <data name="SB_Route" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="SB_RouteFrom" xml:space="preserve">
+    <value>خط السير من</value>
+  </data>
+  <data name="SB_RouteTo" xml:space="preserve">
+    <value>خط السير إلى</value>
+  </data>
+  <data name="SB_SearchTitle" xml:space="preserve">
+    <value>بحث الحجوزات</value>
+  </data>
+  <data name="SB_SeatMap" xml:space="preserve">
+    <value>خريطة المقاعد</value>
+  </data>
+  <data name="SB_SeatsCount" xml:space="preserve">
+    <value>عدد المقاعد</value>
+  </data>
+  <data name="SB_SelectCompany" xml:space="preserve">
+    <value>اختر الشركة</value>
+  </data>
+  <data name="SB_SelectRoute" xml:space="preserve">
+    <value>اختر خط السير لعرض الأتوبيسات المتاحة.</value>
+  </data>
+  <data name="SB_SelectRouteFrom" xml:space="preserve">
+    <value>اختر نقطة البداية</value>
+  </data>
+  <data name="SB_SelectRouteTo" xml:space="preserve">
+    <value>اختر نقطة الوصول</value>
+  </data>
+  <data name="SB_SrPaid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="SB_SrPrice" xml:space="preserve">
+    <value>إجمالي السعر</value>
+  </data>
+  <data name="SB_SrRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="SB_SrRows" xml:space="preserve">
+    <value>الصفوف</value>
+  </data>
+  <data name="SB_SrSeats" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="SB_SubtitleRole" xml:space="preserve">
+    <value>إدارة مقاعد الشركات والتحويلات والبحث من مكان واحد.</value>
+  </data>
+  <data name="SB_TabBook" xml:space="preserve">
+    <value>حجز مقاعد</value>
+  </data>
+  <data name="SB_TabSearch" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="SB_TabTransfer" xml:space="preserve">
+    <value>تحويل</value>
+  </data>
+  <data name="SB_TagAvailable" xml:space="preserve">
+    <value>متاح</value>
+  </data>
+  <data name="SB_TagCompanyBooked" xml:space="preserve">
+    <value>محجوز لشركة</value>
+  </data>
+  <data name="SB_TagTransferred" xml:space="preserve">
+    <value>تم التحويل</value>
+  </data>
+  <data name="SB_TagTransferredTo" xml:space="preserve">
+    <value>تم التحويل إلى</value>
+  </data>
+  <data name="SB_ToLocation" xml:space="preserve">
+    <value>إلى مكان</value>
+  </data>
+  <data name="SB_Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="SB_TotalSeats" xml:space="preserve">
+    <value>إجمالي المقاعد</value>
+  </data>
+  <data name="SB_TransferTitle" xml:space="preserve">
+    <value>تحويل مقاعد العملاء إلى شركة</value>
+  </data>
+  <data name="SB_Trip" xml:space="preserve">
+    <value>الرحلة</value>
+  </data>
+  <data name="SB_TripDate" xml:space="preserve">
+    <value>تاريخ الرحلة</value>
+  </data>
+  <data name="SB_TripDetails" xml:space="preserve">
+    <value>تفاصيل الرحلة</value>
+  </data>
+  <data name="SB_WelcomeBack" xml:space="preserve">
+    <value>مرحبًا بعودتك،</value>
+  </data>
+  <data name="SB_CompanySeats" xml:space="preserve">
+    <value>مقاعد الشركة</value>
+  </data>
+  <data name="SB_PageTitle" xml:space="preserve">
+    <value>حجز مقاعد الشركات</value>
+  </data>
+  <data name="CSA_PageTitle" xml:space="preserve">
+    <value>حسابات مقاعد الشركات</value>
+  </data>
+  <data name="CSA_Badge" xml:space="preserve">
+    <value>حسابات مقاعد الشركات</value>
+  </data>
+  <data name="CSA_Heading" xml:space="preserve">
+    <value>حسابات مقاعد الشركات</value>
+  </data>
+  <data name="CSA_Subtitle" xml:space="preserve">
+    <value>عرض حساب الشركة بالكامل، المدفوعات، وتصدير PDF / Excel.</value>
+  </data>
+  <data name="CSA_WelcomeBack" xml:space="preserve">
+    <value>مرحبًا،</value>
+  </data>
+  <data name="CSA_BtnSeatBooking" xml:space="preserve">
+    <value>حجز مقاعد</value>
+  </data>
+  <data name="CSA_BtnTrips" xml:space="preserve">
+    <value>الرحلات</value>
+  </data>
+  <data name="CSA_BtnCompanyTrips" xml:space="preserve">
+    <value>رحلات الشركة</value>
+  </data>
+  <data name="CSA_FilterTitle" xml:space="preserve">
+    <value>فلترة الحساب</value>
+  </data>
+  <data name="CSA_LblCompany" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="CSA_SelectCompany" xml:space="preserve">
+    <value>اختر الشركة</value>
+  </data>
+  <data name="CSA_LblDateFrom" xml:space="preserve">
+    <value>من تاريخ</value>
+  </data>
+  <data name="CSA_LblDateTo" xml:space="preserve">
+    <value>إلى تاريخ</value>
+  </data>
+  <data name="CSA_BtnView" xml:space="preserve">
+    <value>عرض الحساب</value>
+  </data>
+  <data name="CSA_BtnExcel" xml:space="preserve">
+    <value>Excel</value>
+  </data>
+  <data name="CSA_BtnPdf" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="CSA_SelectPrompt" xml:space="preserve">
+    <value>اختر شركة لعرض الحساب.</value>
+  </data>
+  <data name="CSA_SummaryInbound" xml:space="preserve">
+    <value>الشركة حاجزة عندنا / Inbound</value>
+  </data>
+  <data name="CSA_SummaryOutbound" xml:space="preserve">
+    <value>احنا حاجزين منها / Outbound</value>
+  </data>
+  <data name="CSA_SummaryTotalPaid" xml:space="preserve">
+    <value>إجمالي المدفوع</value>
+  </data>
+  <data name="CSA_SummaryNetBalance" xml:space="preserve">
+    <value>الرصيد الصافي</value>
+  </data>
+  <data name="CSA_TableTitle" xml:space="preserve">
+    <value>الحجوزات والتعاملات</value>
+  </data>
+  <data name="CSA_AddPaymentPH" xml:space="preserve">
+    <value>مبلغ دفعة عامة</value>
+  </data>
+  <data name="CSA_NotesPH" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="CSA_BtnAddPayment" xml:space="preserve">
+    <value>إضافة دفعة</value>
+  </data>
+  <data name="CSA_NoBookings" xml:space="preserve">
+    <value>لا توجد حجوزات لهذه الشركة.</value>
+  </data>
+  <data name="CSA_ColDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="CSA_ColDir" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="CSA_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="CSA_ColBus" xml:space="preserve">
+    <value>الحافلة</value>
+  </data>
+  <data name="CSA_ColTripRoute" xml:space="preserve">
+    <value>مسار الرحلة</value>
+  </data>
+  <data name="CSA_ColSeatRoute" xml:space="preserve">
+    <value>مسار المقعد</value>
+  </data>
+  <data name="CSA_ColSeats" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="CSA_ColSeatLabels" xml:space="preserve">
+    <value>أرقام المقاعد</value>
+  </data>
+  <data name="CSA_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="CSA_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="CSA_ColPrice" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="CSA_ColTotal" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="CSA_ColPaid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="CSA_ColRemain" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="CSA_ColUpdatePrice" xml:space="preserve">
+    <value>تحديث السعر</value>
+  </data>
+  <data name="CSA_ColAddPayment" xml:space="preserve">
+    <value>إضافة دفعة</value>
+  </data>
+  <data name="CSA_BtnSave" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="CSA_AmountPH" xml:space="preserve">
+    <value>مبلغ</value>
+  </data>
+  <data name="CSA_BtnPay" xml:space="preserve">
+    <value>دفع</value>
+  </data>
+  <data name="CSA_DirGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CSA_DirReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="CSA_DirExternal" xml:space="preserve">
+    <value>خارجي</value>
+  </data>
+  <data name="CSA_PaymentsTitle" xml:space="preserve">
+    <value>سجل المدفوعات</value>
+  </data>
+  <data name="CSA_NoPayments" xml:space="preserve">
+    <value>لا توجد دفعات.</value>
+  </data>
+  <data name="CSA_PayColDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="CSA_PayColAmount" xml:space="preserve">
+    <value>المبلغ</value>
+  </data>
+  <data name="CSA_PayColTrip" xml:space="preserve">
+    <value>الرحلة</value>
+  </data>
+  <data name="CSA_PayColNotes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="CSA_PayColDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="CSA_BtnDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="CSA_GeneralPayment" xml:space="preserve">
+    <value>دفعة عامة</value>
+  </data>
+  <data name="CSA_ConfirmDelete" xml:space="preserve">
+    <value>حذف هذه الدفعة؟</value>
+  </data>
+  <data name="BkList_Badge" xml:space="preserve">
+    <value>الحجوزات</value>
+  </data>
+  <data name="BkList_Title" xml:space="preserve">
+    <value>الحجوزات</value>
+  </data>
+  <data name="BkList_Subtitle" xml:space="preserve">
+    <value>إدارة حجوزات الفنادق والنقل والمدفوعات وبيانات العملاء.</value>
+  </data>
+  <data name="BkList_LangLabel" xml:space="preserve">
+    <value>اللغة</value>
+  </data>
+  <data name="BkList_ThemeLabel" xml:space="preserve">
+    <value>المظهر</value>
+  </data>
+  <data name="BkList_ThemeLight" xml:space="preserve">
+    <value>فاتح</value>
+  </data>
+  <data name="BkList_ThemeDark" xml:space="preserve">
+    <value>داكن</value>
+  </data>
+  <data name="BkList_NewBooking" xml:space="preserve">
+    <value>حجز جديد</value>
+  </data>
+  <data name="BkList_TodayBookings" xml:space="preserve">
+    <value>حجوزات اليوم</value>
+  </data>
+  <data name="BkList_Dashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="BkList_TotalBookings" xml:space="preserve">
+    <value>إجمالي الحجوزات</value>
+  </data>
+  <data name="BkList_ActiveBookings" xml:space="preserve">
+    <value>الحجوزات النشطة</value>
+  </data>
+  <data name="BkList_FilterSearch" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="BkList_FilterSearchPH" xml:space="preserve">
+    <value>الكود، الهاتف، العميل، الفندق...</value>
+  </data>
+  <data name="BkList_FilterCheckIn" xml:space="preserve">
+    <value>تاريخ الدخول</value>
+  </data>
+  <data name="BkList_FilterCheckOut" xml:space="preserve">
+    <value>تاريخ الخروج</value>
+  </data>
+  <data name="BkList_FilterType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="BkList_FilterAllTypes" xml:space="preserve">
+    <value>كل الأنواع</value>
+  </data>
+  <data name="BkList_FilterHotelOnly" xml:space="preserve">
+    <value>فندق فقط</value>
+  </data>
+  <data name="BkList_FilterTransportOnly" xml:space="preserve">
+    <value>نقل فقط</value>
+  </data>
+  <data name="BkList_FilterBoth" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="BkList_FilterSearchBtn" xml:space="preserve">
+    <value>بحث</value>
+  </data>
+  <data name="BkList_FilterReset" xml:space="preserve">
+    <value>إعادة تعيين</value>
+  </data>
+  <data name="BkList_ScrollHint" xml:space="preserve">
+    <value>اسحب أفقيًا لعرض باقي الأعمدة.</value>
+  </data>
+  <data name="BkList_ColCode" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="BkList_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="BkList_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="BkList_ColType" xml:space="preserve">
+    <value>النوع</value>
+  </data>
+  <data name="BkList_ColHotel" xml:space="preserve">
+    <value>الفندق</value>
+  </data>
+  <data name="BkList_ColCheckIn" xml:space="preserve">
+    <value>تاريخ الدخول</value>
+  </data>
+  <data name="BkList_ColCheckOut" xml:space="preserve">
+    <value>تاريخ الخروج</value>
+  </data>
+  <data name="BkList_ColPaid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="BkList_ColRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="BkList_ColUser" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="BkList_Empty" xml:space="preserve">
+    <value>لا توجد حجوزات.</value>
+  </data>
+  <data name="BkList_TypeHotel" xml:space="preserve">
+    <value>فندق</value>
+  </data>
+  <data name="BkList_TypeTransport" xml:space="preserve">
+    <value>نقل</value>
+  </data>
+  <data name="BkList_TypeHT" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="BkList_TypeNA" xml:space="preserve">
+    <value>غير متاح</value>
+  </data>
+  <data name="BkList_RowTitle" xml:space="preserve">
+    <value>اضغط لعرض تفاصيل الحجز</value>
+  </data>
+  <data name="BkList_UserBtnTitle" xml:space="preserve">
+    <value>اضغط لعرض هاتف منشئ الحجز</value>
+  </data>
+  <data name="BkList_UserHint" xml:space="preserve">
+    <value>اضغط للتواصل</value>
+  </data>
+  <data name="BkList_ModalTitle" xml:space="preserve">
+    <value>مستخدم الحجز</value>
+  </data>
+  <data name="BkList_ModalSubtitle" xml:space="preserve">
+    <value>المستخدم الذي أنشأ هذا الحجز</value>
+  </data>
+  <data name="BkList_ModalLoading" xml:space="preserve">
+    <value>جارٍ تحميل بيانات المستخدم...</value>
+  </data>
+  <data name="BkList_ModalUserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="BkList_ModalPhone" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="DW_Title" xml:space="preserve">
+    <value>العمل اليومي</value>
+  </data>
+  <data name="DW_Badge" xml:space="preserve">
+    <value>العمل اليومي</value>
+  </data>
+  <data name="DW_Subtitle" xml:space="preserve">
+    <value>إدارة رحلات النقل اليومية ودخول وخروج الفنادق وبيانات تواصل العملاء والمبالغ المتبقية.</value>
+  </data>
+  <data name="DW_BtnTransportWork" xml:space="preserve">
+    <value>عمل النقل</value>
+  </data>
+  <data name="DW_BtnHotelWork" xml:space="preserve">
+    <value>عمل الفنادق</value>
+  </data>
+  <data name="DW_BtnCompanyTrips" xml:space="preserve">
+    <value>رحلات الشركات</value>
+  </data>
+  <data name="DW_BtnDashboard" xml:space="preserve">
+    <value>لوحة التحكم</value>
+  </data>
+  <data name="DW_Today" xml:space="preserve">
+    <value>اليوم</value>
+  </data>
+  <data name="DW_TabTransport" xml:space="preserve">
+    <value>النقل</value>
+  </data>
+  <data name="DW_TabHotels" xml:space="preserve">
+    <value>الفنادق</value>
+  </data>
+  <data name="DW_TabCheckIn" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="DW_TabCheckOut" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="DW_DirGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="DW_DirReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="DW_DirRound" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="DW_ChooseDate" xml:space="preserve">
+    <value>اختر التاريخ</value>
+  </data>
+  <data name="DW_BtnShow" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="DW_SumTripsBus" xml:space="preserve">
+    <value>عدد الباصات</value>
+  </data>
+  <data name="DW_SumBookings" xml:space="preserve">
+    <value>الحجوزات</value>
+  </data>
+  <data name="DW_SumRooms" xml:space="preserve">
+    <value>الغرف</value>
+  </data>
+  <data name="DW_SumSeats" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="DW_SumTotalAmount" xml:space="preserve">
+    <value>إجمالي المبلغ</value>
+  </data>
+  <data name="DW_SumRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="DW_EmptyTransport" xml:space="preserve">
+    <value>لا توجد حجوزات نقل في هذا اليوم.</value>
+  </data>
+  <data name="DW_EmptyHotel" xml:space="preserve">
+    <value>لا توجد حجوزات فنادق في هذا اليوم.</value>
+  </data>
+  <data name="DW_LblBookings" xml:space="preserve">
+    <value>حجوزات</value>
+  </data>
+  <data name="DW_LblSeats" xml:space="preserve">
+    <value>مقاعد</value>
+  </data>
+  <data name="DW_SecCompanyClients" xml:space="preserve">
+    <value>عملاء الشركات</value>
+  </data>
+  <data name="DW_SecCompanyBookings" xml:space="preserve">
+    <value>حجوزات الشركات</value>
+  </data>
+  <data name="DW_SecClientBookings" xml:space="preserve">
+    <value>حجوزات العملاء</value>
+  </data>
+  <data name="DW_ColCompany" xml:space="preserve">
+    <value>الشركة</value>
+  </data>
+  <data name="DW_ColClient" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="DW_ColPhone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="DW_ColTripType" xml:space="preserve">
+    <value>نوع الرحلة</value>
+  </data>
+  <data name="DW_ColSeatGo" xml:space="preserve">
+    <value>المقعد (ذهاب)</value>
+  </data>
+  <data name="DW_ColSeatReturn" xml:space="preserve">
+    <value>المقعد (عودة)</value>
+  </data>
+  <data name="DW_ColRoute" xml:space="preserve">
+    <value>المسار</value>
+  </data>
+  <data name="DW_ColPrice" xml:space="preserve">
+    <value>السعر</value>
+  </data>
+  <data name="DW_ColTotal" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="DW_ColInfo" xml:space="preserve">
+    <value>معلومات</value>
+  </data>
+  <data name="DW_ColSeats" xml:space="preserve">
+    <value>المقاعد</value>
+  </data>
+  <data name="DW_ColDirection" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="DW_ColSeatsCount" xml:space="preserve">
+    <value>عدد المقاعد</value>
+  </data>
+  <data name="DW_ColCode" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="DW_ColContacts" xml:space="preserve">
+    <value>وسائل التواصل</value>
+  </data>
+  <data name="DW_ColHotel" xml:space="preserve">
+    <value>الفندق</value>
+  </data>
+  <data name="DW_ColTransportTotal" xml:space="preserve">
+    <value>إجمالي النقل</value>
+  </data>
+  <data name="DW_ColBookingTotal" xml:space="preserve">
+    <value>إجمالي الحجز</value>
+  </data>
+  <data name="DW_ColRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="DW_Transfer" xml:space="preserve">
+    <value>تحويل</value>
+  </data>
+  <data name="DW_TransferredFrom" xml:space="preserve">
+    <value>مُحوَّل من</value>
+  </data>
+  <data name="DW_Inbound" xml:space="preserve">
+    <value>وارد</value>
+  </data>
+  <data name="DW_Outbound" xml:space="preserve">
+    <value>صادر</value>
+  </data>
+  <data name="DW_HotelOnly" xml:space="preserve">
+    <value>فندق فقط</value>
+  </data>
+  <data name="DW_HotelPlusTransport" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="DW_HbDates" xml:space="preserve">
+    <value>التواريخ</value>
+  </data>
+  <data name="DW_HbRooms" xml:space="preserve">
+    <value>الغرف</value>
+  </data>
+  <data name="DW_HbChildren" xml:space="preserve">
+    <value>الأطفال</value>
+  </data>
+  <data name="DW_HbU6" xml:space="preserve">
+    <value>أقل من 6</value>
+  </data>
+  <data name="DW_HbU12" xml:space="preserve">
+    <value>أقل من 12</value>
+  </data>
+  <data name="DW_HbTotal" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="DW_HbContacts" xml:space="preserve">
+    <value>وسائل التواصل</value>
+  </data>
+  <data name="DW_HbHotelTotal" xml:space="preserve">
+    <value>إجمالي الفندق</value>
+  </data>
+  <data name="DW_HbTransportTotal" xml:space="preserve">
+    <value>إجمالي النقل</value>
+  </data>
+  <data name="DW_HbGrandTotal" xml:space="preserve">
+    <value>الإجمالي الكلي</value>
+  </data>
+  <data name="DW_HbRemaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="CB_Title" xml:space="preserve">
+    <value>إنشاء حجز</value>
+  </data>
+  <data name="CB_Badge" xml:space="preserve">
+    <value>الحجوزات</value>
+  </data>
+  <data name="CB_Heading" xml:space="preserve">
+    <value>إنشاء حجز</value>
+  </data>
+  <data name="CB_Subtitle" xml:space="preserve">
+    <value>أنشئ حجز فندق أو نقل أو حجزًا مدمجًا في خطوات منظمة.</value>
+  </data>
+  <data name="CB_BackToBookings" xml:space="preserve">
+    <value>العودة للحجوزات</value>
+  </data>
+  <data name="CB_BookingType" xml:space="preserve">
+    <value>نوع الحجز</value>
+  </data>
+  <data name="CB_SelectMode" xml:space="preserve">
+    <value>اختر نوع الحجز</value>
+  </data>
+  <data name="CB_ModeDesc" xml:space="preserve">
+    <value>حجز الفندق يعرض تواريخ الفندق والغرف فقط. النقل يعرض تواريخ الرحلة والباصات والمقاعد. المدمج يعرض القسمين معًا.</value>
+  </data>
+  <data name="CB_ModeHotelTag" xml:space="preserve">
+    <value>فندق</value>
+  </data>
+  <data name="CB_ModeHotelTitle" xml:space="preserve">
+    <value>حجز فندق</value>
+  </data>
+  <data name="CB_ModeHotelDesc" xml:space="preserve">
+    <value>غرف الفندق والليالي والأطفال والمدفوعات والهواتف.</value>
+  </data>
+  <data name="CB_ModeTransportTag" xml:space="preserve">
+    <value>النقل</value>
+  </data>
+  <data name="CB_ModeTransportTitle" xml:space="preserve">
+    <value>حجز نقل</value>
+  </data>
+  <data name="CB_ModeTransportDesc" xml:space="preserve">
+    <value>نوع الرحلة وتاريخ الذهاب والعودة والباصات والمقاعد والأسعار.</value>
+  </data>
+  <data name="CB_ModeBothTag" xml:space="preserve">
+    <value>مدمج</value>
+  </data>
+  <data name="CB_ModeBothTitle" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="CB_ModeBothDesc" xml:space="preserve">
+    <value>حجز فندق مع النقل في نفس الصفحة.</value>
+  </data>
+  <data name="CB_BasicData" xml:space="preserve">
+    <value>البيانات الأساسية</value>
+  </data>
+  <data name="CB_BasicDataSub" xml:space="preserve">
+    <value>بيانات العميل وتواريخ الحجز</value>
+  </data>
+  <data name="CB_ClientName" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+  <data name="CB_ClientNamePH" xml:space="preserve">
+    <value>اسم العميل...</value>
+  </data>
+  <data name="CB_CheckIn" xml:space="preserve">
+    <value>تاريخ الدخول</value>
+  </data>
+  <data name="CB_Nights" xml:space="preserve">
+    <value>عدد الليالي</value>
+  </data>
+  <data name="CB_CheckOut" xml:space="preserve">
+    <value>تاريخ الخروج</value>
+  </data>
+  <data name="CB_Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="CB_NotesPH" xml:space="preserve">
+    <value>اكتب ملاحظات إذا لزم الأمر...</value>
+  </data>
+  <data name="CB_HotelRooms" xml:space="preserve">
+    <value>غرف الفندق</value>
+  </data>
+  <data name="CB_HotelRoomsSub" xml:space="preserve">
+    <value>أكمل صف الغرفة الحالي قبل إضافة صف جديد</value>
+  </data>
+  <data name="CB_AddRoom" xml:space="preserve">
+    <value>+ إضافة غرفة</value>
+  </data>
+  <data name="CB_HotelName" xml:space="preserve">
+    <value>اسم الفندق</value>
+  </data>
+  <data name="CB_HotelNamePH" xml:space="preserve">
+    <value>اسم الفندق...</value>
+  </data>
+  <data name="CB_RoomType" xml:space="preserve">
+    <value>نوع الغرفة</value>
+  </data>
+  <data name="CB_Count" xml:space="preserve">
+    <value>العدد</value>
+  </data>
+  <data name="CB_NightPrice" xml:space="preserve">
+    <value>سعر الليلة</value>
+  </data>
+  <data name="CB_Remove" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="CB_Children" xml:space="preserve">
+    <value>الأطفال</value>
+  </data>
+  <data name="CB_ChildrenSub" xml:space="preserve">
+    <value>عدد الأطفال حسب العمر</value>
+  </data>
+  <data name="CB_Until6" xml:space="preserve">
+    <value>حتى 6 سنوات</value>
+  </data>
+  <data name="CB_Until12" xml:space="preserve">
+    <value>حتى 12 سنة</value>
+  </data>
+  <data name="CB_TotalChildren" xml:space="preserve">
+    <value>إجمالي الأطفال</value>
+  </data>
+  <data name="CB_Transportation" xml:space="preserve">
+    <value>النقل</value>
+  </data>
+  <data name="CB_TransportationSub" xml:space="preserve">
+    <value>اختر المسار والباص ثم حدد المقاعد</value>
+  </data>
+  <data name="CB_GoRequiredSeats" xml:space="preserve">
+    <value>مقاعد الذهاب المطلوبة</value>
+  </data>
+  <data name="CB_GoRequiredSeatsNote" xml:space="preserve">
+    <value>ستظهر قائمة الباصات التي بها مقاعد كافية فقط.</value>
+  </data>
+  <data name="CB_ReturnRequiredSeats" xml:space="preserve">
+    <value>مقاعد العودة المطلوبة</value>
+  </data>
+  <data name="CB_ReturnRequiredSeatsNote" xml:space="preserve">
+    <value>لرحلة الذهاب والعودة، أدخل عدد مقاعد العودة بشكل منفصل.</value>
+  </data>
+  <data name="CB_TripType" xml:space="preserve">
+    <value>نوع الرحلة</value>
+  </data>
+  <data name="CB_TripGoOnly" xml:space="preserve">
+    <value>ذهاب فقط</value>
+  </data>
+  <data name="CB_TripReturnOnly" xml:space="preserve">
+    <value>عودة فقط</value>
+  </data>
+  <data name="CB_TripRound" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="CB_GoDate" xml:space="preserve">
+    <value>تاريخ الذهاب</value>
+  </data>
+  <data name="CB_ReturnDate" xml:space="preserve">
+    <value>تاريخ العودة</value>
+  </data>
+  <data name="CB_GoTrip" xml:space="preserve">
+    <value>رحلة الذهاب</value>
+  </data>
+  <data name="CB_PillGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="CB_GoFrom" xml:space="preserve">
+    <value>الذهاب من</value>
+  </data>
+  <data name="CB_GoTo" xml:space="preserve">
+    <value>الذهاب إلى</value>
+  </data>
+  <data name="CB_GoBus" xml:space="preserve">
+    <value>باص الذهاب</value>
+  </data>
+  <data name="CB_SwapGoRoute" xml:space="preserve">
+    <value>عكس مسار الذهاب</value>
+  </data>
+  <data name="CB_SelectFromLocation" xml:space="preserve">
+    <value>اختر مكان البداية...</value>
+  </data>
+  <data name="CB_SelectToLocation" xml:space="preserve">
+    <value>اختر مكان الوصول...</value>
+  </data>
+  <data name="CB_SelectRouteFirst" xml:space="preserve">
+    <value>اختر المسار أولاً...</value>
+  </data>
+  <data name="CB_SelectRouteToShowBuses" xml:space="preserve">
+    <value>اختر المسار لعرض الباصات.</value>
+  </data>
+  <data name="CB_SelectedGoPrices" xml:space="preserve">
+    <value>أسعار مقاعد الذهاب المختارة</value>
+  </data>
+  <data name="CB_ReturnTrip" xml:space="preserve">
+    <value>رحلة العودة</value>
+  </data>
+  <data name="CB_PillReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="CB_ReturnFrom" xml:space="preserve">
+    <value>العودة من</value>
+  </data>
+  <data name="CB_ReturnTo" xml:space="preserve">
+    <value>العودة إلى</value>
+  </data>
+  <data name="CB_ReturnBus" xml:space="preserve">
+    <value>باص العودة</value>
+  </data>
+  <data name="CB_SwapReturnRoute" xml:space="preserve">
+    <value>عكس مسار العودة</value>
+  </data>
+  <data name="CB_SelectedReturnPrices" xml:space="preserve">
+    <value>أسعار مقاعد العودة المختارة</value>
+  </data>
+  <data name="CB_Payments" xml:space="preserve">
+    <value>المدفوعات</value>
+  </data>
+  <data name="CB_PaymentsSub" xml:space="preserve">
+    <value>المبلغ المدفوع لا يمكن أن يتجاوز الإجمالي الكلي</value>
+  </data>
+  <data name="CB_AddPayment" xml:space="preserve">
+    <value>+ إضافة دفعة</value>
+  </data>
+  <data name="CB_Amount" xml:space="preserve">
+    <value>المبلغ</value>
+  </data>
+  <data name="CB_PayType" xml:space="preserve">
+    <value>طريقة الدفع</value>
+  </data>
+  <data name="CB_PaidAt" xml:space="preserve">
+    <value>تاريخ الدفع</value>
+  </data>
+  <data name="CB_PaymentNotes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="CB_PaymentNotesPH" xml:space="preserve">
+    <value>ملاحظات الدفعة...</value>
+  </data>
+  <data name="CB_PhoneNumbers" xml:space="preserve">
+    <value>أرقام الهواتف</value>
+  </data>
+  <data name="CB_PhoneNumbersSub" xml:space="preserve">
+    <value>مثال صيغة الهاتف المصري: 01012345678</value>
+  </data>
+  <data name="CB_AddPhone" xml:space="preserve">
+    <value>+ إضافة هاتف</value>
+  </data>
+  <data name="CB_Phone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="CB_Primary" xml:space="preserve">
+    <value>أساسي</value>
+  </data>
+  <data name="CB_Totals" xml:space="preserve">
+    <value>الإجماليات</value>
+  </data>
+  <data name="CB_TotalsSub" xml:space="preserve">
+    <value>حساب فوري</value>
+  </data>
+  <data name="CB_Discount" xml:space="preserve">
+    <value>الخصم</value>
+  </data>
+  <data name="CB_SumNights" xml:space="preserve">
+    <value>الليالي</value>
+  </data>
+  <data name="CB_SumHotel" xml:space="preserve">
+    <value>الفندق</value>
+  </data>
+  <data name="CB_SumTransport" xml:space="preserve">
+    <value>النقل</value>
+  </data>
+  <data name="CB_SumGrandRemaining" xml:space="preserve">
+    <value>الإجمالي / المتبقي</value>
+  </data>
+  <data name="CB_CreateBtn" xml:space="preserve">
+    <value>إنشاء الحجز</value>
+  </data>
+  <data name="CB_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="CB_JsSeat" xml:space="preserve">
+    <value>مقعد</value>
+  </data>
+  <data name="CB_JsCheckoutAfterCheckin" xml:space="preserve">
+    <value>تاريخ الخروج يجب أن يكون بعد الدخول بيوم على الأقل.</value>
+  </data>
+  <data name="CB_JsSelectBus" xml:space="preserve">
+    <value>اختر الباص...</value>
+  </data>
+  <data name="CB_JsSelectToLocation" xml:space="preserve">
+    <value>اختر مكان الوصول...</value>
+  </data>
+  <data name="CB_JsSelectRouteFirst" xml:space="preserve">
+    <value>اختر المسار أولاً...</value>
+  </data>
+  <data name="CB_JsSelectRouteToShowBuses" xml:space="preserve">
+    <value>اختر المسار لعرض الباصات.</value>
+  </data>
+  <data name="CB_JsSelectBusToShowSeats" xml:space="preserve">
+    <value>اختر الباص لعرض المقاعد.</value>
+  </data>
+  <data name="CB_JsCannotLoadRoute" xml:space="preserve">
+    <value>تعذر تحميل أماكن المسار.</value>
+  </data>
+  <data name="CB_JsCannotLoadBuses" xml:space="preserve">
+    <value>تعذر تحميل الباصات.</value>
+  </data>
+  <data name="CB_JsCannotLoadLayout" xml:space="preserve">
+    <value>تعذر تحميل مخطط الباص.</value>
+  </data>
+  <data name="CB_JsLoadingLayout" xml:space="preserve">
+    <value>جارٍ تحميل مخطط الباص...</value>
+  </data>
+  <data name="CB_JsNewTrip" xml:space="preserve">
+    <value>رحلة جديدة</value>
+  </data>
+  <data name="CB_JsExistingTrip" xml:space="preserve">
+    <value>رحلة موجودة</value>
+  </data>
+  <data name="CB_JsAvailable" xml:space="preserve">
+    <value>متاح</value>
+  </data>
+  <data name="CB_JsGoDisabled" xml:space="preserve">
+    <value>الذهاب معطّل.</value>
+  </data>
+  <data name="CB_JsReturnDisabled" xml:space="preserve">
+    <value>العودة معطّلة.</value>
+  </data>
+  <data name="CB_JsBooked" xml:space="preserve">
+    <value>محجوز</value>
+  </data>
+  <data name="CB_JsDirGo" xml:space="preserve">
+    <value>الذهاب</value>
+  </data>
+  <data name="CB_JsDirReturn" xml:space="preserve">
+    <value>العودة</value>
+  </data>
+  <data name="CB_JsBusSuffix" xml:space="preserve">
+    <value>باص</value>
+  </data>
+  <data name="CB_JsSeatLocation" xml:space="preserve">
+    <value>مكان المقعد</value>
+  </data>
+  <data name="CB_JsSeatLocationHint" xml:space="preserve">
+    <value>أدخل مكان الالتقاط/التنزيل للمقاعد المختارة. هذا منفصل عن مسار الباص.</value>
+  </data>
+  <data name="CB_JsSeatFromLocation" xml:space="preserve">
+    <value>مكان بداية المقعد</value>
+  </data>
+  <data name="CB_JsSeatToLocation" xml:space="preserve">
+    <value>مكان وصول المقعد</value>
+  </data>
+  <data name="CB_JsSeatLocationFromPH" xml:space="preserve">
+    <value>مثال: أسيوط الجديدة</value>
+  </data>
+  <data name="CB_JsSeatLocationToPH" xml:space="preserve">
+    <value>مثال: الشمس والبحر</value>
+  </data>
+  <data name="CB_JsSeatPriceLabel" xml:space="preserve">
+    <value>سعر المقعد</value>
+  </data>
+  <data name="CB_JsCountLabel" xml:space="preserve">
+    <value>العدد</value>
+  </data>
+  <data name="CB_JsPricePerSeat" xml:space="preserve">
+    <value>سعر المقعد</value>
+  </data>
+  <data name="CB_JsSelectedPrices" xml:space="preserve">
+    <value>أسعار مقاعد {0} المختارة</value>
+  </data>
+  <data name="CB_JsSeatsExceedRequired" xml:space="preserve">
+    <value>مقاعد {0} المختارة لا يمكن أن تتجاوز العدد المطلوب ({1}).</value>
+  </data>
+  <data name="CB_JsEnterRequiredSeats" xml:space="preserve">
+    <value>أدخل عدد مقاعد {0} المطلوبة أولاً.</value>
+  </data>
+  <data name="CB_JsSelectDateFirst" xml:space="preserve">
+    <value>اختر تاريخ {0} أولاً.</value>
+  </data>
+  <data name="CB_JsLoadingBuses" xml:space="preserve">
+    <value>جارٍ تحميل الباصات التي بها {0} مقاعد متاحة على الأقل...</value>
+  </data>
+  <data name="CB_JsNoBusSeats" xml:space="preserve">
+    <value>لا يوجد باص به {0} مقاعد متاحة لهذا المسار/التاريخ.</value>
+  </data>
+  <data name="CB_JsFoundBuses" xml:space="preserve">
+    <value>تم العثور على {0} باص. اختر باصًا لعرض المقاعد.</value>
+  </data>
+  <data name="CB_JsBusOnlyHas" xml:space="preserve">
+    <value>هذا الباص به {0} مقاعد متاحة فقط. اختر باصًا آخر.</value>
+  </data>
+  <data name="CB_JsReqSeatsRequired" xml:space="preserve">
+    <value>عدد مقاعد {0} المطلوبة إلزامي.</value>
+  </data>
+  <data name="CB_JsDateRequired" xml:space="preserve">
+    <value>تاريخ {0} إلزامي.</value>
+  </data>
+  <data name="CB_JsFromLocRequired" xml:space="preserve">
+    <value>مكان بداية {0} إلزامي.</value>
+  </data>
+  <data name="CB_JsToLocRequired" xml:space="preserve">
+    <value>مكان وصول {0} إلزامي.</value>
+  </data>
+  <data name="CB_JsBusRequired" xml:space="preserve">
+    <value>باص {0} إلزامي.</value>
+  </data>
+  <data name="CB_JsSelectOneSeat" xml:space="preserve">
+    <value>اختر مقعد {0} واحدًا على الأقل.</value>
+  </data>
+  <data name="CB_JsSeatsMustEqual" xml:space="preserve">
+    <value>مقاعد {0} المختارة يجب أن تساوي العدد المطلوب ({1}).</value>
+  </data>
+  <data name="CB_JsSeatFromRequired" xml:space="preserve">
+    <value>مكان بداية مقعد {0} إلزامي.</value>
+  </data>
+  <data name="CB_JsSeatToRequired" xml:space="preserve">
+    <value>مكان وصول مقعد {0} إلزامي.</value>
+  </data>
+  <data name="CB_JsSeatPricePositive" xml:space="preserve">
+    <value>سعر مقعد {0} {1} يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="CB_JsHotelNameRequired" xml:space="preserve">
+    <value>اسم الفندق إلزامي.</value>
+  </data>
+  <data name="CB_JsRoomRowCount" xml:space="preserve">
+    <value>صف الغرفة {0}: العدد يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="CB_JsRoomRowPrice" xml:space="preserve">
+    <value>صف الغرفة {0}: سعر الليلة يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="CB_JsPhoneRowRequired" xml:space="preserve">
+    <value>صف الهاتف {0}: رقم الهاتف إلزامي.</value>
+  </data>
+  <data name="CB_JsPhoneRowIncorrect" xml:space="preserve">
+    <value>صف الهاتف {0}: رقم الهاتف غير صحيح.</value>
+  </data>
+  <data name="CB_JsOnePrimaryRequired" xml:space="preserve">
+    <value>يجب تحديد رقم هاتف أساسي واحد.</value>
+  </data>
+  <data name="CB_JsPaymentRowRequired" xml:space="preserve">
+    <value>صف الدفعة {0}: المبلغ إلزامي.</value>
+  </data>
+  <data name="CB_JsPaymentRowNegative" xml:space="preserve">
+    <value>صف الدفعة {0}: المبلغ لا يمكن أن يكون سالبًا.</value>
+  </data>
+  <data name="CB_JsPaidExceedsGrand" xml:space="preserve">
+    <value>المبلغ المدفوع لا يمكن أن يتجاوز الإجمالي الكلي.</value>
+  </data>
+  <data name="CB_JsCountPositive" xml:space="preserve">
+    <value>العدد يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="CB_JsNightPricePositive" xml:space="preserve">
+    <value>سعر الليلة يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="CB_JsAmountPositive" xml:space="preserve">
+    <value>المبلغ يجب أن يكون أكبر من صفر قبل إضافة صف جديد.</value>
+  </data>
+  <data name="CB_JsPhoneRequired" xml:space="preserve">
+    <value>رقم الهاتف إلزامي.</value>
+  </data>
+  <data name="CB_JsPhoneIncorrect" xml:space="preserve">
+    <value>رقم الهاتف غير صحيح.</value>
+  </data>
+  <data name="CB_JsPhoneIncorrectEx" xml:space="preserve">
+    <value>رقم الهاتف غير صحيح. مثال: 01012345678</value>
+  </data>
+  <data name="BkDet_BookingWord" xml:space="preserve">
+    <value>حجز</value>
+  </data>
+  <data name="BkDet_TypeHT" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="BkDet_TypeHotelOnly" xml:space="preserve">
+    <value>فندق فقط</value>
+  </data>
+  <data name="BkDet_TypeTransportOnly" xml:space="preserve">
+    <value>نقل فقط</value>
+  </data>
+  <data name="BkDet_TypeNA" xml:space="preserve">
+    <value>غير متاح</value>
+  </data>
+  <data name="BkDet_MainPhone" xml:space="preserve">
+    <value>الهاتف الأساسي</value>
+  </data>
+  <data name="BkDet_CreatedBy" xml:space="preserve">
+    <value>أنشأه</value>
+  </data>
+  <data name="BkDet_ViewUserContact" xml:space="preserve">
+    <value>اضغط لعرض بيانات تواصل المستخدم</value>
+  </data>
+  <data name="BkDet_BtnBack" xml:space="preserve">
+    <value>رجوع</value>
+  </data>
+  <data name="BkDet_BtnReport" xml:space="preserve">
+    <value>تقرير</value>
+  </data>
+  <data name="BkDet_BtnTicket" xml:space="preserve">
+    <value>تذكرة</value>
+  </data>
+  <data name="BkDet_BtnAudit" xml:space="preserve">
+    <value>السجل</value>
+  </data>
+  <data name="BkDet_BtnEdit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="BkDet_BtnDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="BkDet_ConfirmDelete" xml:space="preserve">
+    <value>حذف الحجز</value>
+  </data>
+  <data name="BkDet_HotelTotal" xml:space="preserve">
+    <value>إجمالي الفندق</value>
+  </data>
+  <data name="BkDet_TransportTotal" xml:space="preserve">
+    <value>إجمالي النقل</value>
+  </data>
+  <data name="BkDet_GrandTotal" xml:space="preserve">
+    <value>الإجمالي الكلي</value>
+  </data>
+  <data name="BkDet_Paid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="BkDet_AddPaymentBtn" xml:space="preserve">
+    <value>+ إضافة دفعة</value>
+  </data>
+  <data name="BkDet_Remaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="BkDet_ClientData" xml:space="preserve">
+    <value>بيانات العميل</value>
+  </data>
+  <data name="BkDet_Code" xml:space="preserve">
+    <value>الكود</value>
+  </data>
+  <data name="BkDet_ClientName" xml:space="preserve">
+    <value>اسم العميل</value>
+  </data>
+  <data name="BkDet_BookingType" xml:space="preserve">
+    <value>نوع الحجز</value>
+  </data>
+  <data name="BkDet_CreatedAt" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="BkDet_PhoneNumbers" xml:space="preserve">
+    <value>أرقام الهواتف</value>
+  </data>
+  <data name="BkDet_NoPhones" xml:space="preserve">
+    <value>لا توجد أرقام هواتف.</value>
+  </data>
+  <data name="BkDet_Primary" xml:space="preserve">
+    <value>أساسي</value>
+  </data>
+  <data name="BkDet_HotelDetails" xml:space="preserve">
+    <value>تفاصيل الفندق</value>
+  </data>
+  <data name="BkDet_HotelName" xml:space="preserve">
+    <value>اسم الفندق</value>
+  </data>
+  <data name="BkDet_CheckIn" xml:space="preserve">
+    <value>تاريخ الدخول</value>
+  </data>
+  <data name="BkDet_CheckOut" xml:space="preserve">
+    <value>تاريخ الخروج</value>
+  </data>
+  <data name="BkDet_Nights" xml:space="preserve">
+    <value>عدد الليالي</value>
+  </data>
+  <data name="BkDet_Rooms" xml:space="preserve">
+    <value>الغرف</value>
+  </data>
+  <data name="BkDet_Children" xml:space="preserve">
+    <value>الأطفال</value>
+  </data>
+  <data name="BkDet_RoomsBreakdown" xml:space="preserve">
+    <value>تفصيل الغرف</value>
+  </data>
+  <data name="BkDet_RoomType" xml:space="preserve">
+    <value>نوع الغرفة</value>
+  </data>
+  <data name="BkDet_Count" xml:space="preserve">
+    <value>العدد</value>
+  </data>
+  <data name="BkDet_NightPrice" xml:space="preserve">
+    <value>سعر الليلة</value>
+  </data>
+  <data name="BkDet_Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="BkDet_TransportDetails" xml:space="preserve">
+    <value>تفاصيل النقل</value>
+  </data>
+  <data name="BkDet_NoTrips" xml:space="preserve">
+    <value>لا توجد رحلات نقل.</value>
+  </data>
+  <data name="BkDet_DirReturn" xml:space="preserve">
+    <value>عودة</value>
+  </data>
+  <data name="BkDet_DirGo" xml:space="preserve">
+    <value>ذهاب</value>
+  </data>
+  <data name="BkDet_ReturnBus" xml:space="preserve">
+    <value>باص العودة</value>
+  </data>
+  <data name="BkDet_GoBus" xml:space="preserve">
+    <value>باص الذهاب</value>
+  </data>
+  <data name="BkDet_Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="BkDet_Direction" xml:space="preserve">
+    <value>الاتجاه</value>
+  </data>
+  <data name="BkDet_Bus" xml:space="preserve">
+    <value>الباص</value>
+  </data>
+  <data name="BkDet_Plate" xml:space="preserve">
+    <value>اللوحة</value>
+  </data>
+  <data name="BkDet_BookedSeats" xml:space="preserve">
+    <value>المقاعد المحجوزة</value>
+  </data>
+  <data name="BkDet_Booked" xml:space="preserve">
+    <value>محجوز</value>
+  </data>
+  <data name="BkDet_SeatsWord" xml:space="preserve">
+    <value>مقاعد</value>
+  </data>
+  <data name="BkDet_SeatRoute" xml:space="preserve">
+    <value>مسار المقعد</value>
+  </data>
+  <data name="BkDet_PricePerSeat" xml:space="preserve">
+    <value>السعر / المقعد</value>
+  </data>
+  <data name="BkDet_NoSeats" xml:space="preserve">
+    <value>لا توجد مقاعد لهذه الرحلة.</value>
+  </data>
+  <data name="BkDet_Payments" xml:space="preserve">
+    <value>المدفوعات</value>
+  </data>
+  <data name="BkDet_NoPayments" xml:space="preserve">
+    <value>لا توجد مدفوعات.</value>
+  </data>
+  <data name="BkDet_PayType" xml:space="preserve">
+    <value>طريقة الدفع</value>
+  </data>
+  <data name="BkDet_Amount" xml:space="preserve">
+    <value>المبلغ</value>
+  </data>
+  <data name="BkDet_NotesCol" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="BkDet_PaidTotal" xml:space="preserve">
+    <value>إجمالي المدفوع</value>
+  </data>
+  <data name="BkDet_Notes" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="BkDet_ModalTitle" xml:space="preserve">
+    <value>مستخدم الحجز</value>
+  </data>
+  <data name="BkDet_ModalSubtitle" xml:space="preserve">
+    <value>المستخدم الذي أنشأ هذا الحجز</value>
+  </data>
+  <data name="BkDet_ModalLoading" xml:space="preserve">
+    <value>جارٍ تحميل بيانات المستخدم...</value>
+  </data>
+  <data name="BkDet_ModalUserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="BkDet_ModalPhone" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="BkDet_AddPaymentTitle" xml:space="preserve">
+    <value>إضافة دفعة</value>
+  </data>
+  <data name="BkDet_PaidAt" xml:space="preserve">
+    <value>تاريخ الدفع</value>
+  </data>
+  <data name="BkDet_PaymentNotesPH" xml:space="preserve">
+    <value>ملاحظات الدفعة...</value>
+  </data>
+  <data name="BkDet_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="BkDet_SavePayment" xml:space="preserve">
+    <value>حفظ الدفعة</value>
+  </data>
+  <data name="BkDet_JsLoadFailed" xml:space="preserve">
+    <value>فشل تحميل بيانات المستخدم.</value>
+  </data>
+  <data name="BkDet_JsConnectFailed" xml:space="preserve">
+    <value>فشل الاتصال بالخادم.</value>
+  </data>
+  <data name="AUD_TitleWord" xml:space="preserve">
+    <value>السجل</value>
+  </data>
+  <data name="AUD_NA" xml:space="preserve">
+    <value>غير متاح</value>
+  </data>
+  <data name="AUD_Badge" xml:space="preserve">
+    <value>سجل التغييرات</value>
+  </data>
+  <data name="AUD_BookingWord" xml:space="preserve">
+    <value>حجز</value>
+  </data>
+  <data name="AUD_Subtitle" xml:space="preserve">
+    <value>كل التغييرات، من قام بها، ومتى، وما القيم التي تغيّرت.</value>
+  </data>
+  <data name="AUD_AllBookings" xml:space="preserve">
+    <value>← كل الحجوزات</value>
+  </data>
+  <data name="AUD_Details" xml:space="preserve">
+    <value>التفاصيل</value>
+  </data>
+  <data name="AUD_Edit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="AUD_Client" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="AUD_PrimaryPhone" xml:space="preserve">
+    <value>الهاتف الأساسي</value>
+  </data>
+  <data name="AUD_BookingType" xml:space="preserve">
+    <value>نوع الحجز</value>
+  </data>
+  <data name="AUD_TypeHT" xml:space="preserve">
+    <value>فندق + نقل</value>
+  </data>
+  <data name="AUD_TypeHotel" xml:space="preserve">
+    <value>فندق</value>
+  </data>
+  <data name="AUD_TypeTransport" xml:space="preserve">
+    <value>نقل</value>
+  </data>
+  <data name="AUD_GrandTotal" xml:space="preserve">
+    <value>الإجمالي الكلي</value>
+  </data>
+  <data name="AUD_Remaining" xml:space="preserve">
+    <value>المتبقي</value>
+  </data>
+  <data name="AUD_NoLogs" xml:space="preserve">
+    <value>لا توجد سجلات تغييرات لهذا الحجز.</value>
+  </data>
+  <data name="AUD_ActionCreate" xml:space="preserve">
+    <value>إنشاء</value>
+  </data>
+  <data name="AUD_ActionUpdate" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="AUD_ActionDelete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="AUD_NoFieldChanges" xml:space="preserve">
+    <value>لم تُسجَّل أي تغييرات في الحقول.</value>
+  </data>
+  <data name="AUD_ColField" xml:space="preserve">
+    <value>الحقل</value>
+  </data>
+  <data name="AUD_ColOldValue" xml:space="preserve">
+    <value>القيمة القديمة</value>
+  </data>
+  <data name="AUD_ColNewValue" xml:space="preserve">
+    <value>القيمة الجديدة</value>
+  </data>
+  <data name="EB_Title" xml:space="preserve">
+    <value>تعديل الحجز</value>
+  </data>
+  <data name="EB_Badge" xml:space="preserve">
+    <value>تعديل الحجز</value>
+  </data>
+  <data name="EB_Subtitle" xml:space="preserve">
+    <value>يمكن فقط تعديل تواريخ الفندق والليالي واسم الفندق والغرف والأطفال ونوع الرحلة وتواريخ السفر والهواتف.</value>
+  </data>
+  <data name="EB_BackToDetails" xml:space="preserve">
+    <value>العودة للتفاصيل</value>
+  </data>
+  <data name="EB_AllBookings" xml:space="preserve">
+    <value>كل الحجوزات</value>
+  </data>
+  <data name="EB_LimitedEdit" xml:space="preserve">
+    <value>تعديل محدود</value>
+  </data>
+  <data name="EB_AllowedChanges" xml:space="preserve">
+    <value>التغييرات المسموحة</value>
+  </data>
+  <data name="EB_AllowedChangesDesc" xml:space="preserve">
+    <value>هذه الصفحة لا تعدّل المدفوعات أو الباصات أو المقاعد. تبقى المدفوعات والباصات والمقاعد واسم العميل والملاحظات وهوية الحجز كما هي تمامًا.</value>
+  </data>
+  <data name="EB_Client" xml:space="preserve">
+    <value>العميل</value>
+  </data>
+  <data name="EB_HotelTotal" xml:space="preserve">
+    <value>إجمالي الفندق</value>
+  </data>
+  <data name="EB_TransportTotal" xml:space="preserve">
+    <value>إجمالي النقل</value>
+  </data>
+  <data name="EB_Paid" xml:space="preserve">
+    <value>المدفوع</value>
+  </data>
+  <data name="EB_InfoNote" xml:space="preserve">
+    <value>تعديل عدد الأيام أو تواريخ الفندق يعيد حساب إجمالي الفندق باستخدام الغرف والأسعار الحالية. تعديل نوع الرحلة يفعّل أو يعطّل حجوزات الذهاب/العودة الموجودة فقط، ولا ينشئ مقاعد جديدة أو يغيّر الباصات.</value>
+  </data>
+  <data name="EB_FixErrors" xml:space="preserve">
+    <value>يرجى تصحيح الأخطاء التالية:</value>
+  </data>
+  <data name="EB_HotelAllowedFields" xml:space="preserve">
+    <value>حقول الفندق المسموحة</value>
+  </data>
+  <data name="EB_HotelAllowedSub" xml:space="preserve">
+    <value>اسم الفندق، الدخول، الخروج، الليالي، الغرف، الأطفال، وخصم الأدمن</value>
+  </data>
+  <data name="EB_HotelName" xml:space="preserve">
+    <value>اسم الفندق</value>
+  </data>
+  <data name="EB_HotelNamePH" xml:space="preserve">
+    <value>اسم الفندق...</value>
+  </data>
+  <data name="EB_CheckIn" xml:space="preserve">
+    <value>تاريخ الدخول</value>
+  </data>
+  <data name="EB_NightsCount" xml:space="preserve">
+    <value>عدد الليالي</value>
+  </data>
+  <data name="EB_CheckOut" xml:space="preserve">
+    <value>تاريخ الخروج</value>
+  </data>
+  <data name="EB_Discount" xml:space="preserve">
+    <value>الخصم</value>
+  </data>
+  <data name="EB_AdminOnly" xml:space="preserve">
+    <value>(الأدمن فقط)</value>
+  </data>
+  <data name="EB_NewHotelTotal" xml:space="preserve">
+    <value>إجمالي الفندق الجديد</value>
+  </data>
+  <data name="EB_NewGrandTotal" xml:space="preserve">
+    <value>الإجمالي الكلي الجديد</value>
+  </data>
+  <data name="EB_TransportAllowedFields" xml:space="preserve">
+    <value>حقول النقل المسموحة</value>
+  </data>
+  <data name="EB_TransportAllowedSub" xml:space="preserve">
+    <value>نوع الرحلة وتواريخ السفر فقط</value>
+  </data>
+  <data name="EB_TripType" xml:space="preserve">
+    <value>نوع الرحلة</value>
+  </data>
+  <data name="EB_TripGoOnly" xml:space="preserve">
+    <value>ذهاب فقط</value>
+  </data>
+  <data name="EB_TripReturnOnly" xml:space="preserve">
+    <value>عودة فقط</value>
+  </data>
+  <data name="EB_TripRound" xml:space="preserve">
+    <value>ذهاب وعودة</value>
+  </data>
+  <data name="EB_GoTravelDate" xml:space="preserve">
+    <value>تاريخ سفر الذهاب</value>
+  </data>
+  <data name="EB_ReturnTravelDate" xml:space="preserve">
+    <value>تاريخ سفر العودة</value>
+  </data>
+  <data name="EB_RoomsBooking" xml:space="preserve">
+    <value>حجز الغرف</value>
+  </data>
+  <data name="EB_RoomsBookingSub" xml:space="preserve">
+    <value>يمكنك تعديل نوع الغرفة وعددها وسعر الليلة</value>
+  </data>
+  <data name="EB_AddRoom" xml:space="preserve">
+    <value>+ إضافة غرفة</value>
+  </data>
+  <data name="EB_RoomType" xml:space="preserve">
+    <value>نوع الغرفة</value>
+  </data>
+  <data name="EB_Count" xml:space="preserve">
+    <value>العدد</value>
+  </data>
+  <data name="EB_NightPrice" xml:space="preserve">
+    <value>سعر الليلة</value>
+  </data>
+  <data name="EB_Remove" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="EB_Children" xml:space="preserve">
+    <value>الأطفال</value>
+  </data>
+  <data name="EB_ChildrenSub" xml:space="preserve">
+    <value>يمكنك تعديل عدد الأطفال حسب العمر</value>
+  </data>
+  <data name="EB_Until6" xml:space="preserve">
+    <value>حتى 6 سنوات</value>
+  </data>
+  <data name="EB_Until12" xml:space="preserve">
+    <value>حتى 12 سنة</value>
+  </data>
+  <data name="EB_TotalChildren" xml:space="preserve">
+    <value>إجمالي الأطفال</value>
+  </data>
+  <data name="EB_PhoneNumbers" xml:space="preserve">
+    <value>أرقام الهواتف</value>
+  </data>
+  <data name="EB_PhoneNumbersSub" xml:space="preserve">
+    <value>يمكنك إضافة أو حذف أو تغيير أرقام الهواتف</value>
+  </data>
+  <data name="EB_AddPhone" xml:space="preserve">
+    <value>+ إضافة هاتف</value>
+  </data>
+  <data name="EB_Phone" xml:space="preserve">
+    <value>الهاتف</value>
+  </data>
+  <data name="EB_Primary" xml:space="preserve">
+    <value>أساسي</value>
+  </data>
+  <data name="EB_SaveChanges" xml:space="preserve">
+    <value>حفظ التغييرات المسموحة</value>
+  </data>
+  <data name="EB_Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="EB_JsCheckoutAfterCheckin" xml:space="preserve">
+    <value>تاريخ الخروج يجب أن يكون بعد الدخول بيوم على الأقل.</value>
+  </data>
+  <data name="EB_JsRoomCountPositive" xml:space="preserve">
+    <value>عدد الغرف يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="EB_JsRoomPriceNegative" xml:space="preserve">
+    <value>سعر ليلة الغرفة لا يمكن أن يكون سالبًا.</value>
+  </data>
+  <data name="EB_JsPhoneRequiredAdd" xml:space="preserve">
+    <value>رقم الهاتف إلزامي قبل إضافة هاتف آخر.</value>
+  </data>
+  <data name="EB_JsPhoneIncorrectEx" xml:space="preserve">
+    <value>رقم الهاتف غير صحيح. مثال: 01012345678</value>
+  </data>
+  <data name="EB_JsHotelNameRequired" xml:space="preserve">
+    <value>اسم الفندق إلزامي.</value>
+  </data>
+  <data name="EB_JsCheckInRequired" xml:space="preserve">
+    <value>تاريخ الدخول إلزامي.</value>
+  </data>
+  <data name="EB_JsCheckOutRequired" xml:space="preserve">
+    <value>تاريخ الخروج إلزامي.</value>
+  </data>
+  <data name="EB_JsNightsAtLeastOne" xml:space="preserve">
+    <value>عدد الليالي يجب أن يكون 1 على الأقل.</value>
+  </data>
+  <data name="EB_JsDiscountNegative" xml:space="preserve">
+    <value>الخصم لا يمكن أن يكون سالبًا.</value>
+  </data>
+  <data name="EB_JsRoomRowCount" xml:space="preserve">
+    <value>صف الغرفة {0}: العدد يجب أن يكون أكبر من صفر.</value>
+  </data>
+  <data name="EB_JsRoomRowPrice" xml:space="preserve">
+    <value>صف الغرفة {0}: سعر الليلة لا يمكن أن يكون سالبًا.</value>
+  </data>
+  <data name="EB_JsChild6Negative" xml:space="preserve">
+    <value>عدد الأطفال حتى 6 سنوات لا يمكن أن يكون سالبًا.</value>
+  </data>
+  <data name="EB_JsChild12Negative" xml:space="preserve">
+    <value>عدد الأطفال حتى 12 سنة لا يمكن أن يكون سالبًا.</value>
+  </data>
+  <data name="EB_JsCheckoutAfter" xml:space="preserve">
+    <value>تاريخ الخروج يجب أن يكون بعد الدخول.</value>
+  </data>
+  <data name="EB_JsGoDateRequired" xml:space="preserve">
+    <value>تاريخ سفر الذهاب إلزامي.</value>
+  </data>
+  <data name="EB_JsReturnDateRequired" xml:space="preserve">
+    <value>تاريخ سفر العودة إلزامي.</value>
+  </data>
+  <data name="EB_JsPhoneRowRequired" xml:space="preserve">
+    <value>صف الهاتف {0}: رقم الهاتف إلزامي.</value>
+  </data>
+  <data name="EB_JsPhoneRowIncorrect" xml:space="preserve">
+    <value>صف الهاتف {0}: رقم الهاتف غير صحيح.</value>
+  </data>
+  <data name="EB_JsOnePrimaryRequired" xml:space="preserve">
+    <value>يجب تحديد رقم هاتف أساسي واحد.</value>
+  </data>
+  <data name="EB_JsPhoneIncorrect" xml:space="preserve">
+    <value>رقم الهاتف غير صحيح.</value>
+  </data>
+</root>

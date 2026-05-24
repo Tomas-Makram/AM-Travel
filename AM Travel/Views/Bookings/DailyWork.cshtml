@@ -1,0 +1,1279 @@
+@using AM_Travel.Resources
+@using Microsoft.Extensions.Localization
+@model BusinessLayer.DTOs.Book.BookingDailyWorkPageDTO
+@using DataLayer.Models
+@using System.Security.Claims
+@inject IStringLocalizer<SharedResource> L
+
+@{
+    ViewData["Title"] = L["DW_Title"];
+
+    var fullName = ViewBag.Name as string ?? User.FindFirstValue(ClaimTypes.GivenName) ?? User.Identity?.Name ?? "User";
+
+    var initials = string.Join("", fullName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+        initials = "AM";
+
+    var workType = (Model.WorkType ?? "transport").ToLower();
+    var selectedDateText = Model.SelectedDate.ToString("yyyy-MM-dd");
+    var selectedDirection = Model.Direction ?? TripDirection.Departure;
+    var hotelDateType = string.IsNullOrWhiteSpace(Model.HotelDateType) ? "CheckIn" : Model.HotelDateType;
+
+    var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+
+    // localized labels for enum / dynamic values
+    string DirLabel(string? raw) => raw?.Trim() switch
+    {
+        "Departure" or "Go" => L["DW_DirGo"].Value,
+        "Return" => L["DW_DirReturn"].Value,
+        "RoundTrip" => L["DW_DirRound"].Value,
+        _ => raw ?? "-"
+    };
+}
+
+<style>
+    :root {
+        --dw-hero-bg: linear-gradient(135deg,#ff7a18,#ffad42);
+        --dw-hero-glow: rgba(255,122,24,.18);
+        --dw-hero-text: #fff;
+        --dw-hero-sub: rgba(255,255,255,.92);
+        --dw-glass: rgba(255,255,255,.16);
+        --dw-card: #fff;
+        --dw-card-border: #f0d8c2;
+        --dw-card-shadow: rgba(255,122,24,.10);
+        --dw-card-shadow-soft: rgba(255,122,24,.08);
+        --dw-text: #172033;
+        --dw-text-strong: #172033;
+        --dw-muted: #667085;
+        --dw-faint: #98a2b3;
+        --dw-line: #f0d8c2;
+        --dw-soft: #fffaf5;
+        --dw-soft-line: #f3dfcc;
+        --dw-soft-line2: #f7e4d2;
+        --dw-input-bg: #fffaf5;
+        --dw-input-border: #f3dfcc;
+        --dw-input-text: #172033;
+        --dw-orange: #ff7a18;
+        --dw-orange-soft: #fff7ed;
+        --dw-pill-bg: #fff;
+        --dw-chip-bg: #fff3e6;
+        --dw-tab-bg: #fffaf5;
+        --dw-danger: #dc2626;
+        --dw-success: #079455;
+        --dw-row-hover: #fff7ed;
+        --dw-scroll-track: #fff3e6;
+        --dw-cc-bg: #fffbeb;
+        --dw-cc-text: #92400e;
+        --dw-cc-line: #fcd34d;
+        --dw-cc-row-hover: #fffbeb;
+        --dw-cs-bg: #f0f9ff;
+        --dw-cs-text: #0369a1;
+        --dw-cs-line: #bae6fd;
+        --dw-cs-row-hover: #f0f9ff;
+        --dw-tr-bg: #f3e8ff;
+        --dw-tr-text: #6b21a8;
+        --dw-tr-line: #d8b4fe;
+    }
+
+    html[data-theme="dark"] {
+        --dw-hero-bg: linear-gradient(135deg,#c45c0a,#d97c2a);
+        --dw-hero-glow: rgba(196,92,10,.22);
+        --dw-hero-text: #f5f0eb;
+        --dw-hero-sub: rgba(245,240,235,.85);
+        --dw-glass: rgba(255,255,255,.12);
+        --dw-card: #1a2236;
+        --dw-card-border: #283148;
+        --dw-card-shadow: rgba(0,0,0,.35);
+        --dw-card-shadow-soft: rgba(0,0,0,.30);
+        --dw-text: #dce3ed;
+        --dw-text-strong: #f5f7fa;
+        --dw-muted: #7a8ba0;
+        --dw-faint: #6b7488;
+        --dw-line: #283148;
+        --dw-soft: #212c3f;
+        --dw-soft-line: #3a4d66;
+        --dw-soft-line2: #2e3a4f;
+        --dw-input-bg: #212c3f;
+        --dw-input-border: #3a4d66;
+        --dw-input-text: #dce3ed;
+        --dw-orange-soft: #2a2113;
+        --dw-pill-bg: #212c3f;
+        --dw-chip-bg: #3a2b18;
+        --dw-tab-bg: #212c3f;
+        --dw-danger: #f87171;
+        --dw-success: #34d399;
+        --dw-row-hover: #2a3346;
+        --dw-scroll-track: #283148;
+        --dw-cc-bg: #2e2716;
+        --dw-cc-text: #fbbf24;
+        --dw-cc-line: #6b5418;
+        --dw-cc-row-hover: #2e2716;
+        --dw-cs-bg: #16283a;
+        --dw-cs-text: #7dd3fc;
+        --dw-cs-line: #2a4a63;
+        --dw-cs-row-hover: #16283a;
+        --dw-tr-bg: #2c1f3e;
+        --dw-tr-text: #d8b4fe;
+        --dw-tr-line: #4a3666;
+    }
+
+    .daily-page {
+        display: grid;
+        gap: 20px;
+        color: var(--dw-text);
+    }
+
+    .daily-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: var(--dw-hero-text);
+        background: var(--dw-hero-bg);
+        box-shadow: 0 24px 70px var(--dw-hero-glow);
+    }
+
+        .daily-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.22), transparent 26%);
+            pointer-events: none;
+        }
+
+        .daily-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            bottom: -110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            pointer-events: none;
+        }
+
+    .daily-page[dir="rtl"] .daily-hero::after {
+        right: auto;
+        left: -90px;
+    }
+
+    .daily-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .daily-title {
+        display: grid;
+        gap: 10px;
+    }
+
+    .daily-badge {
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: var(--dw-hero-text);
+    }
+
+    .daily-title h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1;
+        letter-spacing: -1px;
+        color: var(--dw-hero-text);
+    }
+
+    .daily-title p {
+        margin: 0;
+        color: var(--dw-hero-sub);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .daily-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+        flex-shrink: 0;
+    }
+
+        .daily-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .daily-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: daily-avatar-spin 4s linear infinite;
+        }
+
+    .daily-avatar {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)), linear-gradient(135deg, #ffffff, #fff3e6);
+        color: #ff7a18;
+        border: 1px solid rgba(255,255,255,.55);
+        font-size: 42px;
+        font-weight: 1000;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .daily-avatar-status {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+        box-shadow: 0 8px 18px rgba(18,183,106,.35);
+    }
+
+    .daily-page[dir="rtl"] .daily-avatar-status {
+        right: auto;
+        left: 13px;
+    }
+
+    @@keyframes daily-avatar-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .daily-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .daily-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 900;
+        transition: .2s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+        .daily-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .btn-white {
+        background: #fff;
+        color: #ff7a18;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .btn-glass {
+        background: var(--dw-glass);
+        color: var(--dw-hero-text);
+        border: 1px solid rgba(255,255,255,.24);
+    }
+
+    .week-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(120px, 1fr));
+        gap: 12px;
+    }
+
+    .week-day {
+        text-decoration: none;
+        border-radius: 24px;
+        padding: 16px;
+        background: var(--dw-card);
+        border: 1px solid var(--dw-card-border);
+        color: var(--dw-text);
+        box-shadow: 0 14px 34px var(--dw-card-shadow-soft);
+        display: grid;
+        gap: 6px;
+        min-height: 94px;
+        align-content: center;
+        transition: .2s ease, background .3s, border-color .3s;
+    }
+
+        .week-day:hover {
+            transform: translateY(-3px);
+        }
+
+        .week-day.active {
+            color: #fff;
+            background: linear-gradient(135deg, #ff7a18, #ffad42);
+            border-color: transparent;
+        }
+
+        .week-day small {
+            font-weight: 1000;
+            opacity: .78;
+        }
+
+        .week-day strong {
+            font-size: 24px;
+            font-weight: 1000;
+        }
+
+        .week-day span {
+            font-weight: 900;
+        }
+
+    .panel-card {
+        background: var(--dw-card);
+        border: 1px solid var(--dw-card-border);
+        border-radius: 30px;
+        padding: 24px;
+        box-shadow: 0 18px 42px var(--dw-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .filter-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .tabs,
+    .sub-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        min-height: 44px;
+        border-radius: 999px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--dw-input-border);
+        background: var(--dw-tab-bg);
+        color: var(--dw-muted);
+        font-weight: 1000;
+        text-decoration: none;
+        transition: .2s ease, background .3s, color .3s;
+    }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: #ff7a18;
+            color: #fff;
+            border-color: #ff7a18;
+            box-shadow: 0 14px 28px rgba(255,122,24,.22);
+        }
+
+    .date-form {
+        display: flex;
+        gap: 10px;
+        align-items: end;
+        flex-wrap: wrap;
+    }
+
+        .date-form label {
+            display: block;
+            color: var(--dw-muted);
+            font-size: 13px;
+            font-weight: 1000;
+            margin-bottom: 7px;
+        }
+
+        .date-form input {
+            min-height: 46px;
+            border: 1px solid var(--dw-input-border);
+            background: var(--dw-input-bg);
+            color: var(--dw-input-text);
+            border-radius: 16px;
+            padding: 0 14px;
+            outline: none;
+            font-weight: 900;
+            transition: background .3s, color .3s, border-color .2s;
+        }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .summary-card {
+        background: var(--dw-card);
+        border: 1px solid var(--dw-card-border);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 16px 38px var(--dw-card-shadow-soft);
+        transition: background .3s, border-color .3s;
+    }
+
+        .summary-card small {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dw-muted);
+            font-weight: 900;
+        }
+
+        .summary-card strong {
+            display: block;
+            color: var(--dw-text-strong);
+            font-size: 25px;
+            word-break: break-word;
+            font-weight: 1000;
+        }
+
+    .trip-card {
+        border: 1px solid var(--dw-soft-line);
+        border-radius: 30px;
+        overflow: hidden;
+        margin-top: 16px;
+        background: var(--dw-card);
+        box-shadow: 0 14px 34px var(--dw-card-shadow-soft);
+        transition: background .3s, border-color .3s;
+    }
+
+    .trip-head {
+        padding: 20px;
+        background: var(--dw-orange-soft);
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        transition: background .3s;
+    }
+
+    .trip-title {
+        margin: 0;
+        color: var(--dw-text-strong);
+        font-size: 25px;
+        font-weight: 1000;
+    }
+
+    .route-inline {
+        direction: ltr;
+        unicode-bidi: isolate;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+        text-align: left;
+    }
+
+        .route-inline .route-name {
+            direction: auto;
+            unicode-bidi: isolate;
+        }
+
+        .route-inline .route-arrow {
+            direction: ltr;
+            unicode-bidi: isolate;
+            font-weight: 1000;
+        }
+
+    .route-point {
+        direction: auto;
+        unicode-bidi: isolate;
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: var(--dw-card);
+        border: 1px solid var(--dw-soft-line);
+        font-weight: 1000;
+        color: var(--dw-text);
+    }
+
+    .route-cell {
+        direction: ltr !important;
+        unicode-bidi: isolate !important;
+        text-align: left !important;
+        white-space: nowrap;
+        font-weight: 1000 !important;
+    }
+
+        .route-cell span {
+            unicode-bidi: isolate;
+        }
+
+        .route-cell .route-name {
+            direction: auto;
+        }
+
+        .route-cell .route-arrow {
+            direction: ltr;
+            padding: 0 6px;
+        }
+
+    .trip-meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        border-radius: 999px;
+        padding: 0 12px;
+        font-weight: 1000;
+        font-size: 13px;
+        background: var(--dw-pill-bg);
+        color: #ff7a18;
+        border: 1px solid var(--dw-soft-line);
+    }
+
+    .pill-company {
+        background: var(--dw-cs-bg);
+        color: var(--dw-cs-text);
+        border-color: var(--dw-cs-line);
+    }
+
+    .pill-client {
+        background: var(--dw-cc-bg);
+        color: var(--dw-cc-text);
+        border-color: var(--dw-cc-line);
+        font-size: 11px;
+    }
+
+    .pill-transfer {
+        background: var(--dw-tr-bg);
+        color: var(--dw-tr-text);
+        border-color: var(--dw-tr-line);
+        font-size: 11px;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--dw-orange) var(--dw-scroll-track);
+        -webkit-overflow-scrolling: touch;
+    }
+
+        .table-wrap::-webkit-scrollbar {
+            height: 12px;
+        }
+
+        .table-wrap::-webkit-scrollbar-track {
+            background: var(--dw-scroll-track);
+            border-radius: 999px;
+        }
+
+        .table-wrap::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg,#ff7a18,#ffad42);
+            border-radius: 999px;
+            border: 3px solid var(--dw-scroll-track);
+        }
+
+    .daily-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        min-width: 1250px;
+    }
+
+        .daily-table th {
+            color: var(--dw-muted);
+            font-size: 12px;
+            font-weight: 1000;
+            padding: 14px;
+            background: var(--dw-soft);
+            border-bottom: 1px solid var(--dw-soft-line);
+            white-space: nowrap;
+        }
+
+    .daily-page:not([dir="rtl"]) .daily-table th {
+        text-align: left;
+    }
+
+    .daily-page[dir="rtl"] .daily-table th {
+        text-align: right;
+    }
+
+    .daily-table td {
+        padding: 15px 14px;
+        border-bottom: 1px solid var(--dw-soft-line2);
+        color: var(--dw-text);
+        font-weight: 850;
+        vertical-align: top;
+    }
+
+    .daily-table tbody tr {
+        cursor: pointer;
+        transition: .18s ease;
+    }
+
+        .daily-table tbody tr:hover {
+            background: var(--dw-row-hover);
+        }
+
+        .daily-table tbody tr.company-client-row {
+            cursor: pointer;
+        }
+
+            .daily-table tbody tr.company-client-row:hover {
+                background: var(--dw-cc-row-hover);
+            }
+
+        .daily-table tbody tr.company-row {
+            cursor: default;
+        }
+
+            .daily-table tbody tr.company-row:hover {
+                background: var(--dw-cs-row-hover);
+            }
+
+    .code-chip {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--dw-chip-bg);
+        color: #ff7a18;
+        font-weight: 1000;
+        border: 1px solid var(--dw-soft-line);
+    }
+
+    .company-chip {
+        background: var(--dw-cs-bg);
+        color: var(--dw-cs-text);
+        border-color: var(--dw-cs-line);
+    }
+
+    .transfer-chip {
+        background: var(--dw-tr-bg);
+        color: var(--dw-tr-text);
+        border-color: var(--dw-tr-line);
+        font-size: 11px;
+    }
+
+    .money-danger {
+        color: var(--dw-danger) !important;
+        font-weight: 1000 !important;
+    }
+
+    .money-success {
+        color: var(--dw-success) !important;
+        font-weight: 1000 !important;
+    }
+
+    .hotel-grid {
+        display: grid;
+        gap: 14px;
+        margin-top: 16px;
+    }
+
+    .hotel-card {
+        border: 1px solid var(--dw-soft-line);
+        border-radius: 26px;
+        padding: 18px;
+        background: var(--dw-card);
+        box-shadow: 0 12px 26px var(--dw-card-shadow-soft);
+        cursor: pointer;
+        transition: .2s ease, background .3s, border-color .3s;
+    }
+
+        .hotel-card:hover {
+            transform: translateY(-3px);
+            background: var(--dw-soft);
+        }
+
+    .hotel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .hotel-title {
+        margin: 0;
+        color: var(--dw-text-strong);
+        font-size: 22px;
+        font-weight: 1000;
+    }
+
+    .hotel-sub {
+        color: var(--dw-muted);
+        font-weight: 900;
+        margin-top: 6px;
+    }
+
+    .hotel-details {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(160px, 1fr));
+        gap: 12px;
+    }
+
+    .hotel-box {
+        background: var(--dw-soft);
+        border: 1px solid var(--dw-soft-line);
+        border-radius: 18px;
+        padding: 14px;
+    }
+
+        .hotel-box small {
+            display: block;
+            color: var(--dw-muted);
+            font-weight: 1000;
+            margin-bottom: 7px;
+        }
+
+        .hotel-box strong {
+            color: var(--dw-text-strong);
+            font-weight: 1000;
+        }
+
+    .empty-box {
+        text-align: center;
+        padding: 34px;
+        border-radius: 24px;
+        border: 1px dashed var(--dw-soft-line);
+        background: var(--dw-soft);
+        color: var(--dw-faint);
+        font-weight: 1000;
+        margin-top: 16px;
+    }
+
+    .company-section-title {
+        padding: 12px 14px;
+        margin: 0;
+        font-size: 14px;
+        font-weight: 1000;
+    }
+
+    .section-company-clients {
+        background: var(--dw-cc-bg);
+        color: var(--dw-cc-text);
+        border-bottom: 2px solid var(--dw-cc-line);
+    }
+
+    .section-company-seats {
+        background: var(--dw-cs-bg);
+        color: var(--dw-cs-text);
+        border-bottom: 2px solid var(--dw-cs-line);
+    }
+
+    .section-passengers {
+        background: var(--dw-orange-soft);
+        color: #ff7a18;
+        border-bottom: 2px solid var(--dw-soft-line);
+    }
+
+    .text-muted {
+        color: var(--dw-faint);
+    }
+
+    @@media (max-width: 1000px) {
+        .week-grid,
+        .summary-grid,
+        .hotel-details {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .daily-hero {
+            padding: 24px;
+            border-radius: 24px;
+        }
+
+        .week-grid,
+        .summary-grid,
+        .hotel-details {
+            grid-template-columns: 1fr;
+        }
+
+        .daily-avatar-wrap {
+            width: 112px;
+            height: 112px;
+            border-radius: 32px;
+        }
+
+            .daily-avatar-wrap::before,
+            .daily-avatar-wrap::after {
+                border-radius: 38px;
+            }
+
+        .daily-avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 27px;
+            font-size: 34px;
+        }
+
+        .daily-actions {
+            flex-direction: column;
+        }
+
+        .daily-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="daily-page" dir="@(isRtl ? "rtl" : "ltr")">
+
+    <section class="daily-hero">
+        <div class="daily-hero-inner">
+            <div class="daily-title">
+                <span class="daily-badge">@L["DW_Badge"]</span>
+                <h1>@Model.SelectedDate.ToString("dddd, dd MMM")</h1>
+                <p>@L["DW_Subtitle"]</p>
+            </div>
+
+            <div class="daily-avatar-wrap" title="@fullName">
+                <div class="daily-avatar">@initials</div>
+                <span class="daily-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="daily-actions">
+            <a class="daily-btn btn-white"
+               asp-action="DailyWork" asp-route-date="@selectedDateText"
+               asp-route-workType="transport" asp-route-direction="Departure" asp-route-hotelDateType="@hotelDateType">
+                @L["DW_BtnTransportWork"]
+            </a>
+            <a class="daily-btn btn-glass"
+               asp-action="DailyWork" asp-route-date="@selectedDateText"
+               asp-route-workType="hotel" asp-route-direction="@selectedDirection" asp-route-hotelDateType="CheckIn">
+                @L["DW_BtnHotelWork"]
+            </a>
+            <a class="daily-btn btn-glass" asp-controller="Transportation" asp-action="Index">
+                @L["DW_BtnCompanyTrips"]
+            </a>
+            <a class="daily-btn btn-glass" asp-controller="Dashboard" asp-action="Index">
+                @L["DW_BtnDashboard"]
+            </a>
+        </div>
+    </section>
+
+    <section class="week-grid">
+        @foreach (var day in Model.WeekDays)
+        {
+            <a class="week-day @(day.IsSelected ? "active" : "")"
+               asp-action="DailyWork" asp-route-date="@day.Date.ToString("yyyy-MM-dd")"
+               asp-route-workType="@workType" asp-route-direction="@selectedDirection" asp-route-hotelDateType="@hotelDateType">
+                <small>@(day.IsToday ? L["DW_Today"].Value : day.ShortDayName)</small>
+                <strong>@day.Date.Day</strong>
+                <span>@day.DayName</span>
+            </a>
+        }
+    </section>
+
+    <section class="panel-card">
+        <div class="filter-toolbar">
+            <div>
+                <div class="tabs">
+                    <a class="tab-btn @(workType == "transport" ? "active" : "")"
+                       asp-action="DailyWork" asp-route-date="@selectedDateText"
+                       asp-route-workType="transport" asp-route-direction="@selectedDirection" asp-route-hotelDateType="@hotelDateType">
+                        @L["DW_TabTransport"]
+                    </a>
+                    <a class="tab-btn @(workType == "hotel" ? "active" : "")"
+                       asp-action="DailyWork" asp-route-date="@selectedDateText"
+                       asp-route-workType="hotel" asp-route-direction="@selectedDirection" asp-route-hotelDateType="@hotelDateType">
+                        @L["DW_TabHotels"]
+                    </a>
+                </div>
+
+                <div class="sub-tabs" style="margin-top:12px;">
+                    @if (workType == "transport")
+                    {
+                        <a class="tab-btn @(selectedDirection == TripDirection.Departure ? "active" : "")"
+                           asp-action="DailyWork" asp-route-date="@selectedDateText"
+                           asp-route-workType="transport" asp-route-direction="Departure" asp-route-hotelDateType="@hotelDateType">
+                            @L["DW_DirGo"]
+                        </a>
+                        <a class="tab-btn @(selectedDirection == TripDirection.Return ? "active" : "")"
+                           asp-action="DailyWork" asp-route-date="@selectedDateText"
+                           asp-route-workType="transport" asp-route-direction="Return" asp-route-hotelDateType="@hotelDateType">
+                            @L["DW_DirReturn"]
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="tab-btn @(hotelDateType == "CheckIn" ? "active" : "")"
+                           asp-action="DailyWork" asp-route-date="@selectedDateText"
+                           asp-route-workType="hotel" asp-route-direction="@selectedDirection" asp-route-hotelDateType="CheckIn">
+                            @L["DW_TabCheckIn"]
+                        </a>
+                        <a class="tab-btn @(hotelDateType == "CheckOut" ? "active" : "")"
+                           asp-action="DailyWork" asp-route-date="@selectedDateText"
+                           asp-route-workType="hotel" asp-route-direction="@selectedDirection" asp-route-hotelDateType="CheckOut">
+                            @L["DW_TabCheckOut"]
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <form class="date-form" asp-action="DailyWork" method="get">
+                <input type="hidden" name="workType" value="@workType" />
+                <input type="hidden" name="direction" value="@selectedDirection" />
+                <input type="hidden" name="hotelDateType" value="@hotelDateType" />
+                <div>
+                    <label>@L["DW_ChooseDate"]</label>
+                    <input type="date" name="date" value="@selectedDateText" />
+                </div>
+                <button class="daily-btn btn-white" type="submit">@L["DW_BtnShow"]</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-card">
+            <small>@(workType == "transport" ? L["DW_SumTripsBus"].Value : L["DW_SumBookings"].Value)</small>
+            <strong>@(workType == "transport" ? Model.TotalTripsCount : Model.TotalBookingsCount)</strong>
+        </div>
+        <div class="summary-card">
+            <small>@(workType == "transport" ? L["DW_SumBookings"].Value : L["DW_SumRooms"].Value)</small>
+            <strong>
+                @(workType == "transport"
+                    ? Model.TotalBookingsCount
+                    : Model.HotelBookings.Sum(x => x.NumberOfRooms))
+            </strong>
+        </div>
+        <div class="summary-card">
+            <small>@(workType == "transport" ? L["DW_SumSeats"].Value : L["DW_SumTotalAmount"].Value)</small>
+            <strong>
+                @(workType == "transport"
+                    ? Model.TotalSeatsCount.ToString()
+                    : Model.TotalAmount.ToString("N2"))
+            </strong>
+        </div>
+        <div class="summary-card">
+            <small>@L["DW_SumRemaining"]</small>
+            <strong class="@(Model.TotalRemaining > 0 ? "money-danger" : "money-success")">@Model.TotalRemaining.ToString("N2")</strong>
+        </div>
+    </section>
+
+    @if (workType == "transport")
+    {
+        <section class="panel-card">
+            @if (!Model.TransportTrips.Any())
+            {
+                <div class="empty-box">@L["DW_EmptyTransport"]</div>
+            }
+            else
+            {
+                foreach (var trip in Model.TransportTrips)
+                {
+                    @if (!trip.Passengers.Any() && !trip.CompanySeats.Any() && !trip.CompanyClients.Any())
+                    {
+                        continue;
+                    }
+
+                    <div class="trip-card">
+                        <div class="trip-head">
+                            <div>
+                                <h3 class="trip-title">
+                                    @trip.BusName @(string.IsNullOrWhiteSpace(trip.PlateNumber) ? "" : $"({trip.PlateNumber})")
+                                </h3>
+                                <div class="route-inline">
+                                    <span class="route-point">@trip.FromLocation</span>
+                                    <span class="route-arrow">→</span>
+                                    <span class="route-point">@trip.ToLocation</span>
+                                </div>
+                            </div>
+                            <div class="trip-meta">
+                                <span class="pill">@DirLabel(trip.Direction.ToString())</span>
+                                <span class="pill">@trip.BookingsCount @L["DW_LblBookings"]</span>
+                                <span class="pill">
+                                    @(trip.SeatsCount + trip.CompanySeatsCount + trip.CompanyClients.Sum(x => x.HasReturnSeat ? 2 : 1)) @L["DW_LblSeats"]
+                                </span>
+                                <span class="pill">
+                                    @((trip.TripTotal + trip.CompanySeatsTotal + trip.CompanyClients.Sum(x => x.TotalPrice)).ToString("N2"))
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            @* 1️⃣ COMPANY CLIENTS *@
+                            @if (trip.CompanyClients.Any())
+                            {
+                                <h4 class="company-section-title section-company-clients">
+                                    🏢👤 @L["DW_SecCompanyClients"] · @trip.CompanyClients.Count @L["DW_LblBookings"] ·
+                                    @trip.CompanyClients.Sum(x => x.HasReturnSeat ? 2 : 1) @L["DW_LblSeats"] ·
+                                    @trip.CompanyClients.Sum(x => x.TotalPrice).ToString("N2")
+                                </h4>
+
+                                <table class="daily-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@L["DW_ColCompany"]</th>
+                                            <th>@L["DW_ColClient"]</th>
+                                            <th>@L["DW_ColPhone"]</th>
+                                            <th>@L["DW_ColTripType"]</th>
+                                            <th>@L["DW_ColSeatGo"]</th>
+                                            <th>@L["DW_ColSeatReturn"]</th>
+                                            <th>@L["DW_ColRoute"]</th>
+                                            <th>@L["DW_ColPrice"]</th>
+                                            <th>@L["DW_ColTotal"]</th>
+                                            <th>@L["DW_ColInfo"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var cc in trip.CompanyClients)
+                                        {
+                                            <tr class="company-client-row">
+                                                <td><span class="company-chip">🏢 @cc.CompanyName</span></td>
+                                                <td><strong>@cc.ClientName</strong></td>
+                                                <td>
+                                                    @if (!string.IsNullOrWhiteSpace(cc.ClientPhone))
+                                                    {
+                                                        <span style="direction: ltr; unicode-bidi: isolate;">@cc.ClientPhone</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">—</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <span class="pill pill-client">@cc.ClientTripType.ToString()</span>
+                                                </td>
+                                                <td>@cc.SeatLabel</td>
+                                                <td>
+                                                    @if (cc.HasReturnSeat)
+                                                    {
+                                                        <span>@cc.ReturnSeatLabel</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">—</span>
+                                                    }
+                                                </td>
+                                                <td class="route-cell" dir="ltr">
+                                                    <span class="route-name" dir="auto">@cc.FromLocation</span>
+                                                    <span class="route-arrow" dir="ltr">→</span>
+                                                    <span class="route-name" dir="auto">@cc.ToLocation</span>
+                                                </td>
+                                                <td>@cc.PricePerSeat.ToString("N2")</td>
+                                                <td>@cc.TotalPrice.ToString("N2")</td>
+                                                <td>
+                                                    @if (cc.IsTransfer)
+                                                    {
+                                                        <span class="transfer-chip" title="@L["DW_TransferredFrom"] @cc.OriginalBookingCode">
+                                                            🔄 @L["DW_Transfer"]
+                                                        </span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+
+                            @* 2️⃣ COMPANY SEATS *@
+                            @if (trip.CompanySeats.Any())
+                            {
+                                <h4 class="company-section-title section-company-seats">
+                                    🏢 @L["DW_SecCompanyBookings"] · @trip.CompanySeats.Sum(x => x.SeatsCount) @L["DW_LblSeats"] ·
+                                    @trip.CompanySeats.Sum(x => x.Total).ToString("N2")
+                                </h4>
+
+                                <table class="daily-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@L["DW_ColCompany"]</th>
+                                            <th>@L["DW_ColSeats"]</th>
+                                            <th>@L["DW_ColRoute"]</th>
+                                            <th>@L["DW_ColDirection"]</th>
+                                            <th>@L["DW_ColSeatsCount"]</th>
+                                            <th>@L["DW_ColTotal"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var companySeat in trip.CompanySeats)
+                                        {
+                                            <tr class="company-row">
+                                                <td><span class="company-chip">🏢 @companySeat.CompanyName</span></td>
+                                                <td>@companySeat.SeatLabels</td>
+                                                <td class="route-cell" dir="ltr">
+                                                    <span class="route-name" dir="auto">@companySeat.FromLocation</span>
+                                                    <span class="route-arrow" dir="ltr">→</span>
+                                                    <span class="route-name" dir="auto">@companySeat.ToLocation</span>
+                                                </td>
+                                                <td>
+                                                    <span class="pill pill-company">
+                                                        @(companySeat.BookingDirection == CompanySeatBookingDirection.Inbound ? L["DW_Inbound"].Value : L["DW_Outbound"].Value)
+                                                    </span>
+                                                </td>
+                                                <td>@companySeat.SeatsCount</td>
+                                                <td>@companySeat.Total.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+
+                            @* 3️⃣ CLIENT PASSENGERS *@
+                            @if (trip.Passengers.Any())
+                            {
+                                @if (trip.CompanyClients.Any() || trip.CompanySeats.Any())
+                                {
+                                    <h4 class="company-section-title section-passengers">
+                                        👤 @L["DW_SecClientBookings"] · @trip.Passengers.Sum(x => x.SeatsCount) @L["DW_LblSeats"] ·
+                                        @trip.Passengers.Sum(x => x.TransportationTotal).ToString("N2")
+                                    </h4>
+                                }
+
+                                <table class="daily-table">
+                                    <thead>
+                                        <tr>
+                                            <th>@L["DW_ColCode"]</th>
+                                            <th>@L["DW_ColClient"]</th>
+                                            <th>@L["DW_ColRoute"]</th>
+                                            <th>@L["DW_ColSeats"]</th>
+                                            <th>@L["DW_ColContacts"]</th>
+                                            <th>@L["DW_ColHotel"]</th>
+                                            <th>@L["DW_ColTransportTotal"]</th>
+                                            <th>@L["DW_ColBookingTotal"]</th>
+                                            <th>@L["DW_ColRemaining"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var passenger in trip.Passengers)
+                                        {
+                                            <tr onclick="location.href='@Url.Action("Details", "Bookings", new { id = passenger.BookingId })'">
+                                                <td><span class="code-chip">@passenger.Code</span></td>
+                                                <td>@passenger.ClientName</td>
+                                                <td class="route-cell" dir="ltr">
+                                                    <span class="route-name" dir="auto">@trip.FromLocation</span>
+                                                    <span class="route-arrow" dir="ltr">→</span>
+                                                    <span class="route-name" dir="auto">@trip.ToLocation</span>
+                                                </td>
+                                                <td>@passenger.SeatLabelsText</td>
+                                                <td>@passenger.PhoneNumbersText</td>
+                                                <td>@(passenger.HasHotel ? passenger.HotelName : "-")</td>
+                                                <td>@passenger.TransportationTotal.ToString("N2")</td>
+                                                <td>@passenger.BookingGrandTotal.ToString("N2")</td>
+                                                <td class="@(passenger.BookingRemainingAmount > 0 ? "money-danger" : "money-success")">
+                                                    @passenger.BookingRemainingAmount.ToString("N2")
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </section>
+    }
+    else
+    {
+        <section class="panel-card">
+            @if (!Model.HotelBookings.Any())
+            {
+                <div class="empty-box">@L["DW_EmptyHotel"]</div>
+            }
+            else
+            {
+                <div class="hotel-grid">
+                    @foreach (var item in Model.HotelBookings)
+                    {
+                        <div class="hotel-card" onclick="location.href='@Url.Action("Details", "Bookings", new { id = item.BookingId })'">
+                            <div class="hotel-head">
+                                <div>
+                                    <h3 class="hotel-title">@item.ClientName</h3>
+                                    <div class="hotel-sub">
+                                        <span class="code-chip">@item.Code</span>
+                                        · @item.HotelName
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="pill">@(item.HasTransportation ? L["DW_HotelPlusTransport"].Value : L["DW_HotelOnly"].Value)</span>
+                                </div>
+                            </div>
+                            <div class="hotel-details">
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbDates"]</small>
+                                    <strong>@item.CheckInDate.ToString("dd MMM") → @item.CheckOutDate.ToString("dd MMM")</strong>
+                                </div>
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbRooms"]</small>
+                                    <strong>@item.RoomSummary</strong>
+                                </div>
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbChildren"]</small>
+                                    <strong>@L["DW_HbU6"]: @item.ChildrenCountUntil6Years · @L["DW_HbU12"]: @item.ChildrenCountUntil12Years · @L["DW_HbTotal"]: @item.TotalChildrenCount</strong>
+                                </div>
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbContacts"]</small>
+                                    <strong>@item.PhoneNumbersText</strong>
+                                </div>
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbHotelTotal"]</small>
+                                    <strong>@item.HotelTotal.ToString("N2")</strong>
+                                </div>
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbTransportTotal"]</small>
+                                    <strong>@item.TransportationTotal.ToString("N2")</strong>
+                                </div>
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbGrandTotal"]</small>
+                                    <strong>@item.BookingGrandTotal.ToString("N2")</strong>
+                                </div>
+                                <div class="hotel-box">
+                                    <small>@L["DW_HbRemaining"]</small>
+                                    <strong class="@(item.BookingRemainingAmount > 0 ? "money-danger" : "money-success")">
+                                        @item.BookingRemainingAmount.ToString("N2")
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    }
+</div>

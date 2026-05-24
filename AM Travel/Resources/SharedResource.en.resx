@@ -1,0 +1,4693 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Nav_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Nav_Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Nav_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Nav_DailyTrips" xml:space="preserve">
+    <value>Daily Trips</value>
+  </data>
+  <data name="Nav_Bookings" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="Nav_NewBooking" xml:space="preserve">
+    <value>New Booking</value>
+  </data>
+  <data name="Nav_Works" xml:space="preserve">
+    <value>Works</value>
+  </data>
+  <data name="Nav_TodayWorks" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="Nav_Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Nav_Buses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="Nav_Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="Nav_MyAccount" xml:space="preserve">
+    <value>My Account</value>
+  </data>
+  <data name="Nav_EditFields" xml:space="preserve">
+    <value>Edit Fields</value>
+  </data>
+  <data name="Nav_ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Nav_ReportWorks" xml:space="preserve">
+    <value>Report Works</value>
+  </data>
+  <data name="Nav_Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Nav_Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Nav_Workspace" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
+  <data name="Nav_Transportation" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Nav_Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Nav_Administration" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="Sidebar_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Sidebar_Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Sidebar_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Sidebar_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Sidebar_Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Sidebar_LoginBtn" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Sidebar_BrandMini" xml:space="preserve">
+    <value>Internal Tourism System</value>
+  </data>
+  <data name="Pref_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Pref_Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Pref_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Pref_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Account_Title" xml:space="preserve">
+    <value>My Account</value>
+  </data>
+  <data name="Account_Badge" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Account_Subtitle" xml:space="preserve">
+    <value>Manage your profile, password and account status.</value>
+  </data>
+  <data name="Account_EditProfile" xml:space="preserve">
+    <value>Edit Profile</value>
+  </data>
+  <data name="Account_ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Account_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Account_Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Account_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Account_AccountStatus" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Account_LoginStatus" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Account_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Account_Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Account_Online" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="Account_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Account_ProfileDetails" xml:space="preserve">
+    <value>Profile Details</value>
+  </data>
+  <data name="Account_ProfileSubtitle" xml:space="preserve">
+    <value>Your main account information in AM Travel system.</value>
+  </data>
+  <data name="Account_FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Account_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Account_NationalId" xml:space="preserve">
+    <value>National ID</value>
+  </data>
+  <data name="Account_JoinDate" xml:space="preserve">
+    <value>Join Date</value>
+  </data>
+  <data name="Account_LastLogin" xml:space="preserve">
+    <value>Last Login</value>
+  </data>
+  <data name="Account_NotSet" xml:space="preserve">
+    <value>Not set</value>
+  </data>
+  <data name="Pwd_Title" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Pwd_Badge" xml:space="preserve">
+    <value>Security Center</value>
+  </data>
+  <data name="Pwd_Subtitle" xml:space="preserve">
+    <value>Keep your AM Travel account secure by updating your password regularly.</value>
+  </data>
+  <data name="Pwd_WelcomeBack" xml:space="preserve">
+    <value>Welcome back</value>
+  </data>
+  <data name="Pwd_MyAccount" xml:space="preserve">
+    <value>My Account</value>
+  </data>
+  <data name="Pwd_EditProfile" xml:space="preserve">
+    <value>Edit Profile</value>
+  </data>
+  <data name="Pwd_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Pwd_FormTitle" xml:space="preserve">
+    <value>Password Information</value>
+  </data>
+  <data name="Pwd_FormSubtitle" xml:space="preserve">
+    <value>Enter your current password, then choose a new secure password.</value>
+  </data>
+  <data name="Pwd_OldPassword" xml:space="preserve">
+    <value>Current Password</value>
+  </data>
+  <data name="Pwd_OldPlaceholder" xml:space="preserve">
+    <value>Enter current password</value>
+  </data>
+  <data name="Pwd_NewPassword" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="Pwd_NewPlaceholder" xml:space="preserve">
+    <value>Enter new password</value>
+  </data>
+  <data name="Pwd_ConfirmPassword" xml:space="preserve">
+    <value>Confirm New Password</value>
+  </data>
+  <data name="Pwd_ConfirmPlaceholder" xml:space="preserve">
+    <value>Confirm new password</value>
+  </data>
+  <data name="Pwd_Submit" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Pwd_TipsTitle" xml:space="preserve">
+    <value>Password Tips</value>
+  </data>
+  <data name="Pwd_TipsSubtitle" xml:space="preserve">
+    <value>A strong password reduces the risk of account breaches and protects client data and bookings.</value>
+  </data>
+  <data name="Pwd_Tip1" xml:space="preserve">
+    <value>Use at least 8 characters.</value>
+  </data>
+  <data name="Pwd_Tip2" xml:space="preserve">
+    <value>Mix uppercase, lowercase, numbers and symbols.</value>
+  </data>
+  <data name="Pwd_Tip3" xml:space="preserve">
+    <value>Do not use your phone number or name as a password.</value>
+  </data>
+  <data name="Pwd_StrengthLabel" xml:space="preserve">
+    <value>Password Strength</value>
+  </data>
+  <data name="Pwd_StrengthEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="Pwd_StrengthWeak" xml:space="preserve">
+    <value>Weak</value>
+  </data>
+  <data name="Pwd_StrengthGood" xml:space="preserve">
+    <value>Good</value>
+  </data>
+  <data name="Pwd_StrengthStrong" xml:space="preserve">
+    <value>Strong</value>
+  </data>
+  <data name="Edit_Title" xml:space="preserve">
+    <value>Edit Account</value>
+  </data>
+  <data name="Edit_Badge" xml:space="preserve">
+    <value>Edit Account</value>
+  </data>
+  <data name="Edit_Heading" xml:space="preserve">
+    <value>Update Your Account</value>
+  </data>
+  <data name="Edit_Subtitle" xml:space="preserve">
+    <value>Manage your profile, phone number, and national ID safely inside AM Travel.</value>
+  </data>
+  <data name="Edit_WelcomeBack" xml:space="preserve">
+    <value>Welcome back</value>
+  </data>
+  <data name="Edit_MyAccount" xml:space="preserve">
+    <value>My Account</value>
+  </data>
+  <data name="Edit_ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Edit_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Edit_FormTitle" xml:space="preserve">
+    <value>Account Information</value>
+  </data>
+  <data name="Edit_FormSubtitle" xml:space="preserve">
+    <value>Update only the fields you want to change, then save your changes.</value>
+  </data>
+  <data name="Edit_FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Edit_FullNamePH" xml:space="preserve">
+    <value>Enter your full name</value>
+  </data>
+  <data name="Edit_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Edit_PhoneNumberPH" xml:space="preserve">
+    <value>01xxxxxxxxx</value>
+  </data>
+  <data name="Edit_NationalId" xml:space="preserve">
+    <value>National ID</value>
+  </data>
+  <data name="Edit_NationalIdPH" xml:space="preserve">
+    <value>Enter national ID</value>
+  </data>
+  <data name="Edit_Submit" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="Edit_NotesTitle" xml:space="preserve">
+    <value>Important Notes</value>
+  </data>
+  <data name="Edit_NotesSubtitle" xml:space="preserve">
+    <value>Make sure to enter correct data, as it is linked to bookings and account management inside the system.</value>
+  </data>
+  <data name="Edit_Note1" xml:space="preserve">
+    <value>Your phone number must be correct to avoid communication or booking errors.</value>
+  </data>
+  <data name="Edit_Note2" xml:space="preserve">
+    <value>Your national ID is required to verify account ownership inside the system.</value>
+  </data>
+  <data name="Edit_Note3" xml:space="preserve">
+    <value>Do not forget to click Save Changes before leaving the page.</value>
+  </data>
+  <data name="CU_Title" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="CU_Badge" xml:space="preserve">
+    <value>Admin Panel</value>
+  </data>
+  <data name="CU_Heading" xml:space="preserve">
+    <value>Create New User</value>
+  </data>
+  <data name="CU_Subtitle" xml:space="preserve">
+    <value>Add a new AM Travel account and assign the correct role for the user.</value>
+  </data>
+  <data name="CU_UsersManagement" xml:space="preserve">
+    <value>Users Management</value>
+  </data>
+  <data name="CU_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="CU_FormTitle" xml:space="preserve">
+    <value>Account Information</value>
+  </data>
+  <data name="CU_FormSubtitle" xml:space="preserve">
+    <value>Fill in the user information carefully before creating the account.</value>
+  </data>
+  <data name="CU_FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="CU_FullNamePH" xml:space="preserve">
+    <value>Enter full name</value>
+  </data>
+  <data name="CU_Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="CU_UsernamePH" xml:space="preserve">
+    <value>username</value>
+  </data>
+  <data name="CU_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="CU_PhoneNumberPH" xml:space="preserve">
+    <value>01xxxxxxxxx</value>
+  </data>
+  <data name="CU_NationalId" xml:space="preserve">
+    <value>National ID</value>
+  </data>
+  <data name="CU_NationalIdPH" xml:space="preserve">
+    <value>National ID</value>
+  </data>
+  <data name="CU_AccountType" xml:space="preserve">
+    <value>Account Type</value>
+  </data>
+  <data name="CU_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="CU_PasswordPH" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="CU_ConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="CU_ConfirmPasswordPH" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="CU_Submit" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="CU_NotesTitle" xml:space="preserve">
+    <value>Important Notes</value>
+  </data>
+  <data name="CU_NotesSubtitle" xml:space="preserve">
+    <value>Make sure the username, phone number and national ID are not duplicated before creating the account.</value>
+  </data>
+  <data name="CU_Note1" xml:space="preserve">
+    <value>Admin account cannot be created here if one already exists.</value>
+  </data>
+  <data name="CU_Note2" xml:space="preserve">
+    <value>Choose Helper for a user who can manage bookings without deleting them.</value>
+  </data>
+  <data name="CU_Note3" xml:space="preserve">
+    <value>Choose Viewer for a user who only needs to view data based on permissions.</value>
+  </data>
+  <data name="CU_RoleGuideTitle" xml:space="preserve">
+    <value>Role Guide</value>
+  </data>
+  <data name="CU_RoleGuideText" xml:space="preserve">
+    <value>Admin has full control. Helper can manage bookings. Viewer has limited read access.</value>
+  </data>
+  <data name="Users_Title" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Users_Badge" xml:space="preserve">
+    <value>Admin Panel</value>
+  </data>
+  <data name="Users_Heading" xml:space="preserve">
+    <value>Users Management</value>
+  </data>
+  <data name="Users_Subtitle" xml:space="preserve">
+    <value>Manage AM Travel users, activation status, block status, and password reset operations.</value>
+  </data>
+  <data name="Users_CreateUser" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="Users_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Users_SearchTitle" xml:space="preserve">
+    <value>Search Users</value>
+  </data>
+  <data name="Users_SearchPH" xml:space="preserve">
+    <value>Search: phone, national ID, username, name, role...</value>
+  </data>
+  <data name="Users_ColUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Users_ColRole" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Users_ColActivation" xml:space="preserve">
+    <value>Activation</value>
+  </data>
+  <data name="Users_ColBlock" xml:space="preserve">
+    <value>Block Status</value>
+  </data>
+  <data name="Users_ColJoinDate" xml:space="preserve">
+    <value>Join Date</value>
+  </data>
+  <data name="Users_ColLastLogin" xml:space="preserve">
+    <value>Last Login</value>
+  </data>
+  <data name="Users_ColActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Users_MetaUsername" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Users_MetaPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Users_MetaNational" xml:space="preserve">
+    <value>National ID</value>
+  </data>
+  <data name="Users_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Users_Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Users_Blocked" xml:space="preserve">
+    <value>Blocked</value>
+  </data>
+  <data name="Users_Unblocked" xml:space="preserve">
+    <value>Unblocked</value>
+  </data>
+  <data name="Users_Deactivate" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="Users_Activate" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="Users_Block" xml:space="preserve">
+    <value>Block</value>
+  </data>
+  <data name="Users_Unblock" xml:space="preserve">
+    <value>Unblock</value>
+  </data>
+  <data name="Users_ChangePwd" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Users_NotLoggedYet" xml:space="preserve">
+    <value>Not logged in yet</value>
+  </data>
+  <data name="Users_NoResults" xml:space="preserve">
+    <value>No users found matching your search.</value>
+  </data>
+  <data name="Users_ModalBadge" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Users_ModalSubtitle" xml:space="preserve">
+    <value>Review account information then set a new password.</value>
+  </data>
+  <data name="Users_ModalFullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="Users_ModalUsername" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Users_ModalAccountType" xml:space="preserve">
+    <value>Account Type</value>
+  </data>
+  <data name="Users_ModalPhone" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Users_ModalNational" xml:space="preserve">
+    <value>National ID</value>
+  </data>
+  <data name="Users_ModalJoinDate" xml:space="preserve">
+    <value>Join Date</value>
+  </data>
+  <data name="Users_ModalLastLogin" xml:space="preserve">
+    <value>Last Login</value>
+  </data>
+  <data name="Users_ModalNewPwd" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="Users_ModalNewPwdPH" xml:space="preserve">
+    <value>Enter new password</value>
+  </data>
+  <data name="Users_ModalCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Users_ModalConfirm" xml:space="preserve">
+    <value>Yes, Change Password</value>
+  </data>
+  <data name="Users_NotSet" xml:space="preserve">
+    <value>Not set</value>
+  </data>
+  <data name="Login_Title" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Login_BrandTagline" xml:space="preserve">
+    <value>Internal Tourism System</value>
+  </data>
+  <data name="Login_Welcome" xml:space="preserve">
+    <value>Welcome back</value>
+  </data>
+  <data name="Login_WelcomeSub" xml:space="preserve">
+    <value>Sign in to access bookings, account data, user tools, and daily operations through a clean and secure AM Travel dashboard.</value>
+  </data>
+  <data name="Login_MiniBadge" xml:space="preserve">
+    <value>Login Area</value>
+  </data>
+  <data name="Login_FormTitle" xml:space="preserve">
+    <value>Sign in to your account</value>
+  </data>
+  <data name="Login_FormSubtitle" xml:space="preserve">
+    <value>Use your username, phone number, or national ID with your password.</value>
+  </data>
+  <data name="Login_IdentifierLabel" xml:space="preserve">
+    <value>Username, phone, or national ID</value>
+  </data>
+  <data name="Login_IdentifierPH" xml:space="preserve">
+    <value>admin / 01xxxxxxxxx / national ID</value>
+  </data>
+  <data name="Login_PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Login_PasswordPH" xml:space="preserve">
+    <value>Enter your password</value>
+  </data>
+  <data name="Login_ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="Login_HidePassword" xml:space="preserve">
+    <value>Hide password</value>
+  </data>
+  <data name="Login_Submit" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Login_BackTo" xml:space="preserve">
+    <value>Back to</value>
+  </data>
+  <data name="Login_HomeLink" xml:space="preserve">
+    <value>AM Travel Home</value>
+  </data>
+  <data name="Dash_Title" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Dash_Badge" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Dash_Heading" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Dash_Subtitle" xml:space="preserve">
+    <value>Manage today work, customer follow-up, exports, and AM Travel operations.</value>
+  </data>
+  <data name="Dash_WelcomeBack" xml:space="preserve">
+    <value>Welcome back</value>
+  </data>
+  <data name="Dash_ExcelBtn" xml:space="preserve">
+    <value>Download Excel</value>
+  </data>
+  <data name="Dash_PdfBtn" xml:space="preserve">
+    <value>Download PDF</value>
+  </data>
+  <data name="Dash_Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Dash_Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Dash_RegisteredWork" xml:space="preserve">
+    <value>Registered Work</value>
+  </data>
+  <data name="Dash_TotalRemaining" xml:space="preserve">
+    <value>Total Remaining</value>
+  </data>
+  <data name="Dash_FilterDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Dash_FilterType" xml:space="preserve">
+    <value>Booking Type</value>
+  </data>
+  <data name="Dash_FilterAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Dash_FilterHotel" xml:space="preserve">
+    <value>Hotel Only</value>
+  </data>
+  <data name="Dash_FilterTransport" xml:space="preserve">
+    <value>Transport Only</value>
+  </data>
+  <data name="Dash_FilterBoth" xml:space="preserve">
+    <value>Hotel + Transport</value>
+  </data>
+  <data name="Dash_FilterScope" xml:space="preserve">
+    <value>Scope</value>
+  </data>
+  <data name="Dash_FilterAllWork" xml:space="preserve">
+    <value>Show all registered work</value>
+  </data>
+  <data name="Dash_FilterApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Dash_FilterToday" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Dash_TableBadge" xml:space="preserve">
+    <value>Daily work</value>
+  </data>
+  <data name="Dash_TableTitle" xml:space="preserve">
+    <value>Registered Work</value>
+  </data>
+  <data name="Dash_ColCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Dash_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="Dash_ColPhones" xml:space="preserve">
+    <value>Phones</value>
+  </data>
+  <data name="Dash_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Dash_ColHotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="Dash_ColCheckIn" xml:space="preserve">
+    <value>Check In</value>
+  </data>
+  <data name="Dash_ColCheckOut" xml:space="preserve">
+    <value>Check Out</value>
+  </data>
+  <data name="Dash_ColPayment" xml:space="preserve">
+    <value>Payment</value>
+  </data>
+  <data name="Dash_ColHotelTotal" xml:space="preserve">
+    <value>Hotel Total</value>
+  </data>
+  <data name="Dash_ColTransport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="Dash_ColDiscount" xml:space="preserve">
+    <value>Discount</value>
+  </data>
+  <data name="Dash_ColGrandTotal" xml:space="preserve">
+    <value>Grand Total</value>
+  </data>
+  <data name="Dash_ColPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Dash_ColRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Dash_ColNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Dash_ColCreatedBy" xml:space="preserve">
+    <value>Created By</value>
+  </data>
+  <data name="Dash_ColActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Dash_NoWork" xml:space="preserve">
+    <value>No registered work found for this date.</value>
+  </data>
+  <data name="Dash_NoPhone" xml:space="preserve">
+    <value>No phone</value>
+  </data>
+  <data name="Dash_TypeHotelTransport" xml:space="preserve">
+    <value>Hotel + Transport</value>
+  </data>
+  <data name="Dash_TypeHotel" xml:space="preserve">
+    <value>Hotel Only</value>
+  </data>
+  <data name="Dash_TypeTransport" xml:space="preserve">
+    <value>Transport Only</value>
+  </data>
+  <data name="Dash_TypeNA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="Dash_BtnDetails" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Dash_BtnTicket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="Dash_BtnEdit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Err_BackDashboard" xml:space="preserve">
+    <value>Back to Dashboard</value>
+  </data>
+  <data name="Err_BackHome" xml:space="preserve">
+    <value>Back to Home</value>
+  </data>
+  <data name="Err_403_Title" xml:space="preserve">
+    <value>Access Denied</value>
+  </data>
+  <data name="Err_403_Heading" xml:space="preserve">
+    <value>Access Denied</value>
+  </data>
+  <data name="Err_403_Body" xml:space="preserve">
+    <value>You do not have permission to open this page.</value>
+  </data>
+  <data name="Err_404_Title" xml:space="preserve">
+    <value>Not Found</value>
+  </data>
+  <data name="Err_404_Heading" xml:space="preserve">
+    <value>This route does not exist.</value>
+  </data>
+  <data name="Err_404_Body" xml:space="preserve">
+    <value>The page you requested was not found.</value>
+  </data>
+  <data name="Err_500_Title" xml:space="preserve">
+    <value>Server Error</value>
+  </data>
+  <data name="Err_500_Heading" xml:space="preserve">
+    <value>Something went wrong.</value>
+  </data>
+  <data name="Err_500_Body" xml:space="preserve">
+    <value>Please try again later.</value>
+  </data>
+  <data name="Err_429_Title" xml:space="preserve">
+    <value>Too Many Requests</value>
+  </data>
+  <data name="Err_429_Heading" xml:space="preserve">
+    <value>Too Many Requests</value>
+  </data>
+  <data name="Err_429_Wait" xml:space="preserve">
+    <value>Please wait</value>
+  </data>
+  <data name="Err_429_Seconds" xml:space="preserve">
+    <value>seconds before trying again.</value>
+  </data>
+  <data name="Err_429_TryAgain" xml:space="preserve">
+    <value>Try Again</value>
+  </data>
+  <data name="Home_Title" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Home_LogoTagline" xml:space="preserve">
+    <value>الفؤاد ترافيل للسياحة الداخلية</value>
+  </data>
+  <data name="Home_OpenDashboard" xml:space="preserve">
+    <value>Open Dashboard</value>
+  </data>
+  <data name="Home_Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Home_Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Home_ArabicNote" xml:space="preserve">
+    <value>AM Travel is your destination for organizing domestic trips and hotel bookings in an organized and easy way.</value>
+  </data>
+  <data name="Home_Facebook" xml:space="preserve">
+    <value>Facebook Page</value>
+  </data>
+  <data name="Home_Instagram" xml:space="preserve">
+    <value>Instagram</value>
+  </data>
+  <data name="Home_QuickAlways" xml:space="preserve">
+    <value>Always</value>
+  </data>
+  <data name="Home_QuickOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Home_QuickOnline" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="Home_QuickBooking" xml:space="preserve">
+    <value>Booking</value>
+  </data>
+  <data name="Home_SlideHotelTitle" xml:space="preserve">
+    <value>Hotel Booking</value>
+  </data>
+  <data name="Home_SlideHotelSub" xml:space="preserve">
+    <value>Comfortable stays and organized travel plans.</value>
+  </data>
+  <data name="Home_SlideTourTitle" xml:space="preserve">
+    <value>Internal Tourism</value>
+  </data>
+  <data name="Home_SlideTourSub" xml:space="preserve">
+    <value>Beautiful programs for Hurghada, Marsa Alam, and more.</value>
+  </data>
+  <data name="Home_SlideMemTitle" xml:space="preserve">
+    <value>Travel Memories</value>
+  </data>
+  <data name="Home_SlideMemSub" xml:space="preserve">
+    <value>Moments designed with care and attention.</value>
+  </data>
+  <data name="Home_SlideVideoTitle" xml:space="preserve">
+    <value>AM Travel Experience</value>
+  </data>
+  <data name="Home_SlideVideoSub" xml:space="preserve">
+    <value>Watch highlights from our travel atmosphere.</value>
+  </data>
+  <data name="Home_AboutBadge" xml:space="preserve">
+    <value>Why AM Travel?</value>
+  </data>
+  <data name="Home_AboutHeading" xml:space="preserve">
+    <value>An organized tourism system and a more professional booking experience</value>
+  </data>
+  <data name="Home_AboutSub" xml:space="preserve">
+    <value>The page is designed to reflect the identity of a real travel company.</value>
+  </data>
+  <data name="Home_Card1Title" xml:space="preserve">
+    <value>Hotel Booking</value>
+  </data>
+  <data name="Home_Card1Body" xml:space="preserve">
+    <value>Organize hotel reservations and follow up on client and trip details.</value>
+  </data>
+  <data name="Home_Card2Title" xml:space="preserve">
+    <value>Internal Tourism</value>
+  </data>
+  <data name="Home_Card2Body" xml:space="preserve">
+    <value>Coordinated domestic trips to Egypt's tourist cities.</value>
+  </data>
+  <data name="Home_Card3Title" xml:space="preserve">
+    <value>Online Booking</value>
+  </data>
+  <data name="Home_Card3Body" xml:space="preserve">
+    <value>Fast communication and online booking with continuous follow-up.</value>
+  </data>
+  <data name="Home_ContactBadge" xml:space="preserve">
+    <value>Contact Information</value>
+  </data>
+  <data name="Home_ContactHeading" xml:space="preserve">
+    <value>Get in touch with AM Travel</value>
+  </data>
+  <data name="Home_ContactSub" xml:space="preserve">
+    <value>Official contact details, company location and social media links.</value>
+  </data>
+  <data name="Home_LocationTitle" xml:space="preserve">
+    <value>Company Location</value>
+  </data>
+  <data name="Home_LocationAddr" xml:space="preserve">
+    <value>Al-Namis Street, Second Section Asyut, Asyut Governorate 71111</value>
+  </data>
+  <data name="Home_LocationDetail" xml:space="preserve">
+    <value>Asyut - Al-Namis Street in front of the Y Club next to Saint Claus, Asyut, Egypt</value>
+  </data>
+  <data name="Home_AlwaysOpen" xml:space="preserve">
+    <value>Always open</value>
+  </data>
+  <data name="Home_OpenMaps" xml:space="preserve">
+    <value>Open in Google Maps</value>
+  </data>
+  <data name="Home_PhoneTitle" xml:space="preserve">
+    <value>Phone Numbers</value>
+  </data>
+  <data name="Home_EmailTitle" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Home_FacebookTitle" xml:space="preserve">
+    <value>Facebook</value>
+  </data>
+  <data name="Home_FacebookSub" xml:space="preserve">
+    <value>Page · Travel agent</value>
+  </data>
+  <data name="Home_InstagramTitle" xml:space="preserve">
+    <value>Instagram</value>
+  </data>
+  <data name="Home_GalleryBadge" xml:space="preserve">
+    <value>Gallery</value>
+  </data>
+  <data name="Home_GalleryHeading" xml:space="preserve">
+    <value>Moments from AM Travel</value>
+  </data>
+  <data name="Work_CreateTitle" xml:space="preserve">
+    <value>Create Work</value>
+  </data>
+  <data name="Work_CreateBadge" xml:space="preserve">
+    <value>New Work</value>
+  </data>
+  <data name="Work_CreateHeading" xml:space="preserve">
+    <value>Create Work</value>
+  </data>
+  <data name="Work_CreateSubtitle" xml:space="preserve">
+    <value>Register a client transaction and set the next action date.</value>
+  </data>
+  <data name="Work_AllWorks" xml:space="preserve">
+    <value>All Works</value>
+  </data>
+  <data name="Work_TodayWorks" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="Work_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Work_NameClient" xml:space="preserve">
+    <value>Client Name</value>
+  </data>
+  <data name="Work_NameClientPH" xml:space="preserve">
+    <value>Client name</value>
+  </data>
+  <data name="Work_PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="Work_PhonePH" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="Work_ClientType" xml:space="preserve">
+    <value>Client Type</value>
+  </data>
+  <data name="Work_DayUpdated" xml:space="preserve">
+    <value>Next Action Date</value>
+  </data>
+  <data name="Work_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Work_NotesPH" xml:space="preserve">
+    <value>Write notes here...</value>
+  </data>
+  <data name="Work_SubmitCreate" xml:space="preserve">
+    <value>Create Work</value>
+  </data>
+  <data name="Work_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Work_EditTitle" xml:space="preserve">
+    <value>Edit Work</value>
+  </data>
+  <data name="Work_EditBadge" xml:space="preserve">
+    <value>Edit Work</value>
+  </data>
+  <data name="Work_EditHeading" xml:space="preserve">
+    <value>Update Work</value>
+  </data>
+  <data name="Work_EditSubtitle" xml:space="preserve">
+    <value>Update client transaction details and next action date.</value>
+  </data>
+  <data name="Work_SubmitEdit" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="WL_Title" xml:space="preserve">
+    <value>Works</value>
+  </data>
+  <data name="WL_Badge" xml:space="preserve">
+    <value>Works</value>
+  </data>
+  <data name="WL_Heading" xml:space="preserve">
+    <value>Client Works</value>
+  </data>
+  <data name="WL_Subtitle" xml:space="preserve">
+    <value>Manage daily client transactions, notes, and next action dates.</value>
+  </data>
+  <data name="WL_NewWork" xml:space="preserve">
+    <value>New Work</value>
+  </data>
+  <data name="WL_TodayWorks" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="WL_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="WL_TotalWorks" xml:space="preserve">
+    <value>Total Works</value>
+  </data>
+  <data name="WL_TodayWorksCard" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="WL_ScheduledWorks" xml:space="preserve">
+    <value>Scheduled Works</value>
+  </data>
+  <data name="WL_FilterSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="WL_FilterSearchPH" xml:space="preserve">
+    <value>Phone number or client name</value>
+  </data>
+  <data name="WL_FilterDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="WL_FilterStars" xml:space="preserve">
+    <value>Stars</value>
+  </data>
+  <data name="WL_FilterAllStars" xml:space="preserve">
+    <value>All Stars</value>
+  </data>
+  <data name="WL_FilterApply" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="WL_FilterReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="WL_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="WL_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="WL_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="WL_ColCreated" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="WL_ColNextAction" xml:space="preserve">
+    <value>Next Action</value>
+  </data>
+  <data name="WL_ColNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="WL_ColUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="WL_ColActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="WL_EditBtn" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="WL_DeleteBtn" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="WL_NoWorks" xml:space="preserve">
+    <value>No works found.</value>
+  </data>
+  <data name="WT_Title" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="WT_Badge" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="WT_Heading" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="WT_Subtitle" xml:space="preserve">
+    <value>Works created today or scheduled to be done today.</value>
+  </data>
+  <data name="WT_NewWork" xml:space="preserve">
+    <value>New Work</value>
+  </data>
+  <data name="WT_AllWorks" xml:space="preserve">
+    <value>All Works</value>
+  </data>
+  <data name="WT_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="WT_TotalToday" xml:space="preserve">
+    <value>Total Today Works</value>
+  </data>
+  <data name="WT_CreatedScheduled" xml:space="preserve">
+    <value>Created Or Scheduled Today</value>
+  </data>
+  <data name="WT_ScheduledWorks" xml:space="preserve">
+    <value>Scheduled Works</value>
+  </data>
+  <data name="WT_FilterSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="WT_FilterSearchPH" xml:space="preserve">
+    <value>Phone number or client name</value>
+  </data>
+  <data name="WT_FilterStars" xml:space="preserve">
+    <value>Stars</value>
+  </data>
+  <data name="WT_FilterAllStars" xml:space="preserve">
+    <value>All Stars</value>
+  </data>
+  <data name="WT_FilterApply" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="WT_FilterReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="WT_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="WT_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="WT_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="WT_ColCreated" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="WT_ColNextAction" xml:space="preserve">
+    <value>Next Action</value>
+  </data>
+  <data name="WT_ColNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="WT_ColUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="WT_ColActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="WT_EditBtn" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="WT_DeleteBtn" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="WT_DeleteConfirm" xml:space="preserve">
+    <value>Delete this work permanently?</value>
+  </data>
+  <data name="WT_NoWorks" xml:space="preserve">
+    <value>No works for today.</value>
+  </data>
+  <data name="WR_Title" xml:space="preserve">
+    <value>Report Works</value>
+  </data>
+  <data name="WR_Badge" xml:space="preserve">
+    <value>Report Works</value>
+  </data>
+  <data name="WR_Heading" xml:space="preserve">
+    <value>Users Works Report</value>
+  </data>
+  <data name="WR_Subtitle" xml:space="preserve">
+    <value>View works for any user. Admin can view all data but can edit or delete only his own works.</value>
+  </data>
+  <data name="WR_NewWork" xml:space="preserve">
+    <value>New Work</value>
+  </data>
+  <data name="WR_MyWorks" xml:space="preserve">
+    <value>My Works</value>
+  </data>
+  <data name="WR_TodayWorks" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="WR_TotalWorks" xml:space="preserve">
+    <value>Total Works</value>
+  </data>
+  <data name="WR_TodayWorksCard" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="WR_ScheduledWorks" xml:space="preserve">
+    <value>Scheduled Works</value>
+  </data>
+  <data name="WR_FilterUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="WR_FilterAllUsers" xml:space="preserve">
+    <value>All Users</value>
+  </data>
+  <data name="WR_FilterSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="WR_FilterSearchPH" xml:space="preserve">
+    <value>Phone number or client name</value>
+  </data>
+  <data name="WR_FilterDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="WR_FilterStars" xml:space="preserve">
+    <value>Stars</value>
+  </data>
+  <data name="WR_FilterAllStars" xml:space="preserve">
+    <value>All Stars</value>
+  </data>
+  <data name="WR_FilterApply" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="WR_FilterReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="WR_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="WR_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="WR_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="WR_ColCreated" xml:space="preserve">
+    <value>Created</value>
+  </data>
+  <data name="WR_ColNextAction" xml:space="preserve">
+    <value>Next Action</value>
+  </data>
+  <data name="WR_ColNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="WR_ColUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="WR_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="WR_ColActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="WR_PillMyWork" xml:space="preserve">
+    <value>My Work</value>
+  </data>
+  <data name="WR_PillReadOnly" xml:space="preserve">
+    <value>Read Only</value>
+  </data>
+  <data name="WR_PillNoActions" xml:space="preserve">
+    <value>No actions</value>
+  </data>
+  <data name="WR_EditBtn" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="WR_DeleteBtn" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="WR_DeleteConfirm" xml:space="preserve">
+    <value>Delete this work permanently?</value>
+  </data>
+  <data name="WR_NoWorks" xml:space="preserve">
+    <value>No works found.</value>
+  </data>
+  <data name="Layout_SectionWorkspace" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
+  <data name="Layout_SectionTransport" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Layout_SectionAccount" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Layout_SectionAdmin" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="Layout_NavHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Layout_NavLogin" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Layout_NavDashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Layout_NavDailyTrips" xml:space="preserve">
+    <value>Daily Trips</value>
+  </data>
+  <data name="Layout_NavBookings" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="Layout_NavNewBooking" xml:space="preserve">
+    <value>New Booking</value>
+  </data>
+  <data name="Layout_NavWorks" xml:space="preserve">
+    <value>Works</value>
+  </data>
+  <data name="Layout_NavTodayWorks" xml:space="preserve">
+    <value>Today Works</value>
+  </data>
+  <data name="Layout_NavCompanies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Layout_NavBuses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="Layout_NavTrips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="Layout_NavMyAccount" xml:space="preserve">
+    <value>My Account</value>
+  </data>
+  <data name="Layout_NavEditFields" xml:space="preserve">
+    <value>Edit Fields</value>
+  </data>
+  <data name="Layout_NavChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Layout_NavReportWorks" xml:space="preserve">
+    <value>Report Works</value>
+  </data>
+  <data name="Layout_NavUsers" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="Layout_PrefLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Layout_PrefTheme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Layout_ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Layout_ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Layout_Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Layout_LoginBtn" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Layout_BrandSubtitle" xml:space="preserve">
+    <value>Internal Tourism
+System</value>
+  </data>
+  <data name="Co_Title" xml:space="preserve">
+    <value>Transportation Companies</value>
+  </data>
+  <data name="Co_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Co_Heading" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Co_Subtitle" xml:space="preserve">
+    <value>Manage transportation companies, phone numbers, and active status.</value>
+  </data>
+  <data name="Co_NewCompany" xml:space="preserve">
+    <value>New Company</value>
+  </data>
+  <data name="Co_Buses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="Co_Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="Co_FilterLabel" xml:space="preserve">
+    <value>Search by Name / Phone Number</value>
+  </data>
+  <data name="Co_FilterPH" xml:space="preserve">
+    <value>Search by company name or phone...</value>
+  </data>
+  <data name="Co_FilterStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Co_StatusAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Co_StatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Co_StatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Co_FilterApply" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Co_FilterReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Co_ColCompany" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="Co_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Co_ColNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Co_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Co_ColActions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Co_PillActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Co_PillInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Co_BtnSetInactive" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="Co_BtnSetActive" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="Co_BtnEdit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Co_BtnDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Co_DeleteConfirm" xml:space="preserve">
+    <value>Delete this company permanently?</value>
+  </data>
+  <data name="Co_NoResults" xml:space="preserve">
+    <value>No companies found.</value>
+  </data>
+  <data name="CoEdit_Title" xml:space="preserve">
+    <value>Edit Company</value>
+  </data>
+  <data name="CoEdit_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="CoEdit_Heading" xml:space="preserve">
+    <value>Edit Company</value>
+  </data>
+  <data name="CoEdit_Subtitle" xml:space="preserve">
+    <value>Update company phone number, notes, and active status.</value>
+  </data>
+  <data name="CoEdit_Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="CoEdit_Buses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="CoEdit_Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="CoEdit_Name" xml:space="preserve">
+    <value>Company Name</value>
+  </data>
+  <data name="CoEdit_NamePH" xml:space="preserve">
+    <value>Company name</value>
+  </data>
+  <data name="CoEdit_Phone" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="CoEdit_PhonePH" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="CoEdit_IsActive" xml:space="preserve">
+    <value>Active Status</value>
+  </data>
+  <data name="CoEdit_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="CoEdit_Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="CoEdit_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CoEdit_NotesPH" xml:space="preserve">
+    <value>Write notes here...</value>
+  </data>
+  <data name="CoEdit_Submit" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="CoEdit_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CoCreate_Title" xml:space="preserve">
+    <value>Create Company</value>
+  </data>
+  <data name="CoCreate_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="CoCreate_Heading" xml:space="preserve">
+    <value>Create Company</value>
+  </data>
+  <data name="CoCreate_Subtitle" xml:space="preserve">
+    <value>Add a transportation company with phone number and notes.</value>
+  </data>
+  <data name="CoCreate_Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="CoCreate_Buses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="CoCreate_Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="CoCreate_Name" xml:space="preserve">
+    <value>Company Name</value>
+  </data>
+  <data name="CoCreate_NamePH" xml:space="preserve">
+    <value>Company name</value>
+  </data>
+  <data name="CoCreate_Phone" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="CoCreate_PhonePH" xml:space="preserve">
+    <value>Phone number</value>
+  </data>
+  <data name="CoCreate_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CoCreate_NotesPH" xml:space="preserve">
+    <value>Write notes here...</value>
+  </data>
+  <data name="CoCreate_Submit" xml:space="preserve">
+    <value>Create Company</value>
+  </data>
+  <data name="CoCreate_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Bus_Title" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="Bus_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Bus_Heading" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="Bus_Subtitle" xml:space="preserve">
+    <value>Manage buses, status, plate numbers, routes, and saved layouts.</value>
+  </data>
+  <data name="Bus_CreateNew" xml:space="preserve">
+    <value>Create New Bus</value>
+  </data>
+  <data name="Bus_Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="Bus_FilterName" xml:space="preserve">
+    <value>Search By Name / Plate Number</value>
+  </data>
+  <data name="Bus_FilterNamePH" xml:space="preserve">
+    <value>Bus name or plate number...</value>
+  </data>
+  <data name="Bus_FilterStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Bus_FilterAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Bus_FilterActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Bus_FilterInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Bus_FilterTripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="Bus_FilterAllTrips" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Bus_FilterGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Bus_FilterReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="Bus_FilterLocation" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Bus_FilterAllLoc" xml:space="preserve">
+    <value>All Locations</value>
+  </data>
+  <data name="Bus_FilterApply" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Bus_FilterReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Bus_ColSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="Bus_PillActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Bus_PillInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Bus_BtnShow" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="Bus_BtnDetails" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Bus_NoPlate" xml:space="preserve">
+    <value>No Plate Number</value>
+  </data>
+  <data name="Bus_RouteGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Bus_RouteReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="Bus_NoBuses" xml:space="preserve">
+    <value>No buses found.</value>
+  </data>
+  <data name="Bus_ModalTitle" xml:space="preserve">
+    <value>Bus Layout</value>
+  </data>
+  <data name="Bus_ModalGoRoute" xml:space="preserve">
+    <value>Location Go</value>
+  </data>
+  <data name="Bus_ModalReturnRoute" xml:space="preserve">
+    <value>Location Return</value>
+  </data>
+  <data name="Bus_ModalFrontEntry" xml:space="preserve">
+    <value>Front Entrance</value>
+  </data>
+  <data name="Bus_ModalCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Bus_ModalSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Bus_MenuSetActive" xml:space="preserve">
+    <value>Set Active</value>
+  </data>
+  <data name="Bus_MenuSetInactive" xml:space="preserve">
+    <value>Set Inactive</value>
+  </data>
+  <data name="Bus_ConfirmAllSeats" xml:space="preserve">
+    <value>All passenger seats are inactive. This bus will be deactivated. Continue?</value>
+  </data>
+  <data name="Bus_SaveFailed" xml:space="preserve">
+    <value>Failed to save bus layout.</value>
+  </data>
+  <data name="CBus_Title" xml:space="preserve">
+    <value>Create Bus Design</value>
+  </data>
+  <data name="CBus_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="CBus_Heading" xml:space="preserve">
+    <value>Create Bus</value>
+  </data>
+  <data name="CBus_Subtitle" xml:space="preserve">
+    <value>Draw seats, VIP seats, assistant, driver, aisle, doors and bathroom manually.</value>
+  </data>
+  <data name="CBus_BackToBuses" xml:space="preserve">
+    <value>Back To Buses</value>
+  </data>
+  <data name="CBus_Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="CBus_FieldName" xml:space="preserve">
+    <value>Bus Name</value>
+  </data>
+  <data name="CBus_FieldNamePH" xml:space="preserve">
+    <value>Example: Mercedes VIP</value>
+  </data>
+  <data name="CBus_FieldPlate" xml:space="preserve">
+    <value>Plate Number</value>
+  </data>
+  <data name="CBus_FieldPlatePH" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="CBus_FieldFrom" xml:space="preserve">
+    <value>From Location</value>
+  </data>
+  <data name="CBus_FieldFromPH" xml:space="preserve">
+    <value>Example: Cairo</value>
+  </data>
+  <data name="CBus_FieldTo" xml:space="preserve">
+    <value>To Location</value>
+  </data>
+  <data name="CBus_FieldToPH" xml:space="preserve">
+    <value>Example: Sharm El Sheikh</value>
+  </data>
+  <data name="CBus_FieldSeats" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="CBus_FieldRows" xml:space="preserve">
+    <value>Bus Rows</value>
+  </data>
+  <data name="CBus_FieldCols" xml:space="preserve">
+    <value>Bus Columns</value>
+  </data>
+  <data name="CBus_FieldNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CBus_FieldNotesPH" xml:space="preserve">
+    <value>Bus notes...</value>
+  </data>
+  <data name="CBus_Submit" xml:space="preserve">
+    <value>Create Bus</value>
+  </data>
+  <data name="CBus_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CBus_ToolNormal" xml:space="preserve">
+    <value>Normal Seat</value>
+  </data>
+  <data name="CBus_ToolVIP" xml:space="preserve">
+    <value>VIP Seat</value>
+  </data>
+  <data name="CBus_ToolDriver" xml:space="preserve">
+    <value>Driver Seat</value>
+  </data>
+  <data name="CBus_ToolAssistant" xml:space="preserve">
+    <value>Assistant Seat</value>
+  </data>
+  <data name="CBus_ToolAisle" xml:space="preserve">
+    <value>Aisle</value>
+  </data>
+  <data name="CBus_ToolDoor" xml:space="preserve">
+    <value>Door</value>
+  </data>
+  <data name="CBus_ToolBathroom" xml:space="preserve">
+    <value>Bathroom</value>
+  </data>
+  <data name="CBus_ToolEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="CBus_BtnAutoAisle" xml:space="preserve">
+    <value>Auto Aisle</value>
+  </data>
+  <data name="CBus_BtnMirror" xml:space="preserve">
+    <value>Mirror Left To Right</value>
+  </data>
+  <data name="CBus_BtnRenumber" xml:space="preserve">
+    <value>Renumber Seats</value>
+  </data>
+  <data name="CBus_BtnRebuild" xml:space="preserve">
+    <value>Rebuild Grid</value>
+  </data>
+  <data name="CBus_BtnClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="CBus_HintText" xml:space="preserve">
+    <value>Left click to draw. Right click any object to toggle Active / Inactive.</value>
+  </data>
+  <data name="CBus_SizeNote" xml:space="preserve">
+    <value>Increasing Rows or Columns will not delete the existing design.</value>
+  </data>
+  <data name="CBus_FrontEntry" xml:space="preserve">
+    <value>Front Entrance</value>
+  </data>
+  <data name="CBus_MenuSetActive" xml:space="preserve">
+    <value>Set Active</value>
+  </data>
+  <data name="CBus_MenuSetInactive" xml:space="preserve">
+    <value>Set Inactive</value>
+  </data>
+  <data name="CBus_AlertDoorEdge" xml:space="preserve">
+    <value>Door can be placed only on first or last column.</value>
+  </data>
+  <data name="CBus_AlertDoorType" xml:space="preserve">
+    <value>Door can be added only on Normal/VIP/Empty side cell.</value>
+  </data>
+  <data name="CBus_AlertNoSeats" xml:space="preserve">
+    <value>You must draw at least one passenger seat.</value>
+  </data>
+  <data name="EBus_Title" xml:space="preserve">
+    <value>Edit Bus Design</value>
+  </data>
+  <data name="EBus_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="EBus_Heading" xml:space="preserve">
+    <value>Edit Bus</value>
+  </data>
+  <data name="EBus_Subtitle" xml:space="preserve">
+    <value>Edit bus name, plate number, notes, status, and full bus design.</value>
+  </data>
+  <data name="EBus_BackToBuses" xml:space="preserve">
+    <value>Back To Buses</value>
+  </data>
+  <data name="EBus_Trips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="EBus_FieldName" xml:space="preserve">
+    <value>Bus Name</value>
+  </data>
+  <data name="EBus_FieldPlate" xml:space="preserve">
+    <value>Plate Number</value>
+  </data>
+  <data name="EBus_FieldFrom" xml:space="preserve">
+    <value>From Location</value>
+  </data>
+  <data name="EBus_FieldTo" xml:space="preserve">
+    <value>To Location</value>
+  </data>
+  <data name="EBus_FieldSeats" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="EBus_FieldStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="EBus_StatusActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="EBus_StatusInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="EBus_FieldRows" xml:space="preserve">
+    <value>Bus Rows</value>
+  </data>
+  <data name="EBus_FieldCols" xml:space="preserve">
+    <value>Bus Columns</value>
+  </data>
+  <data name="EBus_FieldNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="EBus_Submit" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="EBus_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="EBus_ToolNormal" xml:space="preserve">
+    <value>Normal Seat</value>
+  </data>
+  <data name="EBus_ToolVIP" xml:space="preserve">
+    <value>VIP Seat</value>
+  </data>
+  <data name="EBus_ToolDriver" xml:space="preserve">
+    <value>Driver Seat</value>
+  </data>
+  <data name="EBus_ToolAssistant" xml:space="preserve">
+    <value>Assistant Seat</value>
+  </data>
+  <data name="EBus_ToolAisle" xml:space="preserve">
+    <value>Aisle</value>
+  </data>
+  <data name="EBus_ToolDoor" xml:space="preserve">
+    <value>Door</value>
+  </data>
+  <data name="EBus_ToolBathroom" xml:space="preserve">
+    <value>Bathroom</value>
+  </data>
+  <data name="EBus_ToolEmpty" xml:space="preserve">
+    <value>Empty</value>
+  </data>
+  <data name="EBus_BtnAutoAisle" xml:space="preserve">
+    <value>Auto Aisle</value>
+  </data>
+  <data name="EBus_BtnMirror" xml:space="preserve">
+    <value>Mirror Left To Right</value>
+  </data>
+  <data name="EBus_BtnRenumber" xml:space="preserve">
+    <value>Renumber Seats</value>
+  </data>
+  <data name="EBus_BtnRebuild" xml:space="preserve">
+    <value>Rebuild Grid</value>
+  </data>
+  <data name="EBus_BtnClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="EBus_HintText" xml:space="preserve">
+    <value>Left click to draw. Right click any object to toggle Active / Inactive. Increasing Rows or Columns will not delete the existing design.</value>
+  </data>
+  <data name="EBus_FrontEntry" xml:space="preserve">
+    <value>Front Entrance</value>
+  </data>
+  <data name="EBus_MenuSetActive" xml:space="preserve">
+    <value>Set Active</value>
+  </data>
+  <data name="EBus_MenuSetInactive" xml:space="preserve">
+    <value>Set Inactive</value>
+  </data>
+  <data name="EBus_AlertDoorEdge" xml:space="preserve">
+    <value>Door can be placed only on first or last column.</value>
+  </data>
+  <data name="EBus_AlertDoorType" xml:space="preserve">
+    <value>Door can be added only on Normal/VIP/Empty side cell.</value>
+  </data>
+  <data name="EBus_AlertNoSeats" xml:space="preserve">
+    <value>You must draw at least one passenger seat.</value>
+  </data>
+  <data name="BD_Title" xml:space="preserve">
+    <value>Bus Details</value>
+  </data>
+  <data name="BD_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="BD_NoPlate" xml:space="preserve">
+    <value>No Plate Number</value>
+  </data>
+  <data name="BD_BackToBuses" xml:space="preserve">
+    <value>Back To Buses</value>
+  </data>
+  <data name="BD_EditBus" xml:space="preserve">
+    <value>Edit Bus</value>
+  </data>
+  <data name="BD_BtnSetInactive" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="BD_BtnSetActive" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="BD_BtnDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="BD_DeleteConfirm" xml:space="preserve">
+    <value>Delete this bus permanently?</value>
+  </data>
+  <data name="BD_InfoName" xml:space="preserve">
+    <value>Bus Name</value>
+  </data>
+  <data name="BD_InfoPlate" xml:space="preserve">
+    <value>Plate Number</value>
+  </data>
+  <data name="BD_InfoSeats" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="BD_InfoStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="BD_InfoRows" xml:space="preserve">
+    <value>Rows</value>
+  </data>
+  <data name="BD_InfoCols" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="BD_InfoNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="BD_PillActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="BD_PillInactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="BD_FrontEntry" xml:space="preserve">
+    <value>Front Entrance</value>
+  </data>
+  <data name="Trips_Title" xml:space="preserve">
+    <value>Bus Trips</value>
+  </data>
+  <data name="Trips_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Trips_Heading" xml:space="preserve">
+    <value>Bus Trips</value>
+  </data>
+  <data name="Trips_Subtitle" xml:space="preserve">
+    <value>Create daily bus trips and monitor reserved / available seats.</value>
+  </data>
+  <data name="Trips_Buses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="Trips_Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Trips_CreateBus" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="Trips_CreateBusPH" xml:space="preserve">
+    <value>Choose bus</value>
+  </data>
+  <data name="Trips_CreateDate" xml:space="preserve">
+    <value>Trip Date</value>
+  </data>
+  <data name="Trips_CreateFrom" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="Trips_CreateFromPH" xml:space="preserve">
+    <value>From location</value>
+  </data>
+  <data name="Trips_CreateTo" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Trips_CreateToPH" xml:space="preserve">
+    <value>To location</value>
+  </data>
+  <data name="Trips_CreateSubmit" xml:space="preserve">
+    <value>Create Trip</value>
+  </data>
+  <data name="Trips_FilterDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Trips_FilterApply" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Trips_FilterReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Trips_ColDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Trips_ColCompany" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="Trips_ColBus" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="Trips_ColSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="Trips_ColReserved" xml:space="preserve">
+    <value>Reserved</value>
+  </data>
+  <data name="Trips_ColAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Trips_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Trips_ColSeatsMap" xml:space="preserve">
+    <value>Seats Map</value>
+  </data>
+  <data name="Trips_PillClosed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Trips_PillOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Trips_BtnOpenSeats" xml:space="preserve">
+    <value>Open Seats</value>
+  </data>
+  <data name="Trips_NoTrips" xml:space="preserve">
+    <value>No trips found.</value>
+  </data>
+  <data name="Bus_Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Trips_ColPlate" xml:space="preserve">
+    <value>Plate</value>
+  </data>
+  <data name="Trips_ColRoute" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="Trips_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Trips_PillGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Trips_PillReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="Trips_PillNotLinked" xml:space="preserve">
+    <value>Not Linked</value>
+  </data>
+  <data name="Seats_Title" xml:space="preserve">
+    <value>Trip Seats</value>
+  </data>
+  <data name="Seats_Badge" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Seats_Heading" xml:space="preserve">
+    <value>Trip Seats</value>
+  </data>
+  <data name="Seats_Subtitle" xml:space="preserve">
+    <value>Bus layout, reserved seats, phone numbers, and booking payment details.</value>
+  </data>
+  <data name="Seats_BackToTrips" xml:space="preserve">
+    <value>Back To Trips</value>
+  </data>
+  <data name="Seats_Buses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="Seats_Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="Seats_TotalSeats" xml:space="preserve">
+    <value>Total Seats</value>
+  </data>
+  <data name="Seats_Reserved" xml:space="preserve">
+    <value>Reserved</value>
+  </data>
+  <data name="Seats_Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Seats_LegendAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Seats_LegendClient" xml:space="preserve">
+    <value>Client Booking</value>
+  </data>
+  <data name="Seats_LegendCompany" xml:space="preserve">
+    <value>Company Booking</value>
+  </data>
+  <data name="Seats_LegendVIP" xml:space="preserve">
+    <value>VIP</value>
+  </data>
+  <data name="Seats_LegendDisabled" xml:space="preserve">
+    <value>Disabled / Empty</value>
+  </data>
+  <data name="Seats_FrontEntrance" xml:space="preserve">
+    <value>FRONT ENTRANCE</value>
+  </data>
+  <data name="Seats_ChangeSeatConfirm" xml:space="preserve">
+    <value>Change this seat status?</value>
+  </data>
+  <data name="Seats_ReservedBookings" xml:space="preserve">
+    <value>Reserved Bookings</value>
+  </data>
+  <data name="Seats_NoBookings" xml:space="preserve">
+    <value>No reserved bookings</value>
+  </data>
+  <data name="Seats_SeatsLabel" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="Seats_PhonesLabel" xml:space="preserve">
+    <value>Phones</value>
+  </data>
+  <data name="Seats_TypeLabel" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Seats_CompanyLabel" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="Seats_TypeHotelTransport" xml:space="preserve">
+    <value>Hotel + Transportation</value>
+  </data>
+  <data name="Seats_TypeHotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="Seats_TypeTransport" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Seats_TypeCompany" xml:space="preserve">
+    <value>Company Transportation</value>
+  </data>
+  <data name="Seats_Hotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="Seats_Transportation" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="Seats_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Seats_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="Seats_Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Seats_Discount" xml:space="preserve">
+    <value>Discount</value>
+  </data>
+  <data name="Seats_OpenCompanyBooking" xml:space="preserve">
+    <value>Open Company Booking</value>
+  </data>
+  <data name="Seats_OpenBookingDetails" xml:space="preserve">
+    <value>Open Booking Details</value>
+  </data>
+  <data name="Seats_CompanyBookingPill" xml:space="preserve">
+    <value>Company Booking</value>
+  </data>
+  <data name="Seats_NoPhonesText" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="Seats_GeneralRoute" xml:space="preserve">
+    <value>General Trip Route</value>
+  </data>
+  <data name="Seats_TripRoute" xml:space="preserve">
+    <value>Trip Route</value>
+  </data>
+  <data name="Seats_BookingRoute" xml:space="preserve">
+    <value>Booking Route</value>
+  </data>
+  <data name="Seats_GoTrip" xml:space="preserve">
+    <value>Go Trip</value>
+  </data>
+  <data name="Seats_GoTripDate" xml:space="preserve">
+    <value>Go Date</value>
+  </data>
+  <data name="Seats_GoSeat" xml:space="preserve">
+    <value>Go Seat</value>
+  </data>
+  <data name="Seats_GoRoute" xml:space="preserve">
+    <value>Go Route</value>
+  </data>
+  <data name="Seats_ReturnTrip" xml:space="preserve">
+    <value>Return Trip</value>
+  </data>
+  <data name="Seats_ReturnTripDate" xml:space="preserve">
+    <value>Return Date</value>
+  </data>
+  <data name="Seats_ReturnSeat" xml:space="preserve">
+    <value>Return Seat</value>
+  </data>
+  <data name="Seats_ReturnRoute" xml:space="preserve">
+    <value>Return Route</value>
+  </data>
+  <data name="Seats_NoGoTrip" xml:space="preserve">
+    <value>No Go Trip</value>
+  </data>
+  <data name="Seats_NoReturnTrip" xml:space="preserve">
+    <value>No Return Trip</value>
+  </data>
+  <data name="Seats_TripDate" xml:space="preserve">
+    <value>Trip Date</value>
+  </data>
+  <data name="Seats_OneWay" xml:space="preserve">
+    <value>One Way</value>
+  </data>
+  <data name="Seats_RoundTrip" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="Seats_TripInfo" xml:space="preserve">
+    <value>Trip Info</value>
+  </data>
+  <data name="Go_GeneralTripRoute" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Return_GeneralTripRoute" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="Seats_RouteGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Seats_RouteReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="Seats_TripTypeGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Seats_TripTypeReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="Seats_TripTypeRound" xml:space="preserve">
+    <value>RoundTrip</value>
+  </data>
+  <data name="Seats_TripTypeDep" xml:space="preserve">
+    <value>Departure</value>
+  </data>
+  <data name="CTIndex_Title" xml:space="preserve">
+    <value>Company Trip Booking</value>
+  </data>
+  <data name="CTIndex_Badge" xml:space="preserve">
+    <value>Company Trips</value>
+  </data>
+  <data name="CTIndex_Heading" xml:space="preserve">
+    <value>Company Trips</value>
+  </data>
+  <data name="CTIndex_Subtitle" xml:space="preserve">
+    <value>Link trips to companies and monitor daily schedules.</value>
+  </data>
+  <data name="CTIndex_BtnDailyWork" xml:space="preserve">
+    <value>Daily Work</value>
+  </data>
+  <data name="CTIndex_BtnDashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="CTIndex_BtnAccounting" xml:space="preserve">
+    <value>Accounting</value>
+  </data>
+  <data name="CTIndex_Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="CTIndex_SelectCompany" xml:space="preserve">
+    <value>-- Select Company --</value>
+  </data>
+  <data name="CTIndex_TripDate" xml:space="preserve">
+    <value>Trip Date</value>
+  </data>
+  <data name="CTIndex_TripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="CTIndex_TripTypeGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CTIndex_TripTypeReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CTIndex_TripTypeRound" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="CTIndex_BtnLoad" xml:space="preserve">
+    <value>Load Trips</value>
+  </data>
+  <data name="CTIndex_BtnLink" xml:space="preserve">
+    <value>Link to Company</value>
+  </data>
+  <data name="CTIndex_AvailTitle" xml:space="preserve">
+    <value>Available Trips</value>
+  </data>
+  <data name="CTIndex_LinkedTitle" xml:space="preserve">
+    <value>Trips Linked Today</value>
+  </data>
+  <data name="CTIndex_ColDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="CTIndex_ColDirection" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="CTIndex_ColBus" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="CTIndex_ColRoute" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="CTIndex_ColTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="CTIndex_ColReserved" xml:space="preserve">
+    <value>Reserved</value>
+  </data>
+  <data name="CTIndex_ColAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="CTIndex_ColPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="CTIndex_ColPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CTIndex_ColRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="CTIndex_ColDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="CTIndex_BtnDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="CTIndex_SelectDateFirst" xml:space="preserve">
+    <value>Select a date first.</value>
+  </data>
+  <data name="CTIndex_NoTrips" xml:space="preserve">
+    <value>No available trips for the current selection.</value>
+  </data>
+  <data name="CTIndex_SelectBoth" xml:space="preserve">
+    <value>Select company and date to view linked trips.</value>
+  </data>
+  <data name="CTIndex_NoLinked" xml:space="preserve">
+    <value>No trips linked for the selected date.</value>
+  </data>
+  <data name="CTIndex_ErrNoCompany" xml:space="preserve">
+    <value>Please select a company.</value>
+  </data>
+  <data name="CTIndex_ErrNoDep" xml:space="preserve">
+    <value>Please select a Go trip.</value>
+  </data>
+  <data name="CTIndex_ErrNoRet" xml:space="preserve">
+    <value>Please select a Return trip.</value>
+  </data>
+  <data name="CTIndex_ErrNoBoth" xml:space="preserve">
+    <value>Please select both Go and Return trips.</value>
+  </data>
+  <data name="CTIndex_ConfirmDelete" xml:space="preserve">
+    <value>Delete this link? If round trip, both will be removed.</value>
+  </data>
+  <data name="CTAcct_Title" xml:space="preserve">
+    <value>Company Accounting</value>
+  </data>
+  <data name="CTAcct_Badge" xml:space="preserve">
+    <value>Company Trips</value>
+  </data>
+  <data name="CTAcct_Heading" xml:space="preserve">
+    <value>Company Accounting</value>
+  </data>
+  <data name="CTAcct_Subtitle" xml:space="preserve">
+    <value>Search trips, manage prices, payments, and export reports.</value>
+  </data>
+  <data name="CTAcct_BtnDailyWork" xml:space="preserve">
+    <value>Daily Work</value>
+  </data>
+  <data name="CTAcct_BtnBooking" xml:space="preserve">
+    <value>Trip Booking</value>
+  </data>
+  <data name="CTAcct_Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="CTAcct_AllCompanies" xml:space="preserve">
+    <value>All Companies</value>
+  </data>
+  <data name="CTAcct_DateFrom" xml:space="preserve">
+    <value>Date From</value>
+  </data>
+  <data name="CTAcct_DateTo" xml:space="preserve">
+    <value>Date To</value>
+  </data>
+  <data name="CTAcct_Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="CTAcct_AllLocations" xml:space="preserve">
+    <value>All Locations</value>
+  </data>
+  <data name="CTAcct_PaymentStatus" xml:space="preserve">
+    <value>Payment Status</value>
+  </data>
+  <data name="CTAcct_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="CTAcct_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CTAcct_Unpaid" xml:space="preserve">
+    <value>Unpaid / Remaining</value>
+  </data>
+  <data name="CTAcct_TripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="CTAcct_TripTypeAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="CTAcct_TripTypeGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CTAcct_TripTypeReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CTAcct_TripTypeRound" xml:space="preserve">
+    <value>Round</value>
+  </data>
+  <data name="CTAcct_BtnSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="CTAcct_BtnExcel" xml:space="preserve">
+    <value>Excel</value>
+  </data>
+  <data name="CTAcct_BtnPDF" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="CTAcct_TotalPrice" xml:space="preserve">
+    <value>Total Price</value>
+  </data>
+  <data name="CTAcct_TotalPaid" xml:space="preserve">
+    <value>Total Paid</value>
+  </data>
+  <data name="CTAcct_TotalRemaining" xml:space="preserve">
+    <value>Total Remaining</value>
+  </data>
+  <data name="CTAcct_ColDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="CTAcct_ColDirection" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="CTAcct_ColBus" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="CTAcct_ColRoute" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="CTAcct_ColSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="CTAcct_ColPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="CTAcct_ColPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CTAcct_ColRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="CTAcct_ColUpdatePrice" xml:space="preserve">
+    <value>Update Price</value>
+  </data>
+  <data name="CTAcct_ColAddPayment" xml:space="preserve">
+    <value>Add Payment</value>
+  </data>
+  <data name="CTAcct_BtnSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="CTAcct_BtnPay" xml:space="preserve">
+    <value>Pay</value>
+  </data>
+  <data name="CTAcct_NoData" xml:space="preserve">
+    <value>No accounting data to display.</value>
+  </data>
+  <data name="CTAcct_ErrNoCompany" xml:space="preserve">
+    <value>Please select a company first.</value>
+  </data>
+  <data name="CTIndex_MetaTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="CTIndex_MetaReserved" xml:space="preserve">
+    <value>Reserved</value>
+  </data>
+  <data name="CTIndex_MetaAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="Layout_NavCompanyBuses" xml:space="preserve">
+    <value>Company Buses Booking</value>
+  </data>
+  <data name="CTIndex_WelcomeBack" xml:space="preserve">
+    <value>Welcome back,</value>
+  </data>
+  <data name="CTIndex_SubtitleFull" xml:space="preserve">
+    <value>Manage company trip booking. Link trips, monitor today's schedule.</value>
+  </data>
+  <data name="CTIndex_BtnLoad2" xml:space="preserve">
+    <value>Load Trips</value>
+  </data>
+  <data name="CTIndex_BtnAttach" xml:space="preserve">
+    <value>Link to Company</value>
+  </data>
+  <data name="CTIndex_AvailTrips" xml:space="preserve">
+    <value>Available Trips</value>
+  </data>
+  <data name="CTIndex_LinkedTrips" xml:space="preserve">
+    <value>Linked Trips Today</value>
+  </data>
+  <data name="CTIndex_SelectFirst" xml:space="preserve">
+    <value>Select company and date, then click Load Trips.</value>
+  </data>
+  <data name="CTIndex_NoAvail" xml:space="preserve">
+    <value>No available trips.</value>
+  </data>
+  <data name="CTIndex_SelectCoFirst" xml:space="preserve">
+    <value>Select a company to view linked trips.</value>
+  </data>
+  <data name="CTIndex_NoLinkedTrips" xml:space="preserve">
+    <value>No trips linked for selected date.</value>
+  </data>
+  <data name="CTIndex_RoundTrip" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="CTIndex_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="CTIndex_ColLocation" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="CTIndex_ColAction" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="CTIndex_BtnDeleteLink" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="CTIndex_GoLabel" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CTIndex_ReturnLabel" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CTIndex_ErrSelectCoFirst" xml:space="preserve">
+    <value>Select company and click Load Trips first.</value>
+  </data>
+  <data name="CTIndex_ErrSelectDate" xml:space="preserve">
+    <value>Select trip date first.</value>
+  </data>
+  <data name="CTIndex_ErrInvalidData" xml:space="preserve">
+    <value>Invalid trip data.</value>
+  </data>
+  <data name="CTIndex_ErrNotDep" xml:space="preserve">
+    <value>This is not a Go trip.</value>
+  </data>
+  <data name="CTIndex_ErrNotRet" xml:space="preserve">
+    <value>This is not a Return trip.</value>
+  </data>
+  <data name="CTIndex_ErrInvalidDir" xml:space="preserve">
+    <value>Invalid trip direction.</value>
+  </data>
+  <data name="CTIndex_ConfirmDel" xml:space="preserve">
+    <value>Delete this trip link? If round trip, both will be removed.</value>
+  </data>
+  <data name="CTIndex_ErrIncomplete" xml:space="preserve">
+    <value>Incomplete delete data.</value>
+  </data>
+  <data name="Seats_DownloadPdf" xml:space="preserve">
+    <value>Download passenger PDF</value>
+  </data>
+  <data name="CSD_Title" xml:space="preserve">
+    <value>Company Seat Booking Details</value>
+  </data>
+  <data name="CSD_Badge" xml:space="preserve">
+    <value>Company Booking</value>
+  </data>
+  <data name="CSD_Heading" xml:space="preserve">
+    <value>Company Seat Booking</value>
+  </data>
+  <data name="CSD_Subtitle" xml:space="preserve">
+    <value>Company transport seat booking details.</value>
+  </data>
+  <data name="CSD_BackToTrips" xml:space="preserve">
+    <value>Back To Trips</value>
+  </data>
+  <data name="CSD_CompanyTrips" xml:space="preserve">
+    <value>Company Trips</value>
+  </data>
+  <data name="CSD_BookingInfo" xml:space="preserve">
+    <value>Booking Information</value>
+  </data>
+  <data name="CSD_Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="CSD_CompanyPhone" xml:space="preserve">
+    <value>Company Phone</value>
+  </data>
+  <data name="CSD_ClientName" xml:space="preserve">
+    <value>Client Name</value>
+  </data>
+  <data name="CSD_ClientPhone" xml:space="preserve">
+    <value>Client Phone</value>
+  </data>
+  <data name="CSD_TripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="CSD_BookingDir" xml:space="preserve">
+    <value>Booking Direction</value>
+  </data>
+  <data name="CSD_GoRoute" xml:space="preserve">
+    <value>Go Route</value>
+  </data>
+  <data name="CSD_GoTripDate" xml:space="preserve">
+    <value>Go Trip Date</value>
+  </data>
+  <data name="CSD_GoBus" xml:space="preserve">
+    <value>Go Bus</value>
+  </data>
+  <data name="CSD_GoPlate" xml:space="preserve">
+    <value>Go Plate Number</value>
+  </data>
+  <data name="CSD_GoSeat" xml:space="preserve">
+    <value>Go Seat</value>
+  </data>
+  <data name="CSD_ReturnRoute" xml:space="preserve">
+    <value>Return Route</value>
+  </data>
+  <data name="CSD_ReturnTripDate" xml:space="preserve">
+    <value>Return Trip Date</value>
+  </data>
+  <data name="CSD_ReturnBus" xml:space="preserve">
+    <value>Return Bus</value>
+  </data>
+  <data name="CSD_ReturnPlate" xml:space="preserve">
+    <value>Return Plate Number</value>
+  </data>
+  <data name="CSD_ReturnSeat" xml:space="preserve">
+    <value>Return Seat</value>
+  </data>
+  <data name="CSD_Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="CSD_Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="CSD_No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="CSD_CreatedAt" xml:space="preserve">
+    <value>Created At</value>
+  </data>
+  <data name="CSD_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CSD_PaymentDetails" xml:space="preserve">
+    <value>Payment Details</value>
+  </data>
+  <data name="CSD_PricePerSeat" xml:space="preserve">
+    <value>Price Per Seat</value>
+  </data>
+  <data name="CSD_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="CSD_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CSD_Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="CSD_DirInbound" xml:space="preserve">
+    <value>Inbound</value>
+  </data>
+  <data name="CSD_DirOutbound" xml:space="preserve">
+    <value>Outbound</value>
+  </data>
+  <data name="CSD_DirGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CSD_DirReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CSD_DirRound" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="CTAcct_WelcomeBack" xml:space="preserve">
+    <value>Welcome back,</value>
+  </data>
+  <data name="CTAcct_BtnDashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="CTAcct_FilterTitle" xml:space="preserve">
+    <value>Search Filters</value>
+  </data>
+  <data name="CTAcct_ColCompany" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="CTAcct_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="CTAcct_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="CTAcct_ColPlate" xml:space="preserve">
+    <value>Plate</value>
+  </data>
+  <data name="CTAcct_ColLocation" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="CTAcct_ColTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="CTAcct_ColReserved" xml:space="preserve">
+    <value>Reserved</value>
+  </data>
+  <data name="CTAcct_ColAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="CTAcct_LblRoundTotalPrice" xml:space="preserve">
+    <value>Round Total Price</value>
+  </data>
+  <data name="CTAcct_LblRoundTotalPaid" xml:space="preserve">
+    <value>Round Total Paid</value>
+  </data>
+  <data name="CTAcct_LblRoundNote" xml:space="preserve">
+    <value>Automatically divided on Departure / Return</value>
+  </data>
+  <data name="CTAcct_LblPlate" xml:space="preserve">
+    <value>Plate:</value>
+  </data>
+  <data name="CTAcct_LblTotal" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="CTAcct_RoundLabel" xml:space="preserve">
+    <value>Round</value>
+  </data>
+  <data name="CTAcct_GoLabel" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CTAcct_ReturnLabel" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CTAcct_Showing" xml:space="preserve">
+    <value>Showing</value>
+  </data>
+  <data name="CTAcct_Of" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="CTAcct_Groups" xml:space="preserve">
+    <value>groups</value>
+  </data>
+  <data name="CTAcct_Trips" xml:space="preserve">
+    <value>trips</value>
+  </data>
+  <data name="Layout_NavCompanyTrips" xml:space="preserve">
+    <value>Company Seat Bookings</value>
+  </data>
+  <data name="SB_AllCompanies" xml:space="preserve">
+    <value>All companies</value>
+  </data>
+  <data name="SB_AvailTrip" xml:space="preserve">
+    <value>Available trip</value>
+  </data>
+  <data name="SB_Available" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="SB_AvailableTrips" xml:space="preserve">
+    <value>Available trips</value>
+  </data>
+  <data name="SB_Badge" xml:space="preserve">
+    <value>Company seat booking</value>
+  </data>
+  <data name="SB_BookDetails" xml:space="preserve">
+    <value>Booking details</value>
+  </data>
+  <data name="SB_BookTitle" xml:space="preserve">
+    <value>Book company seats</value>
+  </data>
+  <data name="SB_Bookings" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="SB_BtnAccounting" xml:space="preserve">
+    <value>Accounting</value>
+  </data>
+  <data name="SB_BtnCompanyTrips" xml:space="preserve">
+    <value>Company trips</value>
+  </data>
+  <data name="SB_BtnConfirm" xml:space="preserve">
+    <value>Confirm booking</value>
+  </data>
+  <data name="SB_BtnDeleteSel" xml:space="preserve">
+    <value>Delete selected</value>
+  </data>
+  <data name="SB_BtnForceDelete" xml:space="preserve">
+    <value>Force delete</value>
+  </data>
+  <data name="SB_BtnReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="SB_BtnSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SB_BtnSelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="SB_BtnShowTransfer" xml:space="preserve">
+    <value>Show transfer seats</value>
+  </data>
+  <data name="SB_BtnShowTrips" xml:space="preserve">
+    <value>Show trips</value>
+  </data>
+  <data name="SB_BtnTransfer" xml:space="preserve">
+    <value>Transfer selected</value>
+  </data>
+  <data name="SB_BtnTrips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="SB_CardActiveTab" xml:space="preserve">
+    <value>Active tab</value>
+  </data>
+  <data name="SB_CardBuses" xml:space="preserve">
+    <value>Buses</value>
+  </data>
+  <data name="SB_CardLocations" xml:space="preserve">
+    <value>Locations</value>
+  </data>
+  <data name="SB_CardSearchRows" xml:space="preserve">
+    <value>Search rows</value>
+  </data>
+  <data name="SB_ClientInfo" xml:space="preserve">
+    <value>Client information</value>
+  </data>
+  <data name="SB_ClientName" xml:space="preserve">
+    <value>Client name</value>
+  </data>
+  <data name="SB_ClientPhone" xml:space="preserve">
+    <value>Client phone</value>
+  </data>
+  <data name="SB_ClientSeats" xml:space="preserve">
+    <value>Client seats</value>
+  </data>
+  <data name="SB_ClientSeatsTitle" xml:space="preserve">
+    <value>Client seats</value>
+  </data>
+  <data name="SB_ClientTripType" xml:space="preserve">
+    <value>Client trip type</value>
+  </data>
+  <data name="SB_Clients" xml:space="preserve">
+    <value>Clients</value>
+  </data>
+  <data name="SB_ColBus" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="SB_ColBusRoute" xml:space="preserve">
+    <value>Bus route</value>
+  </data>
+  <data name="SB_ColCheck" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="SB_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="SB_ColClientPhone" xml:space="preserve">
+    <value>Client phone</value>
+  </data>
+  <data name="SB_ColCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="SB_ColCompClient" xml:space="preserve">
+    <value>Company client</value>
+  </data>
+  <data name="SB_ColCompPhone" xml:space="preserve">
+    <value>Company phone</value>
+  </data>
+  <data name="SB_ColDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="SB_ColDirection" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="SB_ColPaidTrip" xml:space="preserve">
+    <value>Trip paid</value>
+  </data>
+  <data name="SB_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="SB_ColPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="SB_ColPriceSeat" xml:space="preserve">
+    <value>Seat price</value>
+  </data>
+  <data name="SB_ColRemTrip" xml:space="preserve">
+    <value>Trip remaining</value>
+  </data>
+  <data name="SB_ColRoute" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="SB_ColSeat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="SB_ColSeatLoc" xml:space="preserve">
+    <value>Seat route</value>
+  </data>
+  <data name="SB_ColStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="SB_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="SB_CompSeatsTitle" xml:space="preserve">
+    <value>Company seats</value>
+  </data>
+  <data name="SB_Companies" xml:space="preserve">
+    <value>Companies</value>
+  </data>
+  <data name="SB_Company" xml:space="preserve">
+    <value>Company seats</value>
+  </data>
+  <data name="SB_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="SB_DateFrom" xml:space="preserve">
+    <value>Date from</value>
+  </data>
+  <data name="SB_DateTo" xml:space="preserve">
+    <value>Date to</value>
+  </data>
+  <data name="SB_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="SB_ExtCompany" xml:space="preserve">
+    <value>External company</value>
+  </data>
+  <data name="SB_FallbackInfo" xml:space="preserve">
+    <value>No direct trip was found. You can create a new trip for this route.</value>
+  </data>
+  <data name="SB_ForceBtnCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SB_ForceBtnConfirm" xml:space="preserve">
+    <value>Confirm force delete</value>
+  </data>
+  <data name="SB_ForceLoading" xml:space="preserve">
+    <value>Loading bookings...</value>
+  </data>
+  <data name="SB_ForceTitle" xml:space="preserve">
+    <value>Force delete bookings</value>
+  </data>
+  <data name="SB_FromLocation" xml:space="preserve">
+    <value>From location</value>
+  </data>
+  <data name="SB_Heading" xml:space="preserve">
+    <value>Seat Booking Bound</value>
+  </data>
+  <data name="SB_HintDelete" xml:space="preserve">
+    <value>Selected bookings will be deleted if allowed.</value>
+  </data>
+  <data name="SB_Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="SB_NewTrip" xml:space="preserve">
+    <value>Create new trip</value>
+  </data>
+  <data name="SB_NoResults" xml:space="preserve">
+    <value>No results found.</value>
+  </data>
+  <data name="SB_NoSeats" xml:space="preserve">
+    <value>No seats found.</value>
+  </data>
+  <data name="SB_NoSeatsWarning" xml:space="preserve">
+    <value>No seats are available for transfer.</value>
+  </data>
+  <data name="SB_NoTransferTrips" xml:space="preserve">
+    <value>No transfer trips found.</value>
+  </data>
+  <data name="SB_NoTrips" xml:space="preserve">
+    <value>No trips found.</value>
+  </data>
+  <data name="SB_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="SB_NotesOptional" xml:space="preserve">
+    <value>Optional notes</value>
+  </data>
+  <data name="SB_PayAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="SB_PayPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="SB_PayPartial" xml:space="preserve">
+    <value>Partially paid</value>
+  </data>
+  <data name="SB_PayStatus" xml:space="preserve">
+    <value>Payment status</value>
+  </data>
+  <data name="SB_PayUnpaid" xml:space="preserve">
+    <value>Unpaid</value>
+  </data>
+  <data name="SB_Plate" xml:space="preserve">
+    <value>Plate</value>
+  </data>
+  <data name="SB_PricePerSeat" xml:space="preserve">
+    <value>Price per seat</value>
+  </data>
+  <data name="SB_Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="SB_Route" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="SB_RouteFrom" xml:space="preserve">
+    <value>Route from</value>
+  </data>
+  <data name="SB_RouteTo" xml:space="preserve">
+    <value>Route to</value>
+  </data>
+  <data name="SB_SearchTitle" xml:space="preserve">
+    <value>Search bookings</value>
+  </data>
+  <data name="SB_SeatMap" xml:space="preserve">
+    <value>Seat map</value>
+  </data>
+  <data name="SB_SeatsCount" xml:space="preserve">
+    <value>Seats count</value>
+  </data>
+  <data name="SB_SelectCompany" xml:space="preserve">
+    <value>Select company</value>
+  </data>
+  <data name="SB_SelectRoute" xml:space="preserve">
+    <value>Select a route to show available buses.</value>
+  </data>
+  <data name="SB_SelectRouteFrom" xml:space="preserve">
+    <value>Select route from</value>
+  </data>
+  <data name="SB_SelectRouteTo" xml:space="preserve">
+    <value>Select route to</value>
+  </data>
+  <data name="SB_SrPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="SB_SrPrice" xml:space="preserve">
+    <value>Total price</value>
+  </data>
+  <data name="SB_SrRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="SB_SrRows" xml:space="preserve">
+    <value>Rows</value>
+  </data>
+  <data name="SB_SrSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="SB_SubtitleRole" xml:space="preserve">
+    <value>Manage company seats, transfers, and searches from one place.</value>
+  </data>
+  <data name="SB_TabBook" xml:space="preserve">
+    <value>Book seats</value>
+  </data>
+  <data name="SB_TabSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SB_TabTransfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="SB_TagAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="SB_TagCompanyBooked" xml:space="preserve">
+    <value>Company booked</value>
+  </data>
+  <data name="SB_TagTransferred" xml:space="preserve">
+    <value>Transferred</value>
+  </data>
+  <data name="SB_TagTransferredTo" xml:space="preserve">
+    <value>Transferred to</value>
+  </data>
+  <data name="SB_ToLocation" xml:space="preserve">
+    <value>To location</value>
+  </data>
+  <data name="SB_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="SB_TotalSeats" xml:space="preserve">
+    <value>Total seats</value>
+  </data>
+  <data name="SB_TransferTitle" xml:space="preserve">
+    <value>Transfer client seats to company</value>
+  </data>
+  <data name="SB_Trip" xml:space="preserve">
+    <value>Trip</value>
+  </data>
+  <data name="SB_TripDate" xml:space="preserve">
+    <value>Trip date</value>
+  </data>
+  <data name="SB_TripDetails" xml:space="preserve">
+    <value>Trip details</value>
+  </data>
+  <data name="SB_WelcomeBack" xml:space="preserve">
+    <value>Welcome back,</value>
+  </data>
+  <data name="SB_CompanySeats" xml:space="preserve">
+    <value>Company seats</value>
+  </data>
+  <data name="SB_PageTitle" xml:space="preserve">
+    <value>Seat Booking Bound</value>
+  </data>
+  <data name="CSA_PageTitle" xml:space="preserve">
+    <value>Company Seat Accounting</value>
+  </data>
+  <data name="CSA_Badge" xml:space="preserve">
+    <value>Company Seat Accounting</value>
+  </data>
+  <data name="CSA_Heading" xml:space="preserve">
+    <value>Company Seat Accounts</value>
+  </data>
+  <data name="CSA_Subtitle" xml:space="preserve">
+    <value>View company accounts, payments, and export PDF / Excel.</value>
+  </data>
+  <data name="CSA_WelcomeBack" xml:space="preserve">
+    <value>Welcome,</value>
+  </data>
+  <data name="CSA_BtnSeatBooking" xml:space="preserve">
+    <value>Seat Booking</value>
+  </data>
+  <data name="CSA_BtnTrips" xml:space="preserve">
+    <value>Trips</value>
+  </data>
+  <data name="CSA_BtnCompanyTrips" xml:space="preserve">
+    <value>Company Trips</value>
+  </data>
+  <data name="CSA_FilterTitle" xml:space="preserve">
+    <value>Filter Account</value>
+  </data>
+  <data name="CSA_LblCompany" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="CSA_SelectCompany" xml:space="preserve">
+    <value>Select a company</value>
+  </data>
+  <data name="CSA_LblDateFrom" xml:space="preserve">
+    <value>Date From</value>
+  </data>
+  <data name="CSA_LblDateTo" xml:space="preserve">
+    <value>Date To</value>
+  </data>
+  <data name="CSA_BtnView" xml:space="preserve">
+    <value>View Account</value>
+  </data>
+  <data name="CSA_BtnExcel" xml:space="preserve">
+    <value>Excel</value>
+  </data>
+  <data name="CSA_BtnPdf" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="CSA_SelectPrompt" xml:space="preserve">
+    <value>Select a company to display the account.</value>
+  </data>
+  <data name="CSA_SummaryInbound" xml:space="preserve">
+    <value>Company Booked With Us / Inbound</value>
+  </data>
+  <data name="CSA_SummaryOutbound" xml:space="preserve">
+    <value>We Booked From Them / Outbound</value>
+  </data>
+  <data name="CSA_SummaryTotalPaid" xml:space="preserve">
+    <value>Total Paid</value>
+  </data>
+  <data name="CSA_SummaryNetBalance" xml:space="preserve">
+    <value>Net Balance</value>
+  </data>
+  <data name="CSA_TableTitle" xml:space="preserve">
+    <value>Bookings &amp; Transactions</value>
+  </data>
+  <data name="CSA_AddPaymentPH" xml:space="preserve">
+    <value>General payment amount</value>
+  </data>
+  <data name="CSA_NotesPH" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CSA_BtnAddPayment" xml:space="preserve">
+    <value>Add Payment</value>
+  </data>
+  <data name="CSA_NoBookings" xml:space="preserve">
+    <value>No bookings for this company.</value>
+  </data>
+  <data name="CSA_ColDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="CSA_ColDir" xml:space="preserve">
+    <value>Dir</value>
+  </data>
+  <data name="CSA_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="CSA_ColBus" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="CSA_ColTripRoute" xml:space="preserve">
+    <value>Trip Route</value>
+  </data>
+  <data name="CSA_ColSeatRoute" xml:space="preserve">
+    <value>Seat Route</value>
+  </data>
+  <data name="CSA_ColSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="CSA_ColSeatLabels" xml:space="preserve">
+    <value>Seat Labels</value>
+  </data>
+  <data name="CSA_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="CSA_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="CSA_ColPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="CSA_ColTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="CSA_ColPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="CSA_ColRemain" xml:space="preserve">
+    <value>Remain</value>
+  </data>
+  <data name="CSA_ColUpdatePrice" xml:space="preserve">
+    <value>Update Price</value>
+  </data>
+  <data name="CSA_ColAddPayment" xml:space="preserve">
+    <value>Add Payment</value>
+  </data>
+  <data name="CSA_BtnSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="CSA_AmountPH" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="CSA_BtnPay" xml:space="preserve">
+    <value>Pay</value>
+  </data>
+  <data name="CSA_DirGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CSA_DirReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CSA_DirExternal" xml:space="preserve">
+    <value>External</value>
+  </data>
+  <data name="CSA_PaymentsTitle" xml:space="preserve">
+    <value>Payment History</value>
+  </data>
+  <data name="CSA_NoPayments" xml:space="preserve">
+    <value>No payments found.</value>
+  </data>
+  <data name="CSA_PayColDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="CSA_PayColAmount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="CSA_PayColTrip" xml:space="preserve">
+    <value>Trip</value>
+  </data>
+  <data name="CSA_PayColNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CSA_PayColDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="CSA_BtnDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="CSA_GeneralPayment" xml:space="preserve">
+    <value>General Payment</value>
+  </data>
+  <data name="CSA_ConfirmDelete" xml:space="preserve">
+    <value>Delete this payment?</value>
+  </data>
+  <data name="BkList_Badge" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="BkList_Title" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="BkList_Subtitle" xml:space="preserve">
+    <value>Manage hotel bookings, transportation, payments, and client details.</value>
+  </data>
+  <data name="BkList_LangLabel" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="BkList_ThemeLabel" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="BkList_ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="BkList_ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="BkList_NewBooking" xml:space="preserve">
+    <value>New Booking</value>
+  </data>
+  <data name="BkList_TodayBookings" xml:space="preserve">
+    <value>Today Bookings</value>
+  </data>
+  <data name="BkList_Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="BkList_TotalBookings" xml:space="preserve">
+    <value>Total Bookings</value>
+  </data>
+  <data name="BkList_ActiveBookings" xml:space="preserve">
+    <value>Active Bookings</value>
+  </data>
+  <data name="BkList_FilterSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="BkList_FilterSearchPH" xml:space="preserve">
+    <value>Code, phone, client, hotel...</value>
+  </data>
+  <data name="BkList_FilterCheckIn" xml:space="preserve">
+    <value>Check In</value>
+  </data>
+  <data name="BkList_FilterCheckOut" xml:space="preserve">
+    <value>Check Out</value>
+  </data>
+  <data name="BkList_FilterType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="BkList_FilterAllTypes" xml:space="preserve">
+    <value>All Types</value>
+  </data>
+  <data name="BkList_FilterHotelOnly" xml:space="preserve">
+    <value>Hotel Only</value>
+  </data>
+  <data name="BkList_FilterTransportOnly" xml:space="preserve">
+    <value>Transport Only</value>
+  </data>
+  <data name="BkList_FilterBoth" xml:space="preserve">
+    <value>Hotel + Transport</value>
+  </data>
+  <data name="BkList_FilterSearchBtn" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="BkList_FilterReset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="BkList_ScrollHint" xml:space="preserve">
+    <value>Scroll horizontally to see all columns.</value>
+  </data>
+  <data name="BkList_ColCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="BkList_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="BkList_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="BkList_ColType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="BkList_ColHotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="BkList_ColCheckIn" xml:space="preserve">
+    <value>Check In</value>
+  </data>
+  <data name="BkList_ColCheckOut" xml:space="preserve">
+    <value>Check Out</value>
+  </data>
+  <data name="BkList_ColPaid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="BkList_ColRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="BkList_ColUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="BkList_Empty" xml:space="preserve">
+    <value>No bookings found.</value>
+  </data>
+  <data name="BkList_TypeHotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="BkList_TypeTransport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="BkList_TypeHT" xml:space="preserve">
+    <value>H + T</value>
+  </data>
+  <data name="BkList_TypeNA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="BkList_RowTitle" xml:space="preserve">
+    <value>Click to view booking details</value>
+  </data>
+  <data name="BkList_UserBtnTitle" xml:space="preserve">
+    <value>Click to view creator phone</value>
+  </data>
+  <data name="BkList_UserHint" xml:space="preserve">
+    <value>Click for contact</value>
+  </data>
+  <data name="BkList_ModalTitle" xml:space="preserve">
+    <value>Booking User</value>
+  </data>
+  <data name="BkList_ModalSubtitle" xml:space="preserve">
+    <value>User who created this booking</value>
+  </data>
+  <data name="BkList_ModalLoading" xml:space="preserve">
+    <value>Loading user information...</value>
+  </data>
+  <data name="BkList_ModalUserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="BkList_ModalPhone" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="DW_Title" xml:space="preserve">
+    <value>Daily Work</value>
+  </data>
+  <data name="DW_Badge" xml:space="preserve">
+    <value>Daily Work</value>
+  </data>
+  <data name="DW_Subtitle" xml:space="preserve">
+    <value>Manage daily transport trips, hotel check-in/check-out, customer contacts, and remaining payments.</value>
+  </data>
+  <data name="DW_BtnTransportWork" xml:space="preserve">
+    <value>Transport Work</value>
+  </data>
+  <data name="DW_BtnHotelWork" xml:space="preserve">
+    <value>Hotel Work</value>
+  </data>
+  <data name="DW_BtnCompanyTrips" xml:space="preserve">
+    <value>Company Trips</value>
+  </data>
+  <data name="DW_BtnDashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DW_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="DW_TabTransport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="DW_TabHotels" xml:space="preserve">
+    <value>Hotels</value>
+  </data>
+  <data name="DW_TabCheckIn" xml:space="preserve">
+    <value>Check In</value>
+  </data>
+  <data name="DW_TabCheckOut" xml:space="preserve">
+    <value>Check Out</value>
+  </data>
+  <data name="DW_DirGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="DW_DirReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="DW_DirRound" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="DW_ChooseDate" xml:space="preserve">
+    <value>Choose Date</value>
+  </data>
+  <data name="DW_BtnShow" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="DW_SumTripsBus" xml:space="preserve">
+    <value>Trips Bus</value>
+  </data>
+  <data name="DW_SumBookings" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="DW_SumRooms" xml:space="preserve">
+    <value>Rooms</value>
+  </data>
+  <data name="DW_SumSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="DW_SumTotalAmount" xml:space="preserve">
+    <value>Total Amount</value>
+  </data>
+  <data name="DW_SumRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="DW_EmptyTransport" xml:space="preserve">
+    <value>No transport bookings found for this day.</value>
+  </data>
+  <data name="DW_EmptyHotel" xml:space="preserve">
+    <value>No hotel bookings found for this day.</value>
+  </data>
+  <data name="DW_LblBookings" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="DW_LblSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="DW_SecCompanyClients" xml:space="preserve">
+    <value>Company Clients</value>
+  </data>
+  <data name="DW_SecCompanyBookings" xml:space="preserve">
+    <value>Company Bookings</value>
+  </data>
+  <data name="DW_SecClientBookings" xml:space="preserve">
+    <value>Client Bookings</value>
+  </data>
+  <data name="DW_ColCompany" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="DW_ColClient" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="DW_ColPhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="DW_ColTripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="DW_ColSeatGo" xml:space="preserve">
+    <value>Seat (Go)</value>
+  </data>
+  <data name="DW_ColSeatReturn" xml:space="preserve">
+    <value>Seat (Return)</value>
+  </data>
+  <data name="DW_ColRoute" xml:space="preserve">
+    <value>Route</value>
+  </data>
+  <data name="DW_ColPrice" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="DW_ColTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="DW_ColInfo" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="DW_ColSeats" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="DW_ColDirection" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="DW_ColSeatsCount" xml:space="preserve">
+    <value>Seats Count</value>
+  </data>
+  <data name="DW_ColCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="DW_ColContacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="DW_ColHotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="DW_ColTransportTotal" xml:space="preserve">
+    <value>Transport Total</value>
+  </data>
+  <data name="DW_ColBookingTotal" xml:space="preserve">
+    <value>Booking Total</value>
+  </data>
+  <data name="DW_ColRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="DW_Transfer" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="DW_TransferredFrom" xml:space="preserve">
+    <value>Transferred from</value>
+  </data>
+  <data name="DW_Inbound" xml:space="preserve">
+    <value>Inbound</value>
+  </data>
+  <data name="DW_Outbound" xml:space="preserve">
+    <value>Outbound</value>
+  </data>
+  <data name="DW_HotelOnly" xml:space="preserve">
+    <value>Hotel Only</value>
+  </data>
+  <data name="DW_HotelPlusTransport" xml:space="preserve">
+    <value>Hotel + Transport</value>
+  </data>
+  <data name="DW_HbDates" xml:space="preserve">
+    <value>Dates</value>
+  </data>
+  <data name="DW_HbRooms" xml:space="preserve">
+    <value>Rooms</value>
+  </data>
+  <data name="DW_HbChildren" xml:space="preserve">
+    <value>Children</value>
+  </data>
+  <data name="DW_HbU6" xml:space="preserve">
+    <value>U6</value>
+  </data>
+  <data name="DW_HbU12" xml:space="preserve">
+    <value>U12</value>
+  </data>
+  <data name="DW_HbTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="DW_HbContacts" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="DW_HbHotelTotal" xml:space="preserve">
+    <value>Hotel Total</value>
+  </data>
+  <data name="DW_HbTransportTotal" xml:space="preserve">
+    <value>Transport Total</value>
+  </data>
+  <data name="DW_HbGrandTotal" xml:space="preserve">
+    <value>Grand Total</value>
+  </data>
+  <data name="DW_HbRemaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="CB_Title" xml:space="preserve">
+    <value>Create Booking</value>
+  </data>
+  <data name="CB_Badge" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
+  <data name="CB_Heading" xml:space="preserve">
+    <value>Create Booking</value>
+  </data>
+  <data name="CB_Subtitle" xml:space="preserve">
+    <value>Create hotel, transportation, or combined booking in one clean workflow.</value>
+  </data>
+  <data name="CB_BackToBookings" xml:space="preserve">
+    <value>Back To Bookings</value>
+  </data>
+  <data name="CB_BookingType" xml:space="preserve">
+    <value>Booking Type</value>
+  </data>
+  <data name="CB_SelectMode" xml:space="preserve">
+    <value>Select Booking Mode</value>
+  </data>
+  <data name="CB_ModeDesc" xml:space="preserve">
+    <value>Hotel only shows hotel dates and rooms. Transportation only shows trip dates, buses, and seats. Combined shows both sections together.</value>
+  </data>
+  <data name="CB_ModeHotelTag" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="CB_ModeHotelTitle" xml:space="preserve">
+    <value>Hotel Booking</value>
+  </data>
+  <data name="CB_ModeHotelDesc" xml:space="preserve">
+    <value>Hotel rooms, nights, children, payments, and phones.</value>
+  </data>
+  <data name="CB_ModeTransportTag" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="CB_ModeTransportTitle" xml:space="preserve">
+    <value>Transportation Booking</value>
+  </data>
+  <data name="CB_ModeTransportDesc" xml:space="preserve">
+    <value>Trip type, go date, return date, buses, seats, and prices.</value>
+  </data>
+  <data name="CB_ModeBothTag" xml:space="preserve">
+    <value>Combined</value>
+  </data>
+  <data name="CB_ModeBothTitle" xml:space="preserve">
+    <value>Hotel + Transportation</value>
+  </data>
+  <data name="CB_ModeBothDesc" xml:space="preserve">
+    <value>Hotel booking with transportation in the same page.</value>
+  </data>
+  <data name="CB_BasicData" xml:space="preserve">
+    <value>Basic Data</value>
+  </data>
+  <data name="CB_BasicDataSub" xml:space="preserve">
+    <value>Client information and booking dates</value>
+  </data>
+  <data name="CB_ClientName" xml:space="preserve">
+    <value>Client Name</value>
+  </data>
+  <data name="CB_ClientNamePH" xml:space="preserve">
+    <value>Client name...</value>
+  </data>
+  <data name="CB_CheckIn" xml:space="preserve">
+    <value>Check In</value>
+  </data>
+  <data name="CB_Nights" xml:space="preserve">
+    <value>Nights</value>
+  </data>
+  <data name="CB_CheckOut" xml:space="preserve">
+    <value>Check Out</value>
+  </data>
+  <data name="CB_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CB_NotesPH" xml:space="preserve">
+    <value>Write notes if needed...</value>
+  </data>
+  <data name="CB_HotelRooms" xml:space="preserve">
+    <value>Hotel Rooms</value>
+  </data>
+  <data name="CB_HotelRoomsSub" xml:space="preserve">
+    <value>Complete the current room row before adding a new one</value>
+  </data>
+  <data name="CB_AddRoom" xml:space="preserve">
+    <value>+ Add Room</value>
+  </data>
+  <data name="CB_HotelName" xml:space="preserve">
+    <value>Hotel Name</value>
+  </data>
+  <data name="CB_HotelNamePH" xml:space="preserve">
+    <value>Hotel name...</value>
+  </data>
+  <data name="CB_RoomType" xml:space="preserve">
+    <value>Room Type</value>
+  </data>
+  <data name="CB_Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="CB_NightPrice" xml:space="preserve">
+    <value>Night Price</value>
+  </data>
+  <data name="CB_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="CB_Children" xml:space="preserve">
+    <value>Children</value>
+  </data>
+  <data name="CB_ChildrenSub" xml:space="preserve">
+    <value>Children count by age</value>
+  </data>
+  <data name="CB_Until6" xml:space="preserve">
+    <value>Until 6 Years</value>
+  </data>
+  <data name="CB_Until12" xml:space="preserve">
+    <value>Until 12 Years</value>
+  </data>
+  <data name="CB_TotalChildren" xml:space="preserve">
+    <value>Total Children</value>
+  </data>
+  <data name="CB_Transportation" xml:space="preserve">
+    <value>Transportation</value>
+  </data>
+  <data name="CB_TransportationSub" xml:space="preserve">
+    <value>Choose route, bus, then select seats</value>
+  </data>
+  <data name="CB_GoRequiredSeats" xml:space="preserve">
+    <value>Go Required Seats</value>
+  </data>
+  <data name="CB_GoRequiredSeatsNote" xml:space="preserve">
+    <value>Buses list will show buses with enough available seats only.</value>
+  </data>
+  <data name="CB_ReturnRequiredSeats" xml:space="preserve">
+    <value>Return Required Seats</value>
+  </data>
+  <data name="CB_ReturnRequiredSeatsNote" xml:space="preserve">
+    <value>For Round Trip, enter the return seats count separately.</value>
+  </data>
+  <data name="CB_TripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="CB_TripGoOnly" xml:space="preserve">
+    <value>Go Only</value>
+  </data>
+  <data name="CB_TripReturnOnly" xml:space="preserve">
+    <value>Return Only</value>
+  </data>
+  <data name="CB_TripRound" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="CB_GoDate" xml:space="preserve">
+    <value>Go Date</value>
+  </data>
+  <data name="CB_ReturnDate" xml:space="preserve">
+    <value>Return Date</value>
+  </data>
+  <data name="CB_GoTrip" xml:space="preserve">
+    <value>Go Trip</value>
+  </data>
+  <data name="CB_PillGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CB_GoFrom" xml:space="preserve">
+    <value>Go From</value>
+  </data>
+  <data name="CB_GoTo" xml:space="preserve">
+    <value>Go To</value>
+  </data>
+  <data name="CB_GoBus" xml:space="preserve">
+    <value>Go Bus</value>
+  </data>
+  <data name="CB_SwapGoRoute" xml:space="preserve">
+    <value>Swap Go Route</value>
+  </data>
+  <data name="CB_SelectFromLocation" xml:space="preserve">
+    <value>Select from location...</value>
+  </data>
+  <data name="CB_SelectToLocation" xml:space="preserve">
+    <value>Select to location...</value>
+  </data>
+  <data name="CB_SelectRouteFirst" xml:space="preserve">
+    <value>Select route first...</value>
+  </data>
+  <data name="CB_SelectRouteToShowBuses" xml:space="preserve">
+    <value>Select route to show buses.</value>
+  </data>
+  <data name="CB_SelectedGoPrices" xml:space="preserve">
+    <value>Selected Go seat prices</value>
+  </data>
+  <data name="CB_ReturnTrip" xml:space="preserve">
+    <value>Return Trip</value>
+  </data>
+  <data name="CB_PillReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CB_ReturnFrom" xml:space="preserve">
+    <value>Return From</value>
+  </data>
+  <data name="CB_ReturnTo" xml:space="preserve">
+    <value>Return To</value>
+  </data>
+  <data name="CB_ReturnBus" xml:space="preserve">
+    <value>Return Bus</value>
+  </data>
+  <data name="CB_SwapReturnRoute" xml:space="preserve">
+    <value>Swap Return Route</value>
+  </data>
+  <data name="CB_SelectedReturnPrices" xml:space="preserve">
+    <value>Selected Return seat prices</value>
+  </data>
+  <data name="CB_Payments" xml:space="preserve">
+    <value>Payments</value>
+  </data>
+  <data name="CB_PaymentsSub" xml:space="preserve">
+    <value>Paid amount cannot be greater than grand total</value>
+  </data>
+  <data name="CB_AddPayment" xml:space="preserve">
+    <value>+ Add Payment</value>
+  </data>
+  <data name="CB_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="CB_PayType" xml:space="preserve">
+    <value>Pay Type</value>
+  </data>
+  <data name="CB_PaidAt" xml:space="preserve">
+    <value>Paid At</value>
+  </data>
+  <data name="CB_PaymentNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="CB_PaymentNotesPH" xml:space="preserve">
+    <value>Payment notes...</value>
+  </data>
+  <data name="CB_PhoneNumbers" xml:space="preserve">
+    <value>Phone Numbers</value>
+  </data>
+  <data name="CB_PhoneNumbersSub" xml:space="preserve">
+    <value>Egyptian phone format example: 01012345678</value>
+  </data>
+  <data name="CB_AddPhone" xml:space="preserve">
+    <value>+ Add Phone</value>
+  </data>
+  <data name="CB_Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="CB_Primary" xml:space="preserve">
+    <value>Primary</value>
+  </data>
+  <data name="CB_Totals" xml:space="preserve">
+    <value>Totals</value>
+  </data>
+  <data name="CB_TotalsSub" xml:space="preserve">
+    <value>Live calculation</value>
+  </data>
+  <data name="CB_Discount" xml:space="preserve">
+    <value>Discount</value>
+  </data>
+  <data name="CB_SumNights" xml:space="preserve">
+    <value>Nights</value>
+  </data>
+  <data name="CB_SumHotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="CB_SumTransport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="CB_SumGrandRemaining" xml:space="preserve">
+    <value>Grand / Remaining</value>
+  </data>
+  <data name="CB_CreateBtn" xml:space="preserve">
+    <value>Create Booking</value>
+  </data>
+  <data name="CB_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CB_JsSeat" xml:space="preserve">
+    <value>Seat</value>
+  </data>
+  <data name="CB_JsCheckoutAfterCheckin" xml:space="preserve">
+    <value>Check out must be at least one day after check in.</value>
+  </data>
+  <data name="CB_JsSelectBus" xml:space="preserve">
+    <value>Select bus...</value>
+  </data>
+  <data name="CB_JsSelectToLocation" xml:space="preserve">
+    <value>Select to location...</value>
+  </data>
+  <data name="CB_JsSelectRouteFirst" xml:space="preserve">
+    <value>Select route first...</value>
+  </data>
+  <data name="CB_JsSelectRouteToShowBuses" xml:space="preserve">
+    <value>Select route to show buses.</value>
+  </data>
+  <data name="CB_JsSelectBusToShowSeats" xml:space="preserve">
+    <value>Select bus to show seats.</value>
+  </data>
+  <data name="CB_JsCannotLoadRoute" xml:space="preserve">
+    <value>Cannot load route locations.</value>
+  </data>
+  <data name="CB_JsCannotLoadBuses" xml:space="preserve">
+    <value>Cannot load buses.</value>
+  </data>
+  <data name="CB_JsCannotLoadLayout" xml:space="preserve">
+    <value>Cannot load bus layout.</value>
+  </data>
+  <data name="CB_JsLoadingLayout" xml:space="preserve">
+    <value>Loading bus layout...</value>
+  </data>
+  <data name="CB_JsNewTrip" xml:space="preserve">
+    <value>New trip</value>
+  </data>
+  <data name="CB_JsExistingTrip" xml:space="preserve">
+    <value>Existing trip</value>
+  </data>
+  <data name="CB_JsAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="CB_JsGoDisabled" xml:space="preserve">
+    <value>Go is disabled.</value>
+  </data>
+  <data name="CB_JsReturnDisabled" xml:space="preserve">
+    <value>Return is disabled.</value>
+  </data>
+  <data name="CB_JsBooked" xml:space="preserve">
+    <value>Booked</value>
+  </data>
+  <data name="CB_JsDirGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="CB_JsDirReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="CB_JsBusSuffix" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="CB_JsSeatLocation" xml:space="preserve">
+    <value>Seat Location</value>
+  </data>
+  <data name="CB_JsSeatLocationHint" xml:space="preserve">
+    <value>Enter pickup/drop-off for these selected seats. This is separate from the bus route.</value>
+  </data>
+  <data name="CB_JsSeatFromLocation" xml:space="preserve">
+    <value>Seat From Location</value>
+  </data>
+  <data name="CB_JsSeatToLocation" xml:space="preserve">
+    <value>Seat To Location</value>
+  </data>
+  <data name="CB_JsSeatLocationFromPH" xml:space="preserve">
+    <value>Example: Assiut New</value>
+  </data>
+  <data name="CB_JsSeatLocationToPH" xml:space="preserve">
+    <value>Example: Sun and Sea</value>
+  </data>
+  <data name="CB_JsSeatPriceLabel" xml:space="preserve">
+    <value>Seat Price</value>
+  </data>
+  <data name="CB_JsCountLabel" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="CB_JsPricePerSeat" xml:space="preserve">
+    <value>Price per seat</value>
+  </data>
+  <data name="CB_JsSelectedPrices" xml:space="preserve">
+    <value>Selected {0} seat prices</value>
+  </data>
+  <data name="CB_JsSeatsExceedRequired" xml:space="preserve">
+    <value>{0} selected seats cannot exceed required seats count ({1}).</value>
+  </data>
+  <data name="CB_JsEnterRequiredSeats" xml:space="preserve">
+    <value>Enter {0} required seats count first.</value>
+  </data>
+  <data name="CB_JsSelectDateFirst" xml:space="preserve">
+    <value>Select {0} date first.</value>
+  </data>
+  <data name="CB_JsLoadingBuses" xml:space="preserve">
+    <value>Loading buses with at least {0} available seats...</value>
+  </data>
+  <data name="CB_JsNoBusSeats" xml:space="preserve">
+    <value>No bus has {0} available seats for this route/date.</value>
+  </data>
+  <data name="CB_JsFoundBuses" xml:space="preserve">
+    <value>Found {0} bus(es). Select a bus to show seats.</value>
+  </data>
+  <data name="CB_JsBusOnlyHas" xml:space="preserve">
+    <value>This bus has only {0} available seats. Please choose another bus.</value>
+  </data>
+  <data name="CB_JsReqSeatsRequired" xml:space="preserve">
+    <value>{0} required seats count is required.</value>
+  </data>
+  <data name="CB_JsDateRequired" xml:space="preserve">
+    <value>{0} date is required.</value>
+  </data>
+  <data name="CB_JsFromLocRequired" xml:space="preserve">
+    <value>{0} from location is required.</value>
+  </data>
+  <data name="CB_JsToLocRequired" xml:space="preserve">
+    <value>{0} to location is required.</value>
+  </data>
+  <data name="CB_JsBusRequired" xml:space="preserve">
+    <value>{0} bus is required.</value>
+  </data>
+  <data name="CB_JsSelectOneSeat" xml:space="preserve">
+    <value>Select at least one {0} seat.</value>
+  </data>
+  <data name="CB_JsSeatsMustEqual" xml:space="preserve">
+    <value>{0} selected seats must equal required seats count ({1}).</value>
+  </data>
+  <data name="CB_JsSeatFromRequired" xml:space="preserve">
+    <value>{0} seat from location is required.</value>
+  </data>
+  <data name="CB_JsSeatToRequired" xml:space="preserve">
+    <value>{0} seat to location is required.</value>
+  </data>
+  <data name="CB_JsSeatPricePositive" xml:space="preserve">
+    <value>{0} {1} seat price must be greater than zero.</value>
+  </data>
+  <data name="CB_JsHotelNameRequired" xml:space="preserve">
+    <value>Hotel name is required.</value>
+  </data>
+  <data name="CB_JsRoomRowCount" xml:space="preserve">
+    <value>Room row {0}: count must be greater than zero.</value>
+  </data>
+  <data name="CB_JsRoomRowPrice" xml:space="preserve">
+    <value>Room row {0}: night price must be greater than zero.</value>
+  </data>
+  <data name="CB_JsPhoneRowRequired" xml:space="preserve">
+    <value>Phone row {0}: phone number is required.</value>
+  </data>
+  <data name="CB_JsPhoneRowIncorrect" xml:space="preserve">
+    <value>Phone row {0}: phone number is incorrect.</value>
+  </data>
+  <data name="CB_JsOnePrimaryRequired" xml:space="preserve">
+    <value>One primary phone number is required.</value>
+  </data>
+  <data name="CB_JsPaymentRowRequired" xml:space="preserve">
+    <value>Payment row {0}: amount is required.</value>
+  </data>
+  <data name="CB_JsPaymentRowNegative" xml:space="preserve">
+    <value>Payment row {0}: amount cannot be negative.</value>
+  </data>
+  <data name="CB_JsPaidExceedsGrand" xml:space="preserve">
+    <value>Paid amount cannot be greater than grand total.</value>
+  </data>
+  <data name="CB_JsCountPositive" xml:space="preserve">
+    <value>Count must be greater than zero.</value>
+  </data>
+  <data name="CB_JsNightPricePositive" xml:space="preserve">
+    <value>Night price must be greater than zero.</value>
+  </data>
+  <data name="CB_JsAmountPositive" xml:space="preserve">
+    <value>Amount must be greater than zero before adding a new row.</value>
+  </data>
+  <data name="CB_JsPhoneRequired" xml:space="preserve">
+    <value>Phone number is required.</value>
+  </data>
+  <data name="CB_JsPhoneIncorrect" xml:space="preserve">
+    <value>Phone number is incorrect.</value>
+  </data>
+  <data name="CB_JsPhoneIncorrectEx" xml:space="preserve">
+    <value>Phone number is incorrect. Example: 01012345678</value>
+  </data>
+  <data name="BkDet_BookingWord" xml:space="preserve">
+    <value>Booking</value>
+  </data>
+  <data name="BkDet_TypeHT" xml:space="preserve">
+    <value>Hotel + Transportation</value>
+  </data>
+  <data name="BkDet_TypeHotelOnly" xml:space="preserve">
+    <value>Hotel Only</value>
+  </data>
+  <data name="BkDet_TypeTransportOnly" xml:space="preserve">
+    <value>Transportation Only</value>
+  </data>
+  <data name="BkDet_TypeNA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="BkDet_MainPhone" xml:space="preserve">
+    <value>Main Phone</value>
+  </data>
+  <data name="BkDet_CreatedBy" xml:space="preserve">
+    <value>Created By</value>
+  </data>
+  <data name="BkDet_ViewUserContact" xml:space="preserve">
+    <value>Click to view user contact</value>
+  </data>
+  <data name="BkDet_BtnBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="BkDet_BtnReport" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="BkDet_BtnTicket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
+  <data name="BkDet_BtnAudit" xml:space="preserve">
+    <value>Audit</value>
+  </data>
+  <data name="BkDet_BtnEdit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="BkDet_BtnDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="BkDet_ConfirmDelete" xml:space="preserve">
+    <value>Delete booking</value>
+  </data>
+  <data name="BkDet_HotelTotal" xml:space="preserve">
+    <value>Hotel Total</value>
+  </data>
+  <data name="BkDet_TransportTotal" xml:space="preserve">
+    <value>Transportation Total</value>
+  </data>
+  <data name="BkDet_GrandTotal" xml:space="preserve">
+    <value>Grand Total</value>
+  </data>
+  <data name="BkDet_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="BkDet_AddPaymentBtn" xml:space="preserve">
+    <value>+ Add Payment</value>
+  </data>
+  <data name="BkDet_Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="BkDet_ClientData" xml:space="preserve">
+    <value>Client Data</value>
+  </data>
+  <data name="BkDet_Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="BkDet_ClientName" xml:space="preserve">
+    <value>Client Name</value>
+  </data>
+  <data name="BkDet_BookingType" xml:space="preserve">
+    <value>Booking Type</value>
+  </data>
+  <data name="BkDet_CreatedAt" xml:space="preserve">
+    <value>Created At</value>
+  </data>
+  <data name="BkDet_PhoneNumbers" xml:space="preserve">
+    <value>Phone Numbers</value>
+  </data>
+  <data name="BkDet_NoPhones" xml:space="preserve">
+    <value>No phone numbers found.</value>
+  </data>
+  <data name="BkDet_Primary" xml:space="preserve">
+    <value>Primary</value>
+  </data>
+  <data name="BkDet_HotelDetails" xml:space="preserve">
+    <value>Hotel Details</value>
+  </data>
+  <data name="BkDet_HotelName" xml:space="preserve">
+    <value>Hotel Name</value>
+  </data>
+  <data name="BkDet_CheckIn" xml:space="preserve">
+    <value>Check In</value>
+  </data>
+  <data name="BkDet_CheckOut" xml:space="preserve">
+    <value>Check Out</value>
+  </data>
+  <data name="BkDet_Nights" xml:space="preserve">
+    <value>Nights</value>
+  </data>
+  <data name="BkDet_Rooms" xml:space="preserve">
+    <value>Rooms</value>
+  </data>
+  <data name="BkDet_Children" xml:space="preserve">
+    <value>Children</value>
+  </data>
+  <data name="BkDet_RoomsBreakdown" xml:space="preserve">
+    <value>Rooms Breakdown</value>
+  </data>
+  <data name="BkDet_RoomType" xml:space="preserve">
+    <value>Room Type</value>
+  </data>
+  <data name="BkDet_Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="BkDet_NightPrice" xml:space="preserve">
+    <value>Night Price</value>
+  </data>
+  <data name="BkDet_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="BkDet_TransportDetails" xml:space="preserve">
+    <value>Transportation Details</value>
+  </data>
+  <data name="BkDet_NoTrips" xml:space="preserve">
+    <value>No transportation trips found.</value>
+  </data>
+  <data name="BkDet_DirReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="BkDet_DirGo" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="BkDet_ReturnBus" xml:space="preserve">
+    <value>Return Bus</value>
+  </data>
+  <data name="BkDet_GoBus" xml:space="preserve">
+    <value>Go Bus</value>
+  </data>
+  <data name="BkDet_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="BkDet_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="BkDet_Bus" xml:space="preserve">
+    <value>Bus</value>
+  </data>
+  <data name="BkDet_Plate" xml:space="preserve">
+    <value>Plate</value>
+  </data>
+  <data name="BkDet_BookedSeats" xml:space="preserve">
+    <value>Booked Seats</value>
+  </data>
+  <data name="BkDet_Booked" xml:space="preserve">
+    <value>Booked</value>
+  </data>
+  <data name="BkDet_SeatsWord" xml:space="preserve">
+    <value>Seats</value>
+  </data>
+  <data name="BkDet_SeatRoute" xml:space="preserve">
+    <value>Seat Route</value>
+  </data>
+  <data name="BkDet_PricePerSeat" xml:space="preserve">
+    <value>Price / Seat</value>
+  </data>
+  <data name="BkDet_NoSeats" xml:space="preserve">
+    <value>No seats found for this trip.</value>
+  </data>
+  <data name="BkDet_Payments" xml:space="preserve">
+    <value>Payments</value>
+  </data>
+  <data name="BkDet_NoPayments" xml:space="preserve">
+    <value>No payments found.</value>
+  </data>
+  <data name="BkDet_PayType" xml:space="preserve">
+    <value>Pay Type</value>
+  </data>
+  <data name="BkDet_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="BkDet_NotesCol" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="BkDet_PaidTotal" xml:space="preserve">
+    <value>Paid Total</value>
+  </data>
+  <data name="BkDet_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="BkDet_ModalTitle" xml:space="preserve">
+    <value>Booking User</value>
+  </data>
+  <data name="BkDet_ModalSubtitle" xml:space="preserve">
+    <value>User who created this booking</value>
+  </data>
+  <data name="BkDet_ModalLoading" xml:space="preserve">
+    <value>Loading user information...</value>
+  </data>
+  <data name="BkDet_ModalUserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="BkDet_ModalPhone" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="BkDet_AddPaymentTitle" xml:space="preserve">
+    <value>Add Payment</value>
+  </data>
+  <data name="BkDet_PaidAt" xml:space="preserve">
+    <value>Paid At</value>
+  </data>
+  <data name="BkDet_PaymentNotesPH" xml:space="preserve">
+    <value>Payment notes...</value>
+  </data>
+  <data name="BkDet_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="BkDet_SavePayment" xml:space="preserve">
+    <value>Save Payment</value>
+  </data>
+  <data name="BkDet_JsLoadFailed" xml:space="preserve">
+    <value>Failed to load user information.</value>
+  </data>
+  <data name="BkDet_JsConnectFailed" xml:space="preserve">
+    <value>Failed to connect to the server.</value>
+  </data>
+  <data name="AUD_TitleWord" xml:space="preserve">
+    <value>Audit</value>
+  </data>
+  <data name="AUD_NA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="AUD_Badge" xml:space="preserve">
+    <value>Audit Trail</value>
+  </data>
+  <data name="AUD_BookingWord" xml:space="preserve">
+    <value>Booking</value>
+  </data>
+  <data name="AUD_Subtitle" xml:space="preserve">
+    <value>All changes, who made them, when, and what values changed.</value>
+  </data>
+  <data name="AUD_AllBookings" xml:space="preserve">
+    <value>← All Bookings</value>
+  </data>
+  <data name="AUD_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="AUD_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="AUD_Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="AUD_PrimaryPhone" xml:space="preserve">
+    <value>Primary Phone</value>
+  </data>
+  <data name="AUD_BookingType" xml:space="preserve">
+    <value>Booking Type</value>
+  </data>
+  <data name="AUD_TypeHT" xml:space="preserve">
+    <value>Hotel + Transport</value>
+  </data>
+  <data name="AUD_TypeHotel" xml:space="preserve">
+    <value>Hotel</value>
+  </data>
+  <data name="AUD_TypeTransport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="AUD_GrandTotal" xml:space="preserve">
+    <value>Grand Total</value>
+  </data>
+  <data name="AUD_Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="AUD_NoLogs" xml:space="preserve">
+    <value>No audit logs found for this booking.</value>
+  </data>
+  <data name="AUD_ActionCreate" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="AUD_ActionUpdate" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="AUD_ActionDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="AUD_NoFieldChanges" xml:space="preserve">
+    <value>No field changes recorded.</value>
+  </data>
+  <data name="AUD_ColField" xml:space="preserve">
+    <value>Field</value>
+  </data>
+  <data name="AUD_ColOldValue" xml:space="preserve">
+    <value>Old Value</value>
+  </data>
+  <data name="AUD_ColNewValue" xml:space="preserve">
+    <value>New Value</value>
+  </data>
+  <data name="EB_Title" xml:space="preserve">
+    <value>Edit Booking</value>
+  </data>
+  <data name="EB_Badge" xml:space="preserve">
+    <value>Edit Booking</value>
+  </data>
+  <data name="EB_Subtitle" xml:space="preserve">
+    <value>Only hotel dates, nights, hotel name, rooms, children, trip type, travel dates, and phones.</value>
+  </data>
+  <data name="EB_BackToDetails" xml:space="preserve">
+    <value>Back To Details</value>
+  </data>
+  <data name="EB_AllBookings" xml:space="preserve">
+    <value>All Bookings</value>
+  </data>
+  <data name="EB_LimitedEdit" xml:space="preserve">
+    <value>Limited Edit</value>
+  </data>
+  <data name="EB_AllowedChanges" xml:space="preserve">
+    <value>Allowed Changes</value>
+  </data>
+  <data name="EB_AllowedChangesDesc" xml:space="preserve">
+    <value>This page intentionally does not edit rooms structure, payments, buses, or seats. Payments, buses, seats, client name, notes, and booking identity remain exactly as they were.</value>
+  </data>
+  <data name="EB_Client" xml:space="preserve">
+    <value>Client</value>
+  </data>
+  <data name="EB_HotelTotal" xml:space="preserve">
+    <value>Hotel Total</value>
+  </data>
+  <data name="EB_TransportTotal" xml:space="preserve">
+    <value>Transportation Total</value>
+  </data>
+  <data name="EB_Paid" xml:space="preserve">
+    <value>Paid</value>
+  </data>
+  <data name="EB_InfoNote" xml:space="preserve">
+    <value>Editing the number of days or hotel dates recalculates the hotel total using the existing rooms and prices. Editing trip type only enables or disables existing Go/Return reservations. It does not create new seats or change buses.</value>
+  </data>
+  <data name="EB_FixErrors" xml:space="preserve">
+    <value>Please fix the following errors:</value>
+  </data>
+  <data name="EB_HotelAllowedFields" xml:space="preserve">
+    <value>Hotel Allowed Fields</value>
+  </data>
+  <data name="EB_HotelAllowedSub" xml:space="preserve">
+    <value>Hotel name, check-in, check-out, nights, rooms, children, and Admin discount</value>
+  </data>
+  <data name="EB_HotelName" xml:space="preserve">
+    <value>Hotel Name</value>
+  </data>
+  <data name="EB_HotelNamePH" xml:space="preserve">
+    <value>Hotel name...</value>
+  </data>
+  <data name="EB_CheckIn" xml:space="preserve">
+    <value>Check In</value>
+  </data>
+  <data name="EB_NightsCount" xml:space="preserve">
+    <value>Nights Count</value>
+  </data>
+  <data name="EB_CheckOut" xml:space="preserve">
+    <value>Check Out</value>
+  </data>
+  <data name="EB_Discount" xml:space="preserve">
+    <value>Discount</value>
+  </data>
+  <data name="EB_AdminOnly" xml:space="preserve">
+    <value>(Admin only)</value>
+  </data>
+  <data name="EB_NewHotelTotal" xml:space="preserve">
+    <value>New Hotel Total</value>
+  </data>
+  <data name="EB_NewGrandTotal" xml:space="preserve">
+    <value>New Grand Total</value>
+  </data>
+  <data name="EB_TransportAllowedFields" xml:space="preserve">
+    <value>Transportation Allowed Fields</value>
+  </data>
+  <data name="EB_TransportAllowedSub" xml:space="preserve">
+    <value>Trip type and travel dates only</value>
+  </data>
+  <data name="EB_TripType" xml:space="preserve">
+    <value>Trip Type</value>
+  </data>
+  <data name="EB_TripGoOnly" xml:space="preserve">
+    <value>Go Only</value>
+  </data>
+  <data name="EB_TripReturnOnly" xml:space="preserve">
+    <value>Return Only</value>
+  </data>
+  <data name="EB_TripRound" xml:space="preserve">
+    <value>Round Trip</value>
+  </data>
+  <data name="EB_GoTravelDate" xml:space="preserve">
+    <value>Go Travel Date</value>
+  </data>
+  <data name="EB_ReturnTravelDate" xml:space="preserve">
+    <value>Return Travel Date</value>
+  </data>
+  <data name="EB_RoomsBooking" xml:space="preserve">
+    <value>Rooms Booking</value>
+  </data>
+  <data name="EB_RoomsBookingSub" xml:space="preserve">
+    <value>You can edit room type, room count, and night price</value>
+  </data>
+  <data name="EB_AddRoom" xml:space="preserve">
+    <value>+ Add Room</value>
+  </data>
+  <data name="EB_RoomType" xml:space="preserve">
+    <value>Room Type</value>
+  </data>
+  <data name="EB_Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="EB_NightPrice" xml:space="preserve">
+    <value>Night Price</value>
+  </data>
+  <data name="EB_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="EB_Children" xml:space="preserve">
+    <value>Children</value>
+  </data>
+  <data name="EB_ChildrenSub" xml:space="preserve">
+    <value>You can edit children count by age</value>
+  </data>
+  <data name="EB_Until6" xml:space="preserve">
+    <value>Until 6 Years</value>
+  </data>
+  <data name="EB_Until12" xml:space="preserve">
+    <value>Until 12 Years</value>
+  </data>
+  <data name="EB_TotalChildren" xml:space="preserve">
+    <value>Total Children</value>
+  </data>
+  <data name="EB_PhoneNumbers" xml:space="preserve">
+    <value>Phone Numbers</value>
+  </data>
+  <data name="EB_PhoneNumbersSub" xml:space="preserve">
+    <value>You can add, remove, or change phone numbers</value>
+  </data>
+  <data name="EB_AddPhone" xml:space="preserve">
+    <value>+ Add Phone</value>
+  </data>
+  <data name="EB_Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="EB_Primary" xml:space="preserve">
+    <value>Primary</value>
+  </data>
+  <data name="EB_SaveChanges" xml:space="preserve">
+    <value>Save Allowed Changes</value>
+  </data>
+  <data name="EB_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="EB_JsCheckoutAfterCheckin" xml:space="preserve">
+    <value>Check out must be at least one day after check in.</value>
+  </data>
+  <data name="EB_JsRoomCountPositive" xml:space="preserve">
+    <value>Room count must be greater than zero.</value>
+  </data>
+  <data name="EB_JsRoomPriceNegative" xml:space="preserve">
+    <value>Room night price cannot be negative.</value>
+  </data>
+  <data name="EB_JsPhoneRequiredAdd" xml:space="preserve">
+    <value>Phone number is required before adding another phone.</value>
+  </data>
+  <data name="EB_JsPhoneIncorrectEx" xml:space="preserve">
+    <value>Phone number is incorrect. Example: 01012345678</value>
+  </data>
+  <data name="EB_JsHotelNameRequired" xml:space="preserve">
+    <value>Hotel name is required.</value>
+  </data>
+  <data name="EB_JsCheckInRequired" xml:space="preserve">
+    <value>Check in date is required.</value>
+  </data>
+  <data name="EB_JsCheckOutRequired" xml:space="preserve">
+    <value>Check out date is required.</value>
+  </data>
+  <data name="EB_JsNightsAtLeastOne" xml:space="preserve">
+    <value>Nights count must be at least 1.</value>
+  </data>
+  <data name="EB_JsDiscountNegative" xml:space="preserve">
+    <value>Discount cannot be negative.</value>
+  </data>
+  <data name="EB_JsRoomRowCount" xml:space="preserve">
+    <value>Room row {0}: count must be greater than zero.</value>
+  </data>
+  <data name="EB_JsRoomRowPrice" xml:space="preserve">
+    <value>Room row {0}: night price cannot be negative.</value>
+  </data>
+  <data name="EB_JsChild6Negative" xml:space="preserve">
+    <value>Children until 6 years cannot be negative.</value>
+  </data>
+  <data name="EB_JsChild12Negative" xml:space="preserve">
+    <value>Children until 12 years cannot be negative.</value>
+  </data>
+  <data name="EB_JsCheckoutAfter" xml:space="preserve">
+    <value>Check out must be after check in.</value>
+  </data>
+  <data name="EB_JsGoDateRequired" xml:space="preserve">
+    <value>Go travel date is required.</value>
+  </data>
+  <data name="EB_JsReturnDateRequired" xml:space="preserve">
+    <value>Return travel date is required.</value>
+  </data>
+  <data name="EB_JsPhoneRowRequired" xml:space="preserve">
+    <value>Phone row {0}: phone number is required.</value>
+  </data>
+  <data name="EB_JsPhoneRowIncorrect" xml:space="preserve">
+    <value>Phone row {0}: phone number is incorrect.</value>
+  </data>
+  <data name="EB_JsOnePrimaryRequired" xml:space="preserve">
+    <value>One primary phone number is required.</value>
+  </data>
+  <data name="EB_JsPhoneIncorrect" xml:space="preserve">
+    <value>Phone number is incorrect.</value>
+  </data>
+</root>

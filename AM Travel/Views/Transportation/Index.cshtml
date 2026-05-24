@@ -1,0 +1,1172 @@
+@using BusinessLayer.DTOs.Trip
+@using DataLayer.Models
+@using System.Text.Json
+
+@model BusinessLayer.DTOs.Trip.GetTripDTO
+
+@{
+    ViewData["Title"] = L["CTIndex_Title"];
+
+    var selectedCompanyId = (ViewBag.SelectedCompanyId as Guid?) ?? Model.CompanyId;
+    var selectedDate = ViewBag.SelectedDate as string ?? Model.TripDate.ToString("yyyy-MM-dd");
+    var selectedTripType = (TransportationTripType)(ViewBag.SelectedTripType ?? Model.TripType);
+
+    var selectedDepartureTripId = (ViewBag.SelectedDepartureTripId as Guid?)?.ToString() ?? "";
+    var selectedReturnTripId = (ViewBag.SelectedReturnTripId as Guid?)?.ToString() ?? "";
+
+    var availableTrips = ViewBag.AvailableTrips as List<AvailableTripListDTO> ?? new();
+    var linkedTrips = ViewBag.LinkedTrips as List<AvailableTripListDTO> ?? new();
+
+    var selectedCompanyIdText = selectedCompanyId?.ToString() ?? "";
+
+    string fullName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName = fullName.Trim().Replace("  ", " ");
+    var initials = string.Join("", cleanName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0])).ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+        initials = "U";
+}
+
+<style>
+    :root {
+        --ct-hero-bg: linear-gradient(135deg, #ff7a18, #ffad42);
+        --ct-hero-glow: rgba(255,122,24,.18);
+        --ct-hero-text: #fff;
+        --ct-hero-sub: rgba(255,255,255,.92);
+        --ct-btn-glass: rgba(255,255,255,.16);
+        --ct-card-bg: #fff;
+        --ct-card-border: #f0d8c2;
+        --ct-card-shadow: rgba(255,122,24,.10);
+        --ct-label: #667085;
+        --ct-input-bg: #fffaf5;
+        --ct-input-border: #f3dfcc;
+        --ct-input-text: #172033;
+        --ct-text: #172033;
+        --ct-text-muted: #667085;
+        --ct-row-bg: #fffaf5;
+        --ct-row-border: #f3dfcc;
+        --ct-row-hover: #fff5eb;
+        --ct-th-txt: #667085;
+        --ct-trip-bg: #fff;
+        --ct-trip-border: #f3dfcc;
+        --ct-trip-hover: #fffaf5;
+        --ct-trip-active-bg: #fff7ed;
+        --ct-trip-active-bdr: #ff7a18;
+        --ct-trip-shadow: rgba(255,122,24,.06);
+        --ct-badge-bg: #fff3e6;
+        --ct-badge-txt: #ff7a18;
+        --ct-badge-bdr: #f3dfcc;
+        --ct-meta-bg: #fffaf5;
+        --ct-meta-border: #f7e4d2;
+        --ct-round-bg: #ecfdf3;
+        --ct-round-hover: #dcfae6;
+        --ct-round-line: #12b76a;
+        --ct-round-badge-bg: #dcfce7;
+        --ct-round-badge-txt: #166534;
+        --ct-empty-bg: #fffaf5;
+        --ct-empty-border: #f3dfcc;
+        --ct-empty-txt: #98a2b3;
+        --ct-success-bg: #dcfce7;
+        --ct-success-txt: #166534;
+        --ct-danger-bg: #fee2e2;
+        --ct-danger-txt: #991b1b;
+        --ct-btn-light-bg: #fff7ed;
+        --ct-btn-light-txt: #172033;
+        --ct-btn-light-bdr: #f3dfcc;
+        --ct-btn-danger-bg: #fee2e2;
+        --ct-btn-danger-txt: #991b1b;
+    }
+
+    html[data-theme="dark"] {
+        --ct-hero-bg: linear-gradient(135deg, #c45c0a, #d98030);
+        --ct-hero-glow: rgba(196,92,10,.30);
+        --ct-hero-text: #f5f0eb;
+        --ct-hero-sub: rgba(245,240,235,.85);
+        --ct-btn-glass: rgba(255,255,255,.14);
+        --ct-card-bg: #1a2236;
+        --ct-card-border: #283148;
+        --ct-card-shadow: rgba(0,0,0,.35);
+        --ct-label: #7a8ba0;
+        --ct-input-bg: #212c3f;
+        --ct-input-border: #3a4d66;
+        --ct-input-text: #dce3ed;
+        --ct-text: #dce3ed;
+        --ct-text-muted: #7a8ba0;
+        --ct-row-bg: #183c42;
+        --ct-row-border: rgba(34,197,94,.18);
+        --ct-row-hover: #20484e;
+        --ct-th-txt: #7a8ba0;
+        --ct-trip-bg: #1a2236;
+        --ct-trip-border: #283148;
+        --ct-trip-hover: #1e2940;
+        --ct-trip-active-bg: #1e2a1f;
+        --ct-trip-active-bdr: #c45c0a;
+        --ct-trip-shadow: rgba(0,0,0,.28);
+        --ct-badge-bg: rgba(255,122,24,.14);
+        --ct-badge-txt: #f6ba72;
+        --ct-badge-bdr: rgba(255,122,24,.25);
+        --ct-meta-bg: #212c3f;
+        --ct-meta-border: #283148;
+        --ct-round-bg: #183c42;
+        --ct-round-hover: #20484e;
+        --ct-round-line: #22c55e;
+        --ct-round-badge-bg: rgba(34,197,94,.18);
+        --ct-round-badge-txt: #34d399;
+        --ct-empty-bg: #1a2236;
+        --ct-empty-border: #283148;
+        --ct-empty-txt: #5a6a7e;
+        --ct-success-bg: rgba(22,101,52,.25);
+        --ct-success-txt: #34d399;
+        --ct-danger-bg: rgba(153,27,27,.25);
+        --ct-danger-txt: #f87171;
+        --ct-btn-light-bg: #212c3f;
+        --ct-btn-light-txt: #dce3ed;
+        --ct-btn-light-bdr: #3a4d66;
+        --ct-btn-danger-bg: rgba(153,27,27,.22);
+        --ct-btn-danger-txt: #f87171;
+    }
+
+    .ct-page {
+        display: grid;
+        gap: 24px;
+    }
+
+    .ct-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: var(--ct-hero-text);
+        background: var(--ct-hero-bg);
+        box-shadow: 0 24px 70px var(--ct-hero-glow);
+    }
+
+        .ct-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.16), transparent 26%);
+            pointer-events: none;
+        }
+
+        .ct-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            bottom: -110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.10);
+            pointer-events: none;
+        }
+
+    .ct-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .ct-hero-title {
+        display: grid;
+        gap: 10px;
+    }
+
+    .ct-badge {
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: var(--ct-hero-text);
+    }
+
+    .ct-hero h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1;
+        letter-spacing: -1px;
+        color: var(--ct-hero-text);
+        font-weight: 1000;
+    }
+
+    .ct-hero p {
+        margin: 0;
+        color: var(--ct-hero-sub);
+        font-size: 17px;
+        line-height: 1.7;
+        font-weight: 700;
+    }
+
+    .ct-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        flex-shrink: 0;
+    }
+
+        .ct-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .ct-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: ct-spin 4s linear infinite;
+        }
+
+    @@keyframes ct-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .ct-avatar {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)), linear-gradient(135deg, #fff, #fff3e6);
+        color: #ff7a18;
+        font-size: 42px;
+        font-weight: 1000;
+        text-transform: uppercase;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .ct-avatar-status {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .ct-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .ct-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        cursor: pointer;
+        border: none;
+        white-space: nowrap;
+        transition: .2s ease;
+        font-size: 14px;
+    }
+
+        .ct-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .ct-btn-white {
+        background: #fff;
+        color: #ff7a18;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .ct-btn-glass {
+        background: rgba(255,255,255,.16);
+        color: var(--ct-hero-text);
+        border: 1px solid rgba(255,255,255,.28);
+    }
+
+    .ct-btn-orange {
+        background: linear-gradient(135deg, #ff7a18, #ffad42);
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(255,122,24,.22);
+    }
+
+    .ct-btn-light {
+        background: var(--ct-btn-light-bg);
+        color: var(--ct-btn-light-txt);
+        border: 1px solid var(--ct-btn-light-bdr);
+    }
+
+    .ct-btn-danger {
+        background: var(--ct-btn-danger-bg);
+        color: var(--ct-btn-danger-txt);
+    }
+
+    .ct-card {
+        background: var(--ct-card-bg);
+        border: 1px solid var(--ct-card-border);
+        border-radius: 30px;
+        padding: 24px;
+        box-shadow: 0 18px 42px var(--ct-card-shadow);
+    }
+
+    .ct-card-title {
+        margin: 0 0 20px;
+        color: var(--ct-text);
+        font-size: 20px;
+        font-weight: 1000;
+    }
+
+    .ct-form-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .ct-group {
+        display: grid;
+        gap: 7px;
+    }
+
+        .ct-group label {
+            color: var(--ct-label);
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+    .ct-input,
+    .ct-select {
+        min-height: 46px;
+        border-radius: 16px;
+        border: 1px solid var(--ct-input-border);
+        padding: 0 14px;
+        font-weight: 800;
+        background: var(--ct-input-bg);
+        color: var(--ct-input-text);
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .ct-input:focus,
+        .ct-select:focus {
+            border-color: rgba(255,122,24,.55);
+            box-shadow: 0 0 0 4px rgba(255,122,24,.09);
+        }
+
+        .ct-select option {
+            background: #fff;
+            color: #172033;
+        }
+
+    .ct-form-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .ct-field-error {
+        display: none;
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 900;
+        margin-top: 5px;
+    }
+
+    .ct-is-invalid {
+        border-color: #dc2626 !important;
+        box-shadow: 0 0 0 3px rgba(220,38,38,.12) !important;
+    }
+
+    .ct-alert {
+        border-radius: 16px;
+        padding: 13px 16px;
+        font-weight: 900;
+        display: none;
+    }
+
+        .ct-alert.show {
+            display: block;
+        }
+
+    .ct-alert-success {
+        background: var(--ct-success-bg);
+        color: var(--ct-success-txt);
+    }
+
+    .ct-alert-danger {
+        background: var(--ct-danger-bg);
+        color: var(--ct-danger-txt);
+    }
+
+    .ct-trip-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    .ct-trip-card {
+        background: var(--ct-trip-bg);
+        border: 1px solid var(--ct-trip-border);
+        border-radius: 22px;
+        padding: 18px;
+        cursor: pointer;
+        transition: .18s ease;
+        box-shadow: 0 10px 24px var(--ct-trip-shadow);
+    }
+
+        .ct-trip-card:hover {
+            transform: translateY(-2px);
+            background: var(--ct-trip-hover);
+        }
+
+        .ct-trip-card.active {
+            border-color: var(--ct-trip-active-bdr);
+            background: var(--ct-trip-active-bg);
+            box-shadow: 0 0 0 3px rgba(255,122,24,.14);
+        }
+
+    .ct-trip-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .ct-trip-route {
+        font-weight: 1000;
+        font-size: 17px;
+        color: var(--ct-text);
+    }
+
+    .ct-trip-sub {
+        color: var(--ct-text-muted);
+        font-weight: 800;
+        margin-top: 6px;
+        font-size: 14px;
+    }
+
+    .ct-trip-badge {
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 1000;
+        background: var(--ct-badge-bg);
+        color: var(--ct-badge-txt);
+        border: 1px solid var(--ct-badge-bdr);
+        height: fit-content;
+        white-space: nowrap;
+    }
+
+    .ct-trip-meta {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .ct-trip-meta-item {
+        background: var(--ct-meta-bg);
+        border: 1px solid var(--ct-meta-border);
+        border-radius: 14px;
+        padding: 10px 12px;
+    }
+
+        .ct-trip-meta-item span {
+            display: block;
+            color: var(--ct-text-muted);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .ct-trip-meta-item strong {
+            display: block;
+            color: var(--ct-text);
+            margin-top: 3px;
+            font-size: 15px;
+            font-weight: 1000;
+        }
+
+    .ct-linked-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .ct-linked-table {
+        min-width: 950px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .ct-linked-head,
+    .ct-linked-row {
+        display: grid;
+        grid-template-columns: 1.15fr 1.35fr 1.1fr 1.8fr .8fr .9fr .9fr 1.1fr;
+        align-items: center;
+        gap: 0;
+    }
+
+    .ct-linked-head {
+        padding: 0 16px 8px;
+        border-bottom: 1px solid var(--ct-row-border);
+    }
+
+        .ct-linked-head div {
+            color: var(--ct-th-txt);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            white-space: nowrap;
+        }
+
+    .ct-linked-row {
+        position: relative;
+        min-height: 82px;
+        padding: 0 16px;
+        background: var(--ct-row-bg);
+        border: 1px solid var(--ct-row-border);
+        border-radius: 22px;
+        overflow: hidden;
+        color: var(--ct-text);
+        cursor: pointer;
+        transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+
+        .ct-linked-row:hover {
+            background: var(--ct-row-hover);
+            transform: translateY(-1px);
+        }
+
+        .ct-linked-row.ct-round-row {
+            background: var(--ct-round-bg);
+            border-color: rgba(18,183,106,.35);
+            box-shadow: inset 5px 0 0 var(--ct-round-line);
+        }
+
+            .ct-linked-row.ct-round-row:hover {
+                background: var(--ct-round-hover);
+            }
+
+    .ct-linked-cell {
+        padding: 14px 10px;
+        color: var(--ct-text);
+        font-weight: 900;
+        font-size: 14px;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+        .ct-linked-cell.route-cell {
+            direction: ltr;
+            unicode-bidi: isolate;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+    .ct-round-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 999px;
+        background: var(--ct-round-badge-bg);
+        color: var(--ct-round-badge-txt);
+        font-size: 11px;
+        font-weight: 1000;
+        margin-inline-start: 8px;
+        white-space: nowrap;
+    }
+
+    .ct-empty {
+        padding: 26px;
+        text-align: center;
+        color: var(--ct-empty-txt);
+        font-weight: 900;
+        background: var(--ct-empty-bg);
+        border: 1px dashed var(--ct-empty-border);
+        border-radius: 18px;
+    }
+
+    @@media (max-width: 1100px) {
+        .ct-form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 700px) {
+        .ct-hero {
+            padding: 24px;
+            border-radius: 24px;
+        }
+
+        .ct-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ct-trip-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ct-actions {
+            flex-direction: column;
+        }
+
+        .ct-btn {
+            width: 100%;
+        }
+
+        .ct-avatar-wrap {
+            width: 112px;
+            height: 112px;
+            border-radius: 32px;
+        }
+
+            .ct-avatar-wrap::before,
+            .ct-avatar-wrap::after {
+                border-radius: 38px;
+            }
+
+        .ct-avatar {
+            width: 88px;
+            height: 88px;
+            font-size: 34px;
+            border-radius: 27px;
+        }
+    }
+</style>
+
+<div class="ct-page">
+
+    <section class="ct-hero">
+        <div class="ct-hero-inner">
+            <div class="ct-hero-title">
+                <span class="ct-badge">@L["CTIndex_Badge"]</span>
+                <h1>@L["CTIndex_Heading"]</h1>
+                <p>@L["CTIndex_WelcomeBack"] @ViewBag.Name. @L["CTIndex_SubtitleFull"]</p>
+            </div>
+
+            <div class="ct-avatar-wrap" title="@ViewBag.Name">
+                <div class="ct-avatar">@initials</div>
+                <span class="ct-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="ct-actions">
+            <a class="ct-btn ct-btn-glass" asp-controller="Bookings" asp-action="DailyWork">@L["CTIndex_BtnDailyWork"]</a>
+            <a class="ct-btn ct-btn-glass" asp-controller="Dashboard" asp-action="Index">@L["CTIndex_BtnDashboard"]</a>
+            <a class="ct-btn ct-btn-glass" asp-controller="Transportation" asp-action="Accounting">@L["CTIndex_BtnAccounting"]</a>
+        </div>
+    </section>
+
+    <div id="successAlert" class="ct-alert ct-alert-success @(TempData["Success"] != null ? "show" : "")">@TempData["Success"]</div>
+    <div id="errorAlert" class="ct-alert ct-alert-danger @(TempData["Error"] != null ? "show" : "")">@TempData["Error"]</div>
+
+    <section class="ct-card">
+        <h2 class="ct-card-title">@L["CTIndex_AvailTrips"]</h2>
+
+        <form id="filterForm" method="get" asp-controller="Transportation" asp-action="Index" novalidate>
+            <div class="ct-form-grid">
+
+                <div class="ct-group">
+                    <label>@L["CTIndex_Company"]</label>
+                    <select class="ct-select" name="CompanyId" id="CompanyId">
+                        <option value="">@L["CTIndex_SelectCompany"]</option>
+
+                        @foreach (var company in Model.Companies)
+                        {
+                            if (company.Value.Equals(selectedCompanyIdText, StringComparison.OrdinalIgnoreCase))
+                            {
+                                <option value="@company.Value" selected>@company.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@company.Value">@company.Text</option>
+                            }
+                        }
+                    </select>
+                    <span class="ct-field-error" id="CompanyIdError">@L["CTIndex_ErrNoCompany"]</span>
+                </div>
+
+                <div class="ct-group">
+                    <label>@L["CTIndex_TripDate"]</label>
+                    <input class="ct-input" type="date" name="TripDate" id="TripDate" value="@selectedDate" />
+                    <span class="ct-field-error" id="TripDateError">@L["CTIndex_ErrSelectDate"]</span>
+                </div>
+
+                <div class="ct-group">
+                    <label>@L["CTIndex_TripType"]</label>
+                    <select class="ct-select" name="TripType" id="TripType">
+                        @if (selectedTripType == TransportationTripType.Departure)
+                        {
+                            <option value="@TransportationTripType.Departure" selected>@L["CTIndex_TripTypeGo"]</option>
+                        }
+                        else
+                        {
+                            <option value="@TransportationTripType.Departure">@L["CTIndex_TripTypeGo"]</option>
+                        }
+
+                        @if (selectedTripType == TransportationTripType.Return)
+                        {
+                            <option value="@TransportationTripType.Return" selected>@L["CTIndex_TripTypeReturn"]</option>
+                        }
+                        else
+                        {
+                            <option value="@TransportationTripType.Return">@L["CTIndex_TripTypeReturn"]</option>
+                        }
+
+                        @if (selectedTripType == TransportationTripType.RoundTrip)
+                        {
+                            <option value="@TransportationTripType.RoundTrip" selected>@L["CTIndex_TripTypeRound"]</option>
+                        }
+                        else
+                        {
+                            <option value="@TransportationTripType.RoundTrip">@L["CTIndex_TripTypeRound"]</option>
+                        }
+                    </select>
+                    <span class="ct-field-error" id="TripTypeError">@L["CTIndex_ErrNoDep"]</span>
+                </div>
+
+                <div class="ct-form-actions">
+                    <button type="button" class="ct-btn ct-btn-light" id="filterSubmitBtn">@L["CTIndex_BtnLoad2"]</button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <form id="attachForm" method="post" asp-controller="Transportation" asp-action="ConnectTripByCompany" novalidate>
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="CompanyId" id="AttachCompanyId" value="@selectedCompanyIdText" />
+        <input type="hidden" name="TripDate" id="AttachTripDate" value="@selectedDate" />
+        <input type="hidden" name="TripType" id="AttachTripType" value="@selectedTripType" />
+        <input type="hidden" name="DepartureTripId" id="DepartureTripId" value="@selectedDepartureTripId" />
+        <input type="hidden" name="ReturnTripId" id="ReturnTripId" value="@selectedReturnTripId" />
+
+        <section class="ct-card">
+            <h2 class="ct-card-title">@L["CTIndex_AvailTitle"]</h2>
+
+            @if (!selectedCompanyId.HasValue || string.IsNullOrWhiteSpace(selectedDate))
+            {
+                <div class="ct-empty">@L["CTIndex_SelectFirst"]</div>
+            }
+            else if (!availableTrips.Any())
+            {
+                <div class="ct-empty">@L["CTIndex_NoAvail"]</div>
+            }
+            else
+            {
+                <div class="ct-trip-grid" id="availableTripsBox">
+                    @foreach (var trip in availableTrips)
+                    {
+                        var tid = trip.TripId.ToString();
+                        var isAct = selectedDepartureTripId == tid || selectedReturnTripId == tid;
+                        var dirInt = (int)trip.Direction;
+                        var dirLbl = trip.Direction == TripDirection.Departure
+                            ? L["CTIndex_GoLabel"].Value
+                            : L["CTIndex_ReturnLabel"].Value;
+
+                        <div class="ct-trip-card @(isAct ? "active" : "")"
+                             data-trip-id="@trip.TripId"
+                             data-direction="@dirInt">
+                            <div class="ct-trip-top">
+                                <div>
+                                    <div class="ct-trip-route">@trip.FromLocation → @trip.ToLocation</div>
+                                    <div class="ct-trip-sub">@trip.BusName @(string.IsNullOrWhiteSpace(trip.PlateNumber) ? "" : $"({trip.PlateNumber})")</div>
+                                </div>
+                                <span class="ct-trip-badge">@dirLbl</span>
+                            </div>
+
+                            <div class="ct-trip-meta">
+                                <div class="ct-trip-meta-item">
+                                    <span>@L["CTIndex_MetaTotal"]</span>
+                                    <strong>@trip.TotalSeats</strong>
+                                </div>
+                                <div class="ct-trip-meta-item">
+                                    <span>@L["CTIndex_MetaReserved"]</span>
+                                    <strong>@trip.ReservedSeats</strong>
+                                </div>
+                                <div class="ct-trip-meta-item">
+                                    <span>@L["CTIndex_MetaAvailable"]</span>
+                                    <strong>@trip.AvailableSeats</strong>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button type="button" class="ct-btn ct-btn-orange" id="attachSubmitBtn">@L["CTIndex_BtnAttach"]</button>
+                    <div id="selectionError" class="ct-alert ct-alert-danger" style="margin:0; flex:1; min-width:200px;"></div>
+                </div>
+            }
+        </section>
+    </form>
+
+    <section class="ct-card">
+        <h2 class="ct-card-title">@L["CTIndex_LinkedTrips"]</h2>
+
+        @if (!selectedCompanyId.HasValue)
+        {
+            <div class="ct-empty">@L["CTIndex_SelectCoFirst"]</div>
+        }
+        else if (!linkedTrips.Any())
+        {
+            <div class="ct-empty">@L["CTIndex_NoLinkedTrips"]</div>
+        }
+        else
+        {
+            <div class="ct-linked-wrap">
+                <div class="ct-linked-table">
+                    <div class="ct-linked-head">
+                        <div>@L["CTIndex_ColDate"]</div>
+                        <div>@L["CTIndex_ColType"]</div>
+                        <div>@L["CTIndex_ColBus"]</div>
+                        <div>@L["CTIndex_ColLocation"]</div>
+                        <div>@L["CTIndex_ColTotal"]</div>
+                        <div>@L["CTIndex_ColReserved"]</div>
+                        <div>@L["CTIndex_ColAvailable"]</div>
+                        <div>@L["CTIndex_ColAction"]</div>
+                    </div>
+
+                    @foreach (var trip in linkedTrips)
+                    {
+                        var dirLbl = trip.Direction == TripDirection.Departure
+                            ? L["CTIndex_GoLabel"].Value
+                            : L["CTIndex_ReturnLabel"].Value;
+
+                        var isRound = trip.CompanyTripGroupId.HasValue;
+                        var seatsUrl = Url.Action("Seats", "Transportation", new { tripId = trip.TripId });
+
+                        <div class="ct-linked-row @(isRound ? "ct-round-row" : "")"
+                             data-seats-url="@seatsUrl"
+                             onclick="if(!event.target.closest('button,form')) window.location.href=this.dataset.seatsUrl">
+
+                            <div class="ct-linked-cell">@trip.TripDate.ToString("yyyy-MM-dd")</div>
+
+                            <div class="ct-linked-cell">
+                                @dirLbl
+
+                                @if (isRound)
+                                {
+                                    <span class="ct-round-badge">@L["CTIndex_RoundTrip"]</span>
+                                }
+                            </div>
+
+                            <div class="ct-linked-cell">@(string.IsNullOrWhiteSpace(trip.BusName) ? "-" : trip.BusName)</div>
+
+                            <div class="ct-linked-cell route-cell">
+                                <span dir="auto">@trip.FromLocation</span>
+                                <span>→</span>
+                                <span dir="auto">@trip.ToLocation</span>
+                            </div>
+
+                            <div class="ct-linked-cell">@trip.TotalSeats</div>
+                            <div class="ct-linked-cell">@trip.ReservedSeats</div>
+                            <div class="ct-linked-cell">@trip.AvailableSeats</div>
+
+                            <div class="ct-linked-cell">
+                                <form method="post"
+                                      asp-controller="Transportation"
+                                      asp-action="DeleteConnectTripByCompany"
+                                      class="delete-form"
+                                      novalidate
+                                      onclick="event.stopPropagation()">
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="CompanyId" value="@selectedCompanyIdText" />
+                                    <input type="hidden" name="TripId" value="@trip.TripId" />
+                                    <input type="hidden" name="TripDate" value="@selectedDate" />
+                                    <input type="hidden" name="TripType" value="@selectedTripType" />
+
+                                    <button class="ct-btn ct-btn-danger delete-btn" type="button">
+                                        @L["CTIndex_BtnDeleteLink"]
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        const TRIP_DEP = '@TransportationTripType.Departure';
+        const TRIP_RET = '@TransportationTripType.Return';
+        const TRIP_ROUND = '@TransportationTripType.RoundTrip';
+        const DIR_DEP = '@((int)TripDirection.Departure)';
+        const DIR_RET = '@((int)TripDirection.Return)';
+
+        const E_NO_CO = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrSelectCoFirst"].Value));
+        const E_NO_DATE = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrSelectDate"].Value));
+        const E_DEP = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrNoDep"].Value));
+        const E_RET = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrNoRet"].Value));
+        const E_BOTH = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrNoBoth"].Value));
+        const E_DATA = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrInvalidData"].Value));
+        const E_NOTDEP = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrNotDep"].Value));
+        const E_NOTRET = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrNotRet"].Value));
+        const E_DIR = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrInvalidDir"].Value));
+        const E_CONF = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ConfirmDel"].Value));
+        const E_INCOMP = @Html.Raw(JsonSerializer.Serialize(L["CTIndex_ErrIncomplete"].Value));
+
+        let selTripType = '@selectedTripType';
+        let filterBusy = false;
+        let attachBusy = false;
+
+        const filterForm = document.getElementById('filterForm');
+        const attachForm = document.getElementById('attachForm');
+        const filterBtn = document.getElementById('filterSubmitBtn');
+        const attachBtn = document.getElementById('attachSubmitBtn');
+        const companyEl = document.getElementById('CompanyId');
+        const dateEl = document.getElementById('TripDate');
+        const typeEl = document.getElementById('TripType');
+        const depInput = document.getElementById('DepartureTripId');
+        const retInput = document.getElementById('ReturnTripId');
+        const selErr = document.getElementById('selectionError');
+
+        function showSelError(msg) {
+            if (!selErr) return;
+            selErr.textContent = msg;
+            selErr.classList.add('show');
+        }
+
+        function hideSelError() {
+            if (!selErr) return;
+            selErr.textContent = '';
+            selErr.classList.remove('show');
+        }
+
+        function fieldErr(inputEl, errId, msg) {
+            inputEl?.classList.add('ct-is-invalid');
+            const e = document.getElementById(errId);
+
+            if (e) {
+                e.textContent = msg;
+                e.style.display = 'block';
+            }
+        }
+
+        function clearErr(inputEl, errId) {
+            inputEl?.classList.remove('ct-is-invalid');
+            const e = document.getElementById(errId);
+
+            if (e) {
+                e.style.display = 'none';
+            }
+        }
+
+        function validateFilter() {
+            let ok = true;
+
+            clearErr(companyEl, 'CompanyIdError');
+            clearErr(dateEl, 'TripDateError');
+            clearErr(typeEl, 'TripTypeError');
+
+            if (!companyEl?.value) {
+                fieldErr(companyEl, 'CompanyIdError', E_NO_CO);
+                ok = false;
+            }
+
+            if (!dateEl?.value) {
+                fieldErr(dateEl, 'TripDateError', E_NO_DATE);
+                ok = false;
+            }
+
+            if (!typeEl?.value) {
+                fieldErr(typeEl, 'TripTypeError', E_DEP);
+                ok = false;
+            }
+
+            if (!ok) {
+                document.querySelector('.ct-is-invalid')?.focus();
+            }
+
+            return ok;
+        }
+
+        function validateAttach() {
+            hideSelError();
+
+            const co = document.getElementById('AttachCompanyId')?.value;
+            const date = document.getElementById('AttachTripDate')?.value;
+
+            if (!co) {
+                showSelError(E_NO_CO);
+                return false;
+            }
+
+            if (!date) {
+                showSelError(E_NO_DATE);
+                return false;
+            }
+
+            if (selTripType === TRIP_DEP && !depInput?.value) {
+                showSelError(E_DEP);
+                return false;
+            }
+
+            if (selTripType === TRIP_RET && !retInput?.value) {
+                showSelError(E_RET);
+                return false;
+            }
+
+            if (selTripType === TRIP_ROUND && (!depInput?.value || !retInput?.value)) {
+                showSelError(E_BOTH);
+                return false;
+            }
+
+            return true;
+        }
+
+        filterBtn?.addEventListener('click', () => {
+            if (filterBusy || !validateFilter()) return;
+
+            filterBusy = true;
+            filterBtn.disabled = true;
+            filterBtn.textContent = '...';
+
+            filterForm.submit();
+        });
+
+        attachBtn?.addEventListener('click', () => {
+            if (attachBusy || !validateAttach()) return;
+
+            attachBusy = true;
+            attachBtn.disabled = true;
+            attachBtn.textContent = '...';
+
+            attachForm.submit();
+        });
+
+        companyEl?.addEventListener('change', () => {
+            clearErr(companyEl, 'CompanyIdError');
+
+            const a = document.getElementById('AttachCompanyId');
+            if (a) a.value = companyEl.value;
+        });
+
+        dateEl?.addEventListener('change', () => {
+            clearErr(dateEl, 'TripDateError');
+
+            const a = document.getElementById('AttachTripDate');
+            if (a) a.value = dateEl.value;
+        });
+
+        typeEl?.addEventListener('change', () => {
+            clearErr(typeEl, 'TripTypeError');
+
+            selTripType = typeEl.value;
+
+            const a = document.getElementById('AttachTripType');
+            if (a) a.value = typeEl.value;
+
+            if (depInput) depInput.value = '';
+            if (retInput) retInput.value = '';
+
+            document.querySelectorAll('.ct-trip-card').forEach(x => x.classList.remove('active'));
+        });
+
+        document.querySelectorAll('.ct-trip-card').forEach(card => {
+            card.addEventListener('click', () => {
+                hideSelError();
+
+                const id = card.dataset.tripId;
+                const dir = card.dataset.direction;
+
+                if (!id) {
+                    showSelError(E_DATA);
+                    return;
+                }
+
+                if (selTripType === TRIP_DEP) {
+                    if (dir !== DIR_DEP) {
+                        showSelError(E_NOTDEP);
+                        return;
+                    }
+
+                    document.querySelectorAll('.ct-trip-card').forEach(x => x.classList.remove('active'));
+                    depInput.value = id;
+                    retInput.value = '';
+                    card.classList.add('active');
+                }
+                else if (selTripType === TRIP_RET) {
+                    if (dir !== DIR_RET) {
+                        showSelError(E_NOTRET);
+                        return;
+                    }
+
+                    document.querySelectorAll('.ct-trip-card').forEach(x => x.classList.remove('active'));
+                    retInput.value = id;
+                    depInput.value = '';
+                    card.classList.add('active');
+                }
+                else if (selTripType === TRIP_ROUND) {
+                    if (dir === DIR_DEP) {
+                        document.querySelectorAll(`.ct-trip-card[data-direction="${DIR_DEP}"]`).forEach(x => x.classList.remove('active'));
+                        depInput.value = id;
+                        card.classList.add('active');
+                    }
+                    else if (dir === DIR_RET) {
+                        document.querySelectorAll(`.ct-trip-card[data-direction="${DIR_RET}"]`).forEach(x => x.classList.remove('active'));
+                        retInput.value = id;
+                        card.classList.add('active');
+                    }
+                    else {
+                        showSelError(E_DIR);
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.querySelector('.delete-btn')?.addEventListener('click', () => {
+                const co = form.querySelector('[name="CompanyId"]')?.value;
+                const tid = form.querySelector('[name="TripId"]')?.value;
+                const date = form.querySelector('[name="TripDate"]')?.value;
+                const type = form.querySelector('[name="TripType"]')?.value;
+
+                if (!co || !tid || !date || !type) {
+                    alert(E_INCOMP);
+                    return;
+                }
+
+                if (!confirm(E_CONF)) return;
+
+                const btn = form.querySelector('.delete-btn');
+                btn.disabled = true;
+                btn.textContent = '...';
+
+                form.submit();
+            });
+        });
+    </script>
+}

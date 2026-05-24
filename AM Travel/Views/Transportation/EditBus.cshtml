@@ -1,0 +1,1324 @@
+﻿@model BusinessLayer.DTOs.Bus.UpdateBusDTO
+
+@{
+    ViewData["Title"] = L["EBus_Title"];
+
+    string fullName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName = fullName.Trim().Replace("  ", " ");
+    var userName = string.Join("", cleanName.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).Take(2).Select(x => x[0])).ToUpper();
+
+    if (string.IsNullOrWhiteSpace(userName)) userName = "U";
+
+    var initialLayoutJson = System.Text.Json.JsonSerializer.Serialize(Model.LayoutJson ?? "[]");
+}
+
+<style>
+    :root {
+        --eb-hero-bg: linear-gradient(135deg, #ff7a18, #ffad42);
+        --eb-hero-text: #fff;
+        --eb-card-bg: #fff;
+        --eb-card-border: #f0d8c2;
+        --eb-input-bg: #fff;
+        --eb-input-border: #f3dfcc;
+        --eb-input-text: #172033;
+        --eb-label: #667085;
+        --eb-design-bg: #fffaf5;
+        --eb-grid-bg: #fffaf5;
+        --eb-grid-border: #f3dfcc;
+        --eb-cell-bg: #fff;
+        --eb-cell-border: #f0c9a5;
+        --eb-cell-dot: #ffd5b4;
+        --eb-meta: #667085;
+        --eb-tool-bg: #fffaf5;
+        --eb-tool-border: #f3dfcc;
+        --eb-tool-text: #172033;
+    }
+
+    html[data-theme="dark"] {
+        --eb-hero-bg: linear-gradient(135deg, #c45c0a, #d97c2a);
+        --eb-card-bg: #1a2236;
+        --eb-card-border: #283148;
+        --eb-input-bg: #212c3f;
+        --eb-input-border: #3a4d66;
+        --eb-input-text: #c4cedb;
+        --eb-label: #7a8ba0;
+        --eb-design-bg: #0f172a;
+        --eb-grid-bg: #1a2236;
+        --eb-grid-border: #283148;
+        --eb-cell-bg: #212c3f;
+        --eb-cell-border: #3a4d66;
+        --eb-cell-dot: #3a4d66;
+        --eb-meta: #7a8ba0;
+        --eb-tool-bg: #212c3f;
+        --eb-tool-border: #3a4d66;
+        --eb-tool-text: #c4cedb;
+    }
+
+    .eb-page {
+        display: grid;
+        gap: 24px;
+    }
+
+    .eb-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--eb-hero-text);
+        background: var(--eb-hero-bg);
+        box-shadow: 0 24px 70px rgba(255,122,24,.18);
+    }
+
+    .eb-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.18), transparent 26%);
+        pointer-events: none;
+    }
+
+    .eb-hero::after {
+        content: "";
+        position: absolute;
+        width: 270px;
+        height: 270px;
+        right: -95px;
+        bottom: -115px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.12);
+    }
+
+    .eb-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .eb-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: #fff;
+    }
+
+    .eb-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(42px,6vw,66px);
+        line-height: 1;
+        color: #fff;
+    }
+
+    .eb-hero p {
+        margin: 16px 0 0;
+        color: rgba(255,255,255,.92);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .eb-avatar-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+    .eb-avatar-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 48px;
+        border: 3px solid rgba(255,255,255,.22);
+    }
+
+    .eb-avatar-wrap::after {
+        content: "";
+        position: absolute;
+        inset: -8px;
+        border-radius: 48px;
+        border: 3px solid transparent;
+        border-top-color: #fff;
+        border-right-color: rgba(255,255,255,.72);
+        animation: eb-spin 4s linear infinite;
+    }
+
+    @@keyframes eb-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .eb-avatar {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #ff6a00;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .eb-avatar-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .eb-hero-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    .eb-btn {
+        min-height: 48px;
+        padding: 0 20px;
+        border-radius: 16px;
+        border: none;
+        font-weight: 1000;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+    .eb-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .eb-btn-white {
+        background: #fff;
+        color: #ff7a18;
+    }
+
+    .eb-btn-glass {
+        background: rgba(255,255,255,.16);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.26);
+    }
+
+    .eb-btn-orange {
+        background: linear-gradient(135deg,#ff7a18,#ffad42);
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(255,122,24,.22);
+    }
+
+    .eb-btn-light {
+        background: var(--eb-input-bg);
+        color: #ff7a18;
+        border: 1px solid var(--eb-input-border);
+    }
+
+    html[data-theme="dark"] .eb-btn-light {
+        color: #f6ba72;
+    }
+
+    .eb-card {
+        background: var(--eb-card-bg);
+        border: 1px solid var(--eb-card-border);
+        border-radius: 30px;
+        padding: 26px;
+        box-shadow: 0 18px 42px rgba(0,0,0,.20);
+    }
+
+    .eb-settings-grid {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 14px;
+    }
+
+    .eb-group {
+        display: grid;
+        gap: 7px;
+    }
+
+    .eb-group label {
+        color: var(--eb-label);
+        font-size: 13px;
+        font-weight: 1000;
+    }
+
+    .eb-wide {
+        grid-column: span 2;
+    }
+
+    .eb-input,
+    .eb-select,
+    .eb-textarea {
+        width: 100%;
+        min-height: 48px;
+        border-radius: 16px;
+        border: 1px solid var(--eb-input-border);
+        padding: 0 14px;
+        font-weight: 900;
+        outline: none;
+        background: var(--eb-input-bg);
+        color: var(--eb-input-text);
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .eb-textarea {
+        padding: 14px;
+        resize: vertical;
+    }
+
+    .eb-input:focus,
+    .eb-select:focus,
+    .eb-textarea:focus {
+        border-color: rgba(255,122,24,.55);
+        box-shadow: 0 0 0 4px rgba(255,122,24,.09);
+    }
+
+    .eb-select option {
+        background: #fff;
+        color: #172033;
+    }
+
+    .eb-designer-layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .eb-toolbox {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+        position: sticky;
+        top: 20px;
+    }
+
+    .eb-tool {
+        min-height: 54px;
+        border-radius: 18px;
+        border: 1px solid var(--eb-tool-border);
+        background: var(--eb-tool-bg);
+        color: var(--eb-tool-text);
+        font-weight: 1000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .eb-tool.active {
+        border-color: #ff7a18;
+        box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+        color: #ff7a18;
+        background: var(--eb-card-bg);
+    }
+
+    .eb-quick-actions {
+        display: grid;
+        gap: 10px;
+    }
+
+    .eb-hint {
+        border-radius: 18px;
+        background: var(--eb-tool-bg);
+        border: 1px solid var(--eb-tool-border);
+        padding: 12px;
+        color: var(--eb-label);
+        font-weight: 900;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .eb-design-panel {
+        overflow: auto;
+        padding: 26px;
+        border-radius: 28px;
+        border: 1px solid var(--eb-card-border);
+        background: var(--eb-design-bg);
+        min-height: 650px;
+    }
+
+    html[data-theme="dark"] .eb-design-panel {
+        background: radial-gradient(circle at 20% 10%, rgba(196,92,10,.05), transparent 28%), #0f172a;
+    }
+
+    /* FIX: لا تجعل RTL يقلب رسمة الباص أو الأبواب */
+    .eb-bus-stage,
+    .eb-bus-body-wrap,
+    .eb-bus-body,
+    .eb-bus-meta,
+    .eb-grid,
+    .eb-cell {
+        direction: ltr !important;
+    }
+
+    .eb-bus-stage {
+        width: max-content;
+        margin: auto;
+        display: grid;
+        justify-items: center;
+        position: relative;
+        padding: 0 70px;
+        --eb-bus-width: 520px;
+        --eb-cols: 5;
+        --eb-cell-size: 70px;
+        --eb-cell-gap: 8px;
+    }
+
+    .eb-bus-nose {
+        width: var(--eb-bus-width);
+        height: 92px;
+        position: relative;
+        border-radius: 60px 60px 20px 20px;
+        background: linear-gradient(180deg,#ffb266 0%,#ff7a18 100%);
+        border: 4px solid #ffcfaa;
+        border-bottom: 0;
+        box-shadow: inset 0 10px 0 rgba(255,255,255,.18), 0 18px 36px rgba(255,122,24,.15);
+        z-index: 3;
+    }
+
+    .eb-windshield {
+        position: absolute;
+        left: 50%;
+        top: 15px;
+        transform: translateX(-50%);
+        width: 62%;
+        height: 42px;
+        border-radius: 32px 32px 14px 14px;
+        background: linear-gradient(135deg,#172033,#344054);
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,.12);
+    }
+
+    .eb-windshield::before {
+        content: "";
+        position: absolute;
+        width: 35%;
+        height: 4px;
+        background: rgba(255,255,255,.45);
+        top: 11px;
+        left: 14%;
+        border-radius: 20px;
+        transform: rotate(-8deg);
+    }
+
+    .eb-headlight {
+        position: absolute;
+        bottom: 15px;
+        width: 34px;
+        height: 18px;
+        border-radius: 999px;
+        background: #fff7d6;
+        box-shadow: 0 0 18px rgba(255,247,214,.8);
+    }
+
+    .eb-headlight.left { left: 32px; }
+    .eb-headlight.right { right: 32px; }
+
+    .eb-bus-body-wrap {
+        position: relative;
+        width: var(--eb-bus-width);
+    }
+
+    .eb-bus-body {
+        width: var(--eb-bus-width);
+        padding: 22px;
+        background: #fff;
+        border-left: 4px solid #ffcfaa;
+        border-right: 4px solid #ffcfaa;
+        border-bottom: 4px solid #ffcfaa;
+        border-radius: 0 0 42px 42px;
+        box-shadow: inset 0 0 0 8px #fff7ef, 0 22px 44px rgba(255,122,24,.12);
+        position: relative;
+        z-index: 2;
+    }
+
+    html[data-theme="dark"] .eb-bus-body {
+        background: #1a2236;
+        box-shadow: inset 0 0 0 8px #1e2840, 0 22px 44px rgba(0,0,0,.35);
+    }
+
+    .eb-side-rail {
+        position: absolute;
+        top: 26px;
+        bottom: 46px;
+        width: 13px;
+        border-radius: 999px;
+        background: #d0d5dd;
+        z-index: 5;
+    }
+
+    html[data-theme="dark"] .eb-side-rail {
+        background: #3a4d66;
+    }
+
+    .eb-side-rail.left { left: 10px; }
+    .eb-side-rail.right { right: 10px; }
+
+    .eb-wheel {
+        position: absolute;
+        width: 34px;
+        height: 86px;
+        border-radius: 18px;
+        background: linear-gradient(180deg,#111827,#344054);
+        border: 5px solid #475467;
+        box-shadow: inset 0 0 0 7px #1d2939, inset 0 0 0 14px #667085, 0 10px 22px rgba(23,32,51,.22);
+        z-index: 1;
+    }
+
+    .eb-wheel.left.top { left: -22px; top: 72px; }
+    .eb-wheel.left.bottom { left: -22px; bottom: 72px; }
+    .eb-wheel.right.top { right: -22px; top: 72px; }
+    .eb-wheel.right.bottom { right: -22px; bottom: 72px; }
+
+    .eb-bus-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 0 28px;
+        color: var(--eb-meta);
+        font-size: 12px;
+        font-weight: 1000;
+        text-transform: uppercase;
+    }
+
+    .eb-grid {
+        display: grid;
+        gap: var(--eb-cell-gap);
+        grid-template-columns: repeat(var(--eb-cols), var(--eb-cell-size));
+        width: max-content;
+        margin: auto;
+        padding: 14px;
+        border-radius: 28px;
+        background: var(--eb-grid-bg);
+        border: 1px solid var(--eb-grid-border);
+        position: relative;
+        z-index: 4;
+    }
+
+    .eb-cell {
+        width: var(--eb-cell-size);
+        height: calc(var(--eb-cell-size) * .82);
+        border-radius: calc(var(--eb-cell-size) * .22);
+        border: 1px dashed var(--eb-cell-border);
+        background: var(--eb-cell-bg);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        user-select: none;
+        font-weight: 1000;
+        position: relative;
+        transition: .12s ease;
+        font-size: clamp(10px, calc(var(--eb-cell-size) * .22), 14px);
+    }
+
+    .eb-cell:hover {
+        box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+        transform: translateY(-1px);
+    }
+
+    .eb-cell.edge {
+        outline: 2px solid rgba(255,122,24,.10);
+        outline-offset: -4px;
+    }
+
+    .eb-cell.empty::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--eb-cell-dot);
+    }
+
+    .eb-cell.seat {
+        background: linear-gradient(180deg,#ff9340,#ff6a00);
+        color: #fff;
+        border: none;
+        box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+    }
+
+    .eb-cell.vip {
+        background: linear-gradient(180deg,#ffd166,#ff9f1c);
+        color: #172033;
+        border: none;
+        box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+    }
+
+    .eb-cell.driver {
+        background: #172033;
+        color: #fff;
+        border: none;
+    }
+
+    .eb-cell.assistant {
+        background: #7c3aed;
+        color: #fff;
+        border: none;
+    }
+
+    .eb-cell.road {
+        background: repeating-linear-gradient(135deg,#f2f4f7,#f2f4f7 8px,#e4e7ec 8px,#e4e7ec 16px);
+        color: #667085;
+        border: 2px solid #d0d5dd;
+    }
+
+    .eb-cell.wc {
+        background: #e8f3ff;
+        color: #1570ef;
+        border: 2px solid #84caff;
+    }
+
+    .eb-cell.door-only {
+        background: transparent;
+        border: 1px dashed var(--eb-cell-border);
+        color: transparent;
+    }
+
+    html[data-theme="dark"] .eb-cell.driver {
+        background: #0f172a;
+    }
+
+    html[data-theme="dark"] .eb-cell.road {
+        background: repeating-linear-gradient(135deg,#1a2236,#1a2236 8px,#212c3f 8px,#212c3f 16px);
+        color: #7a8ba0;
+        border-color: #3a4d66;
+    }
+
+    html[data-theme="dark"] .eb-cell.wc {
+        background: rgba(21,112,239,.15);
+        color: #60abf8;
+        border-color: rgba(96,171,248,.4);
+    }
+
+    .eb-cell.disabled-seat {
+        opacity: .45;
+        filter: grayscale(.25);
+        box-shadow: inset 0 0 0 3px rgba(240,68,56,.22);
+    }
+
+    .eb-cell.disabled-seat::after {
+        content: "OFF";
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+        padding: 2px 5px;
+        border-radius: 999px;
+        background: rgba(240,68,56,.14);
+        color: #f04438;
+        font-size: 10px;
+        font-weight: 1000;
+    }
+
+    .eb-cell.has-door::before {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 44px;
+        border-radius: 999px;
+        background: #ffb347;
+        border: 2px solid #ff7a18;
+        top: 50%;
+        transform: translateY(-50%);
+        box-shadow: 0 0 0 4px #fff3e6;
+        z-index: 20;
+    }
+
+    html[data-theme="dark"] .eb-cell.has-door::before {
+        box-shadow: 0 0 0 4px #1a2236;
+    }
+
+    .eb-cell.door-left::before {
+        left: -22px !important;
+        right: auto !important;
+    }
+
+    .eb-cell.door-right::before {
+        right: -22px !important;
+        left: auto !important;
+    }
+
+    .eb-cell .door-mark {
+        position: absolute;
+        width: 4px;
+        height: 24px;
+        border-radius: 999px;
+        background: #fff7d6;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 21;
+        pointer-events: none;
+    }
+
+    .eb-cell.door-left .door-mark {
+        left: -16px !important;
+        right: auto !important;
+    }
+
+    .eb-cell.door-right .door-mark {
+        right: -16px !important;
+        left: auto !important;
+    }
+
+    .eb-status-menu {
+        position: fixed;
+        z-index: 99999;
+        display: none;
+        min-width: 180px;
+        border-radius: 18px;
+        border: 1px solid var(--eb-input-border);
+        background: var(--eb-card-bg);
+        box-shadow: 0 20px 60px rgba(23,32,51,.18);
+        padding: 10px;
+    }
+
+    .eb-status-menu.show {
+        display: grid;
+        gap: 8px;
+    }
+
+    .eb-status-menu button {
+        min-height: 40px;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+        font-weight: 1000;
+    }
+
+    .eb-status-menu .active-btn {
+        background: rgba(18,183,106,.12);
+        color: #12b76a;
+    }
+
+    .eb-status-menu .inactive-btn {
+        background: rgba(240,68,56,.10);
+        color: #f04438;
+    }
+
+    .text-danger,
+    .field-validation-error {
+        color: #f04438;
+        font-weight: 800;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 1100px) {
+        .eb-settings-grid,
+        .eb-designer-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .eb-wide {
+            grid-column: auto;
+        }
+
+        .eb-hero-actions {
+            flex-direction: column;
+        }
+
+        .eb-hero-actions .eb-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="eb-page">
+
+    <section class="eb-hero">
+        <div class="eb-hero-inner">
+            <div>
+                <span class="eb-badge">@L["EBus_Badge"]</span>
+                <h1>@L["EBus_Heading"]</h1>
+                <p>@L["EBus_Subtitle"]</p>
+            </div>
+
+            <div class="eb-avatar-wrap">
+                <div class="eb-avatar">@userName</div>
+                <span class="eb-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="eb-hero-actions">
+            <a class="eb-btn eb-btn-white" asp-action="Buses">@L["EBus_BackToBuses"]</a>
+            <a class="eb-btn eb-btn-glass" asp-action="Trips">@L["EBus_Trips"]</a>
+        </div>
+    </section>
+
+    <form id="EditBusForm" asp-action="EditBus" method="post" onsubmit="return ebBeforeSubmit();">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="BusId" />
+        <input type="hidden" asp-for="LayoutJson" id="LayoutJson" />
+
+        <section class="eb-card">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="eb-settings-grid">
+
+                <div class="eb-group">
+                    <label asp-for="Name">@L["EBus_FieldName"]</label>
+                    <input asp-for="Name" class="eb-input" maxlength="100" required />
+                    <span asp-validation-for="Name" class="field-validation-error"></span>
+                </div>
+
+                <div class="eb-group">
+                    <label asp-for="PlateNumber">@L["EBus_FieldPlate"]</label>
+                    <input asp-for="PlateNumber" class="eb-input" maxlength="30" />
+                    <span asp-validation-for="PlateNumber" class="field-validation-error"></span>
+                </div>
+
+                <div class="eb-group">
+                    <label asp-for="FromLocation">@L["EBus_FieldFrom"]</label>
+                    <input asp-for="FromLocation" class="eb-input" required maxlength="100" />
+                    <span asp-validation-for="FromLocation" class="text-danger"></span>
+                </div>
+
+                <div class="eb-group">
+                    <label asp-for="ToLocation">@L["EBus_FieldTo"]</label>
+                    <input asp-for="ToLocation" class="eb-input" required maxlength="100" />
+                    <span asp-validation-for="ToLocation" class="text-danger"></span>
+                </div>
+
+                <div class="eb-group">
+                    <label>@L["EBus_FieldSeats"]</label>
+                    <input id="TotalSeats" class="eb-input" readonly />
+                </div>
+
+                <div class="eb-group">
+                    <label asp-for="IsActive">@L["EBus_FieldStatus"]</label>
+                    <select asp-for="IsActive" class="eb-select">
+                        <option value="true">@L["EBus_StatusActive"]</option>
+                        <option value="false">@L["EBus_StatusInactive"]</option>
+                    </select>
+                    <span asp-validation-for="IsActive" class="field-validation-error"></span>
+                </div>
+
+                <div class="eb-group">
+                    <label asp-for="LayoutRows">@L["EBus_FieldRows"]</label>
+                    <input asp-for="LayoutRows" id="LayoutRows" class="eb-input" type="number" min="4" max="30" required />
+                    <span asp-validation-for="LayoutRows" class="field-validation-error"></span>
+                </div>
+
+                <div class="eb-group">
+                    <label asp-for="LayoutColumns">@L["EBus_FieldCols"]</label>
+                    <input asp-for="LayoutColumns" id="LayoutColumns" class="eb-input" type="number" min="3" max="10" required />
+                    <span asp-validation-for="LayoutColumns" class="field-validation-error"></span>
+                </div>
+
+                <div class="eb-group eb-wide">
+                    <label asp-for="Notes">@L["EBus_FieldNotes"]</label>
+                    <textarea asp-for="Notes" class="eb-textarea" rows="3" maxlength="500"></textarea>
+                    <span asp-validation-for="Notes" class="field-validation-error"></span>
+                </div>
+
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;">
+                <button class="eb-btn eb-btn-orange" type="submit">@L["EBus_Submit"]</button>
+                <a class="eb-btn eb-btn-light" asp-action="Buses">@L["EBus_Cancel"]</a>
+            </div>
+        </section>
+
+        <section class="eb-card" style="margin-top:24px;">
+            <div class="eb-designer-layout">
+
+                <div class="eb-toolbox">
+                    <button type="button" class="eb-tool active" data-tool="0">💺 @L["EBus_ToolNormal"]</button>
+                    <button type="button" class="eb-tool" data-tool="1">⭐ @L["EBus_ToolVIP"]</button>
+                    <button type="button" class="eb-tool" data-tool="2">🚌 @L["EBus_ToolDriver"]</button>
+                    <button type="button" class="eb-tool" data-tool="3">👤 @L["EBus_ToolAssistant"]</button>
+                    <button type="button" class="eb-tool" data-tool="4">⬜ @L["EBus_ToolAisle"]</button>
+                    <button type="button" class="eb-tool" data-tool="5">🚪 @L["EBus_ToolDoor"]</button>
+                    <button type="button" class="eb-tool" data-tool="6">🚻 @L["EBus_ToolBathroom"]</button>
+                    <button type="button" class="eb-tool" data-tool="7">✖ @L["EBus_ToolEmpty"]</button>
+
+                    <div class="eb-quick-actions">
+                        <button type="button" class="eb-btn eb-btn-light" onclick="ebAutoAisle()">@L["EBus_BtnAutoAisle"]</button>
+                        <button type="button" class="eb-btn eb-btn-light" onclick="ebMirrorLeftToRight()">@L["EBus_BtnMirror"]</button>
+                        <button type="button" class="eb-btn eb-btn-light" onclick="ebRepaintAll()">@L["EBus_BtnRenumber"]</button>
+                        <button type="button" class="eb-btn eb-btn-light" onclick="ebRebuildKeepingOld()">@L["EBus_BtnRebuild"]</button>
+                        <button type="button" class="eb-btn eb-btn-light" onclick="ebClearGrid()">@L["EBus_BtnClear"]</button>
+                    </div>
+
+                    <div class="eb-hint">@L["EBus_HintText"]</div>
+                </div>
+
+                <div class="eb-design-panel">
+                    <div id="EbBusStage" class="eb-bus-stage">
+                        <div class="eb-bus-nose">
+                            <div class="eb-windshield"></div>
+                            <div class="eb-headlight left"></div>
+                            <div class="eb-headlight right"></div>
+                        </div>
+
+                        <div class="eb-bus-body-wrap">
+                            <div class="eb-wheel left top"></div>
+                            <div class="eb-wheel left bottom"></div>
+                            <div class="eb-wheel right top"></div>
+                            <div class="eb-wheel right bottom"></div>
+
+                            <div class="eb-bus-body">
+                                <div class="eb-side-rail left"></div>
+                                <div class="eb-side-rail right"></div>
+
+                                <div class="eb-bus-meta">
+                                    <span>@L["EBus_FrontEntry"]</span>
+                                    <span id="EbGridSizeText"></span>
+                                </div>
+
+                                <div id="EbBusGrid" class="eb-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </form>
+</div>
+
+<div id="EbStatusMenu" class="eb-status-menu">
+    <button type="button" class="active-btn" onclick="ebSetSelectedActive(true)">@L["EBus_MenuSetActive"]</button>
+    <button type="button" class="inactive-btn" onclick="ebSetSelectedActive(false)">@L["EBus_MenuSetInactive"]</button>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const EB_ALERT_DOOR_EDGE = "@L["EBus_AlertDoorEdge"]";
+        const EB_ALERT_DOOR_TYPE = "@L["EBus_AlertDoorType"]";
+        const EB_ALERT_NO_SEATS  = "@L["EBus_AlertNoSeats"]";
+
+        const EbSeatType = { Normal:0, VIP:1, Driver:2, Assistant:3, Aisle:4, Door:5, Bathroom:6, Empty:7 };
+
+        const ebRowsInput = document.getElementById("LayoutRows");
+        const ebColsInput = document.getElementById("LayoutColumns");
+        const ebGrid = document.getElementById("EbBusGrid");
+        const ebLayoutJson = document.getElementById("LayoutJson");
+        const ebTotalSeats = document.getElementById("TotalSeats");
+        const ebStage = document.getElementById("EbBusStage");
+        const ebGridSizeText = document.getElementById("EbGridSizeText");
+        const ebStatusMenu = document.getElementById("EbStatusMenu");
+        const ebForm = document.getElementById("EditBusForm");
+
+        let ebCurrentTool = EbSeatType.Normal;
+        let ebIsDrawing = false;
+        let ebLayout = [];
+        let ebSelectedCell = null;
+
+        const ebInitialLayoutJsonString = @Html.Raw(initialLayoutJson);
+
+        function ebSafeParseLayout(json) {
+            try {
+                let d = JSON.parse(json || "[]");
+
+                if (typeof d === "string") d = JSON.parse(d || "[]");
+
+                if (!Array.isArray(d)) return [];
+
+                return d.map(x => ({
+                    type: parseInt(x.type ?? x.Type ?? EbSeatType.Empty),
+                    row: parseInt(x.row ?? x.Row ?? 0),
+                    column: parseInt(x.column ?? x.Column ?? 0),
+                    label: String(x.label ?? x.Label ?? ""),
+                    hasDoor: (x.hasDoor ?? x.HasDoor ?? false) === true,
+                    isActive: (x.isActive ?? x.IsActive ?? true) === true
+                })).filter(x => x.row > 0 && x.column > 0);
+            } catch {
+                return [];
+            }
+        }
+
+        const ebInitialLayout = ebSafeParseLayout(ebInitialLayoutJsonString);
+
+        document.querySelectorAll(".eb-tool").forEach(btn => {
+            btn.addEventListener("click", function () {
+                document.querySelectorAll(".eb-tool").forEach(x => x.classList.remove("active"));
+                this.classList.add("active");
+                ebCurrentTool = parseInt(this.dataset.tool);
+                ebHideStatusMenu();
+            });
+        });
+
+        document.addEventListener("mouseup", () => ebIsDrawing = false);
+        document.addEventListener("click", e => {
+            if (!e.target.closest("#EbStatusMenu")) ebHideStatusMenu();
+        });
+
+        function ebIsPassengerSeat(t) {
+            return parseInt(t) === EbSeatType.Normal || parseInt(t) === EbSeatType.VIP;
+        }
+
+        function ebGetTypeClass(t) {
+            return ["seat","vip","driver","assistant","road","door-only","wc","empty"][parseInt(t)] ?? "empty";
+        }
+
+        function ebGetTypeText(item) {
+            switch (parseInt(item.type)) {
+                case 0: return item.label || "S";
+                case 1: return item.label || "VIP";
+                case 2: return "DRV";
+                case 3: return "AST";
+                case 6: return "WC";
+                default: return "";
+            }
+        }
+
+        function ebGetSizing(cols, rows) {
+            let s = 70;
+            let g = 8;
+
+            if (cols >= 6) s = 64;
+            if (cols >= 8) s = 56;
+            if (cols >= 10) s = 50;
+            if (rows >= 18) s = Math.min(s, 54);
+            if (rows >= 24) s = Math.min(s, 48);
+            if (cols >= 9 || rows >= 22) g = 6;
+
+            return {
+                cellSize: s,
+                gap: g,
+                busWidth: (cols * s) + ((cols - 1) * g) + 98
+            };
+        }
+
+        function ebApplySizing(cols, rows) {
+            const sz = ebGetSizing(cols, rows);
+
+            ebStage.style.setProperty("--eb-cols", cols);
+            ebStage.style.setProperty("--eb-cell-size", `${sz.cellSize}px`);
+            ebStage.style.setProperty("--eb-cell-gap", `${sz.gap}px`);
+            ebStage.style.setProperty("--eb-bus-width", `${sz.busWidth}px`);
+
+            ebGridSizeText.textContent = `${rows} x ${cols}`;
+        }
+
+        function ebBuildGrid(sourceLayout = []) {
+            const rows = Math.max(4, parseInt(ebRowsInput.value || 12));
+            const cols = Math.max(3, parseInt(ebColsInput.value || 5));
+
+            ebRowsInput.value = rows;
+            ebColsInput.value = cols;
+
+            ebApplySizing(cols, rows);
+
+            const old = Array.isArray(sourceLayout) ? sourceLayout : [];
+
+            ebLayout = [];
+            ebGrid.innerHTML = "";
+
+            for (let r = 1; r <= rows; r++) {
+                for (let c = 1; c <= cols; c++) {
+                    const oldItem = old.find(x => x.row === r && x.column === c);
+                    const isEdge = c === 1 || c === cols;
+
+                    const item = {
+                        type: oldItem?.type ?? EbSeatType.Empty,
+                        row: r,
+                        column: c,
+                        label: oldItem?.label ?? "",
+                        hasDoor: (oldItem?.hasDoor ?? false) && isEdge,
+                        isActive: oldItem?.isActive ?? true
+                    };
+
+                    if (parseInt(item.type) === EbSeatType.Door && !isEdge) {
+                        item.type = EbSeatType.Empty;
+                        item.hasDoor = false;
+                    }
+
+                    ebLayout.push(item);
+
+                    const cell = document.createElement("div");
+
+                    cell.className = "eb-cell";
+                    cell.dataset.row = r;
+                    cell.dataset.column = c;
+
+                    cell.addEventListener("mousedown", function () {
+                        ebHideStatusMenu();
+                        ebIsDrawing = true;
+                        ebPaintCell(this);
+                    });
+
+                    cell.addEventListener("mouseenter", function () {
+                        if (ebIsDrawing && ebCurrentTool !== EbSeatType.Door) ebPaintCell(this);
+                    });
+
+                    cell.addEventListener("contextmenu", function (e) {
+                        e.preventDefault();
+                        ebOpenStatusMenu(e, this);
+                    });
+
+                    ebGrid.appendChild(cell);
+                }
+            }
+
+            ebRepaintAll();
+        }
+
+        function ebRebuildKeepingOld() {
+            ebBuildGrid(ebLayout);
+        }
+
+        function ebGetItem(r, c) {
+            return ebLayout.find(x => x.row === r && x.column === c);
+        }
+
+        function ebIsEdgeColumn(c) {
+            return c === 1 || c === parseInt(ebColsInput.value || 5);
+        }
+
+        function ebPaintCell(cell) {
+            const row = parseInt(cell.dataset.row);
+            const column = parseInt(cell.dataset.column);
+            const item = ebGetItem(row, column);
+
+            if (!item) return;
+
+            if (ebCurrentTool === EbSeatType.Door) {
+                if (!ebIsEdgeColumn(column)) {
+                    alert(EB_ALERT_DOOR_EDGE);
+                    return;
+                }
+
+                if (![EbSeatType.Normal, EbSeatType.VIP, EbSeatType.Empty, EbSeatType.Door].includes(parseInt(item.type))) {
+                    alert(EB_ALERT_DOOR_TYPE);
+                    return;
+                }
+
+                if (parseInt(item.type) === EbSeatType.Empty) {
+                    item.type = EbSeatType.Door;
+                    item.isActive = true;
+                }
+
+                item.hasDoor = !item.hasDoor;
+
+                ebRenderCell(cell, item);
+                ebRepaintAll();
+                return;
+            }
+
+            item.type = ebCurrentTool;
+            item.label = "";
+            item.isActive = true;
+
+            if (![EbSeatType.Normal, EbSeatType.VIP].includes(ebCurrentTool)) {
+                item.hasDoor = false;
+            }
+
+            if (ebCurrentTool === EbSeatType.Empty) {
+                item.hasDoor = false;
+                item.isActive = true;
+            }
+
+            ebRenderCell(cell, item);
+            ebRepaintAll();
+        }
+
+        function ebRenderCell(cell, item) {
+            const cols = parseInt(ebColsInput.value || 5);
+
+            cell.className = "eb-cell";
+
+            if (item.column === 1 || item.column === cols) {
+                cell.classList.add("edge");
+            }
+
+            cell.classList.add(ebGetTypeClass(item.type));
+
+            if (parseInt(item.type) !== EbSeatType.Empty && item.isActive === false) {
+                cell.classList.add("disabled-seat");
+            }
+
+            if (item.hasDoor) {
+                cell.classList.add("has-door");
+
+                if (item.column === 1) {
+                    cell.classList.add("door-left");
+                } else if (item.column === cols) {
+                    cell.classList.add("door-right");
+                }
+            }
+
+            cell.innerHTML = ebGetTypeText(item);
+
+            if (item.hasDoor) {
+                const m = document.createElement("span");
+                m.className = "door-mark";
+                cell.appendChild(m);
+            }
+        }
+
+        function ebNumberSeats() {
+            let n = 1;
+
+            ebLayout
+                .filter(x => ebIsPassengerSeat(x.type))
+                .sort((a, b) => a.row - b.row || a.column - b.column)
+                .forEach(x => {
+                    x.label = (n++).toString();
+                });
+        }
+
+        function ebUpdateOutput(renumber = true) {
+            if (renumber) ebNumberSeats();
+
+            ebTotalSeats.value = ebLayout.filter(x => ebIsPassengerSeat(x.type)).length;
+
+            ebLayoutJson.value = JSON.stringify(
+                ebLayout
+                    .filter(x => parseInt(x.type) !== EbSeatType.Empty || x.hasDoor)
+                    .map(x => ({
+                        type: parseInt(x.type),
+                        row: x.row,
+                        column: x.column,
+                        label: x.label,
+                        hasDoor: x.hasDoor,
+                        isActive: x.isActive
+                    }))
+            );
+        }
+
+        function ebRepaintAll() {
+            ebNumberSeats();
+
+            document.querySelectorAll(".eb-cell").forEach(cell => {
+                const item = ebGetItem(parseInt(cell.dataset.row), parseInt(cell.dataset.column));
+                if (item) ebRenderCell(cell, item);
+            });
+
+            ebUpdateOutput(false);
+        }
+
+        function ebOpenStatusMenu(e, cell) {
+            const item = ebGetItem(parseInt(cell.dataset.row), parseInt(cell.dataset.column));
+
+            if (!item || parseInt(item.type) === EbSeatType.Empty) return;
+
+            ebSelectedCell = cell;
+
+            ebStatusMenu.style.left = `${e.clientX}px`;
+            ebStatusMenu.style.top = `${e.clientY}px`;
+            ebStatusMenu.classList.add("show");
+        }
+
+        function ebHideStatusMenu() {
+            ebStatusMenu.classList.remove("show");
+            ebSelectedCell = null;
+        }
+
+        function ebSetSelectedActive(val) {
+            if (!ebSelectedCell) return;
+
+            const item = ebGetItem(parseInt(ebSelectedCell.dataset.row), parseInt(ebSelectedCell.dataset.column));
+
+            if (!item || parseInt(item.type) === EbSeatType.Empty) {
+                ebHideStatusMenu();
+                return;
+            }
+
+            item.isActive = val;
+
+            ebRenderCell(ebSelectedCell, item);
+            ebUpdateOutput(true);
+            ebHideStatusMenu();
+        }
+
+        function ebAutoAisle() {
+            const rows = parseInt(ebRowsInput.value || 12);
+            const cols = parseInt(ebColsInput.value || 5);
+            const aisle = Math.ceil(cols / 2);
+
+            for (let r = 1; r <= rows; r++) {
+                const it = ebGetItem(r, aisle);
+
+                if (it && parseInt(it.type) === EbSeatType.Empty) {
+                    it.type = EbSeatType.Aisle;
+                    it.isActive = true;
+                }
+            }
+
+            ebRepaintAll();
+        }
+
+        function ebMirrorLeftToRight() {
+            const rows = parseInt(ebRowsInput.value || 12);
+            const cols = parseInt(ebColsInput.value || 5);
+
+            for (let r = 1; r <= rows; r++) {
+                for (let c = 1; c <= Math.floor(cols / 2); c++) {
+                    const left = ebGetItem(r, c);
+                    const right = ebGetItem(r, cols - c + 1);
+
+                    if (!left || !right) continue;
+
+                    right.type = left.type;
+                    right.hasDoor = false;
+                    right.label = "";
+                    right.isActive = left.isActive ?? true;
+                }
+            }
+
+            ebRepaintAll();
+        }
+
+        function ebClearGrid() {
+            ebLayout.forEach(x => {
+                x.type = EbSeatType.Empty;
+                x.label = "";
+                x.hasDoor = false;
+                x.isActive = true;
+            });
+
+            ebRepaintAll();
+        }
+
+        function ebBeforeSubmit() {
+            ebUpdateOutput(true);
+
+            if (!ebForm.checkValidity()) {
+                ebForm.reportValidity();
+                return false;
+            }
+
+            if (window.jQuery && $.validator && !$(ebForm).valid()) return false;
+
+            if (ebLayout.filter(x => ebIsPassengerSeat(x.type)).length <= 0) {
+                alert(EB_ALERT_NO_SEATS);
+                return false;
+            }
+
+            return true;
+        }
+
+        ebRowsInput.addEventListener("change", () => ebBuildGrid(ebLayout));
+        ebColsInput.addEventListener("change", () => ebBuildGrid(ebLayout));
+
+        ebBuildGrid(ebInitialLayout);
+    </script>
+}

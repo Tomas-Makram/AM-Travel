@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="AM Travel/AM Travel.csproj" />
+  <Project Path="BusinessLayer/BusinessLayer.csproj" />
+  <Project Path="DataLayer/DataLayer.csproj" />
+</Solution>

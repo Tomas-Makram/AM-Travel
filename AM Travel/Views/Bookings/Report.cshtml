@@ -1,0 +1,678 @@
+@model BusinessLayer.DTOs.Book.BookingDetailsDTO
+@using BusinessLayer.DTOs.Book
+@using DataLayer.Models
+
+@{
+    Layout = null;
+    var today = DateTime.Now.ToString("yyyy/MM/dd");
+
+    var mainPhone = Model.PhoneNumbers?.FirstOrDefault(x => x.Prime)?.PhoneNumber
+                 ?? Model.PhoneNumbers?.FirstOrDefault()?.PhoneNumber ?? "";
+
+    var bookingTypeAr =
+        Model.HasHotel && Model.HasTransportation ? "فندق + انتقالات" :
+        Model.HasHotel ? "فندق" : "انتقالات";
+}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>تقرير الحجز - @Model.Code</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #d8d8d8;
+            font-family: Tahoma, 'Segoe UI', Arial, sans-serif;
+            color: #111;
+            padding: 24px;
+        }
+
+        /* ---- ACTIONS ---- */
+        .actions {
+            width: 210mm;
+            margin: 0 auto 16px;
+            display: flex; gap: 10px; justify-content: center;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px; border-radius: 12px; border: none;
+            font-weight: 900; font-size: 14px; cursor: pointer;
+            text-decoration: none; transition: .2s ease;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-print { background: #ff7a18; color: #fff; }
+        .btn-back  { background: #172033; color: #fff; }
+
+        /* ---- REPORT WRAPPER ---- */
+        .report {
+            width: 210mm;
+            margin: auto;
+            background: #f6f0c2;
+            border: 4px double #111;
+            position: relative;
+        }
+        .report::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(0,0,0,.25);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ---- HEADER ---- */
+        .rpt-header {
+            display: grid;
+            grid-template-columns: 130px 1fr 130px;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 22px 12px;
+            border-bottom: 3px double #111;
+            position: relative; z-index: 2;
+        }
+        .logo-box { text-align: center; }
+        .logo-ring {
+            width: 70px; height: 70px; border-radius: 50%;
+            border: 3px solid #111; background: #fff7cf;
+            margin: 0 auto 5px;
+            display: grid; place-items: center;
+            font-size: 22px; font-weight: 1000;
+        }
+        .logo-box small { font-size: 10px; font-weight: 900; display: block; }
+        .rpt-title { text-align: center; }
+        .rpt-title h1 { font-size: 28px; font-weight: 1000; letter-spacing: 1px; margin-bottom: 5px; }
+        .rpt-title h2 { font-size: 15px; font-weight: 900; }
+        .rpt-code {
+            text-align: center; color: #b91c1c; font-weight: 1000; font-size: 20px;
+            border: 2px solid #111; padding: 10px 8px;
+            background: rgba(255,255,255,.35); line-height: 1.4;
+        }
+        .rpt-code small { display: block; font-size: 10px; color: #111; font-weight: 900; margin-bottom: 4px; }
+
+        /* META */
+        .rpt-meta {
+            display: flex; justify-content: space-between;
+            padding: 8px 22px; font-weight: 900; font-size: 12px;
+            border-bottom: 1px solid rgba(0,0,0,.2);
+            position: relative; z-index: 2;
+            background: rgba(255,255,255,.18);
+            flex-wrap: wrap; gap: 4px;
+        }
+
+        /* SECTION TITLE */
+        .rpt-sec {
+            background: #111; color: #fff;
+            padding: 7px 12px; font-weight: 900; font-size: 13px;
+            margin: 14px 22px 8px;
+            position: relative; z-index: 2;
+        }
+
+        /* FIELD GRID */
+        .field-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 6px 16px;
+            padding: 0 22px;
+            position: relative; z-index: 2;
+        }
+        .field-row {
+            display: grid; grid-template-columns: 130px 1fr;
+            align-items: end; gap: 6px;
+            min-height: 30px; font-size: 13px;
+        }
+        .field-row.full { grid-column: 1 / -1; }
+        .f-label { font-weight: 900; font-size: 12px; }
+        .f-value {
+            border-bottom: 1.5px dotted #111;
+            min-height: 22px; padding: 2px 5px;
+            font-weight: 700; font-size: 13px;
+        }
+
+        /* ROOMS TABLE */
+        .rpt-table {
+            width: calc(100% - 44px); margin: 0 22px;
+            border-collapse: collapse;
+            position: relative; z-index: 2;
+            background: rgba(255,255,255,.2);
+        }
+        .rpt-table th {
+            border: 1px solid #111; padding: 7px 8px;
+            text-align: center; font-size: 12px; font-weight: 900;
+            background: rgba(0,0,0,.1);
+        }
+        .rpt-table td {
+            border: 1px solid #111; padding: 7px 8px;
+            text-align: center; font-size: 12px; font-weight: 700;
+        }
+        .rpt-table tfoot td { font-weight: 1000; background: rgba(0,0,0,.07); }
+
+        /* TRANSPORT */
+        .transport-section {
+            padding: 0 22px; position: relative; z-index: 2;
+        }
+        .trip-block {
+            border: 1px solid #111; border-radius: 4px;
+            margin-bottom: 10px; background: rgba(255,255,255,.25);
+        }
+        .trip-block-head {
+            background: rgba(0,0,0,.08); padding: 7px 12px;
+            font-weight: 1000; font-size: 12px; border-bottom: 1px solid #111;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 6px;
+        }
+        .trip-block-body { padding: 8px 12px; }
+        .trip-route {
+            direction: ltr; unicode-bidi: isolate;
+            font-size: 13px; font-weight: 900;
+            margin-bottom: 8px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .trip-route .route-node {
+            direction: auto; unicode-bidi: isolate;
+            display: inline-flex; padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.45);
+            border: 1px solid rgba(0,0,0,.18);
+            font-size: 12px;
+        }
+        .trip-route .arr {
+            direction: ltr; unicode-bidi: isolate;
+            font-size: 16px; color: #b91c1c; font-weight: 1000;
+        }
+
+        .seat-group-list { display: grid; gap: 6px; }
+        .seat-group-row {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 100px 100px 100px;
+            gap: 6px; align-items: center;
+            border: 1px solid #111;
+            background: rgba(255,255,255,.22);
+            padding: 6px 8px; font-weight: 800; font-size: 12px;
+        }
+        .seat-group-row.head {
+            background: rgba(0,0,0,.10);
+            font-weight: 1000; text-align: center; font-size: 11px;
+        }
+        .seat-group-seats {
+            display: flex; flex-wrap: wrap; gap: 4px;
+        }
+        .seat-mini-chip {
+            display: inline-flex; min-width: 24px; justify-content: center;
+            padding: 3px 7px; border-radius: 999px;
+            background: rgba(255,122,24,.14); color: #111;
+            border: 1px solid rgba(255,122,24,.28);
+            font-weight: 1000; font-size: 11px;
+        }
+        .seat-route-mini {
+            direction: ltr; unicode-bidi: isolate;
+            display: flex; gap: 5px; align-items: center;
+            white-space: nowrap; font-size: 11px;
+        }
+        .seat-route-mini span { direction: auto; unicode-bidi: isolate; }
+        .seat-total-line {
+            border: 1px solid #111; border-top: 0;
+            padding: 7px 8px;
+            display: flex; justify-content: space-between; gap: 10px;
+            font-weight: 1000; font-size: 12px;
+            background: rgba(0,0,0,.06);
+        }
+
+        /* MONEY TABLE */
+        .money-table {
+            width: calc(100% - 44px); margin: 0 22px;
+            border-collapse: collapse; position: relative; z-index: 2;
+            background: rgba(255,255,255,.2);
+        }
+        .money-table th {
+            border: 1px solid #111; padding: 8px;
+            text-align: center; font-size: 12px; font-weight: 900;
+            background: rgba(0,0,0,.1);
+        }
+        .money-table td {
+            border: 1px solid #111; padding: 8px;
+            text-align: center; font-size: 13px; font-weight: 700;
+        }
+
+        /* PAYMENTS TABLE */
+        .pay-table {
+            width: calc(100% - 44px); margin: 0 22px;
+            border-collapse: collapse; position: relative; z-index: 2;
+            background: rgba(255,255,255,.2);
+        }
+        .pay-table th {
+            border: 1px solid #111; padding: 7px 8px;
+            text-align: center; font-size: 12px; font-weight: 900;
+            background: rgba(0,0,0,.1);
+        }
+        .pay-table td {
+            border: 1px solid #111; padding: 7px 8px;
+            text-align: center; font-size: 12px; font-weight: 700;
+        }
+        .pay-table tfoot td { font-weight: 1000; background: rgba(0,0,0,.07); }
+
+        /* NOTES */
+        .rpt-notes {
+            border: 1px solid #111; min-height: 50px; padding: 8px 12px;
+            background: rgba(255,255,255,.2); margin: 0 22px;
+            font-size: 12px; font-weight: 700; line-height: 1.8;
+            position: relative; z-index: 2;
+        }
+
+        /* TERMS */
+        .rpt-terms {
+            margin: 14px 22px 0;
+            border-top: 2px solid #111; padding-top: 8px;
+            font-size: 10.5px; line-height: 1.8; font-weight: 700;
+            position: relative; z-index: 2;
+        }
+        .rpt-terms strong { font-size: 11.5px; display: block; margin-bottom: 4px; }
+
+        /* SIGNATURES */
+        .sig-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 40px; margin: 16px 22px 18px;
+            position: relative; z-index: 2;
+        }
+        .sig-line {
+            border-top: 2px dotted #111; padding-top: 7px;
+            text-align: center; font-weight: 900; font-size: 12px;
+        }
+
+        /* FOOTER */
+        .rpt-footer {
+            background: #111; color: rgba(255,255,255,.8);
+            padding: 10px 22px; font-size: 11px; font-weight: 800;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 5px;
+        }
+        .rpt-footer strong { color: #ff7a18; }
+
+        /* ====== PRINT ====== */
+        @@media print {
+            body {
+                padding: 0;
+                background: white;
+                /* scale everything so the 210mm wide report fits A4 */
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .actions { display: none; }
+
+            .report {
+                width: 100%;
+                border: 4px double #111;
+                /* let content flow naturally across pages */
+                page-break-inside: auto;
+            }
+
+            /* let table rows break across pages cleanly */
+            tr { page-break-inside: avoid; }
+
+            /* avoid breaking inside trip blocks or field rows */
+            .trip-block,
+            .seat-group-row,
+            .field-row { page-break-inside: avoid; }
+
+            /* section titles should stay with their content */
+            .rpt-sec { page-break-after: avoid; }
+
+            /* footer pinned to last page naturally — no fixed positioning */
+            .rpt-footer { page-break-inside: avoid; }
+
+            @@page {
+                size: A4 portrait;
+                margin: 8mm;
+            }
+        }
+
+        @@media (max-width: 700px) {
+            .report { width: 100%; }
+            .actions { width: 100%; }
+            .seat-group-row {
+                grid-template-columns: 1fr;
+                text-align: right;
+            }
+            .seat-group-row.head { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="actions">
+    <button class="btn btn-print" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+    <a class="btn btn-back" href="/Bookings/Details/@Model.BookingID">← رجوع</a>
+</div>
+
+<div class="report">
+
+    <!-- HEADER -->
+    <div class="rpt-header">
+        <div class="logo-box">
+            <div class="logo-ring">AM</div>
+            <div style="font-weight:1000;font-size:13px;">AM Travel</div>
+            <small>الفؤاد ترافيل</small>
+        </div>
+
+        <div class="rpt-title">
+            <h1>إيصال حجز</h1>
+            <h2>AM Travel · الفؤاد ترافيل</h2>
+        </div>
+
+        <div class="rpt-code">
+            <small>رقم الحجز</small>
+            @Model.Code
+        </div>
+    </div>
+
+    <!-- META -->
+    <div class="rpt-meta">
+        <span>تاريخ الطباعة: @today</span>
+        <span>منشئ الحجز: @Model.CreatedBy</span>
+        <span>نوع الحجز: @bookingTypeAr</span>
+    </div>
+
+    <!-- CLIENT DATA -->
+    <div class="rpt-sec">بيانات العميل</div>
+    <div class="field-grid">
+        <div class="field-row">
+            <div class="f-label">اسم العميل</div>
+            <div class="f-value">@Model.ClientName</div>
+        </div>
+        <div class="field-row">
+            <div class="f-label">رقم الهاتف</div>
+            <div class="f-value">@mainPhone</div>
+        </div>
+        @if (Model.PhoneNumbers != null && Model.PhoneNumbers.Count > 1)
+        {
+            foreach (var ph in Model.PhoneNumbers.Skip(1))
+            {
+                <div class="field-row">
+                    <div class="f-label">هاتف إضافي</div>
+                    <div class="f-value">@ph.PhoneNumber</div>
+                </div>
+            }
+        }
+        <div class="field-row">
+            <div class="f-label">طريقة الدفع</div>
+            <div class="f-value">@Model.PayTypeName</div>
+        </div>
+        <div class="field-row">
+            <div class="f-label">نوع الحجز</div>
+            <div class="f-value">@bookingTypeAr</div>
+        </div>
+    </div>
+
+    <!-- HOTEL DATA -->
+    @if (Model.HasHotel)
+    {
+        <div class="rpt-sec">بيانات الفندق</div>
+        <div class="field-grid">
+            <div class="field-row">
+                <div class="f-label">اسم الفندق</div>
+                <div class="f-value">@Model.HotelName</div>
+            </div>
+            <div class="field-row">
+                <div class="f-label">تاريخ الوصول</div>
+                <div class="f-value">@Model.CheckInDate.ToString("yyyy/MM/dd")</div>
+            </div>
+            <div class="field-row">
+                <div class="f-label">تاريخ المغادرة</div>
+                <div class="f-value">@Model.CheckOutDate.ToString("yyyy/MM/dd")</div>
+            </div>
+            <div class="field-row">
+                <div class="f-label">عدد الليالي</div>
+                <div class="f-value">@Model.NightsCount</div>
+            </div>
+            <div class="field-row">
+                <div class="f-label">عدد الغرف</div>
+                <div class="f-value">@Model.NumberOfRooms</div>
+            </div>
+            <div class="field-row">
+                <div class="f-label">الأطفال حتى 6 سنوات</div>
+                <div class="f-value">@Model.ChildrenCountUntil6Years</div>
+            </div>
+            <div class="field-row">
+                <div class="f-label">الأطفال حتى 12 سنة</div>
+                <div class="f-value">@Model.ChildrenCountUntil12Years</div>
+            </div>
+            <div class="field-row">
+                <div class="f-label">إجمالي الأطفال</div>
+                <div class="f-value">@Model.TotalChildrenCount</div>
+            </div>
+        </div>
+
+        @if (Model.Rooms != null && Model.Rooms.Any())
+        {
+            <div class="rpt-sec" style="margin-top:12px;">تفاصيل الغرف</div>
+            <table class="rpt-table">
+                <thead>
+                    <tr>
+                        <th>نوع الغرفة</th>
+                        <th>العدد</th>
+                        <th>سعر الليلة</th>
+                        <th>عدد الليالي</th>
+                        <th>الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var room in Model.Rooms)
+                    {
+                        var rTotal = room.Count * room.NightPrice * Model.NightsCount;
+                        <tr>
+                            <td>@room.RoomType</td>
+                            <td>@room.Count</td>
+                            <td>@room.NightPrice.ToString("N2")</td>
+                            <td>@Model.NightsCount</td>
+                            <td><strong>@rTotal.ToString("N2")</strong></td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" style="text-align:right;">إجمالي الفندق</td>
+                        <td><strong>@Model.HotelTotal.ToString("N2")</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+    }
+
+    <!-- TRANSPORTATION DATA -->
+    @if (Model.HasTransportation && Model.TransportationTrips != null && Model.TransportationTrips.Any())
+    {
+        <div class="rpt-sec">بيانات الانتقالات</div>
+        <div class="transport-section">
+            @foreach (var trip in Model.TransportationTrips)
+            {
+                var isRet = trip.Direction == TripDirection.Return;
+                var dirAr = isRet ? "عودة" : "ذهاب";
+                var seats = trip.BookedSeats ?? new List<BookingSeatDTO>();
+                var sGroups = seats
+                    .GroupBy(x => new
+                    {
+                        x.SeatType,
+                        x.SeatPrice,
+                        From = string.IsNullOrWhiteSpace(x.FromLocation) ? trip.FromLocation : x.FromLocation,
+                        To = string.IsNullOrWhiteSpace(x.ToLocation) ? trip.ToLocation : x.ToLocation
+                    })
+                    .Select(g => new
+                    {
+                        Type = g.Key.SeatType.ToString(),
+                        Price = g.Key.SeatPrice,
+                        From = g.Key.From,
+                        To = g.Key.To,
+                        Count = g.Count(),
+                        Total = g.Sum(x => x.SeatPrice),
+                        Seats = g
+                            .OrderBy(x => x.RowNumber)
+                            .ThenBy(x => x.ColumnNumber)
+                            .Select(x => string.IsNullOrWhiteSpace(x.SeatLabel) ? x.SeatNumber.ToString() : x.SeatLabel)
+                            .ToList()
+                    })
+                    .OrderBy(x => x.Type)
+                    .ThenBy(x => x.Price)
+                    .ToList();
+
+                <div class="trip-block">
+                    <div class="trip-block-head">
+                        <span>رحلة @dirAr — @trip.BusName @(string.IsNullOrWhiteSpace(trip.PlateNumber) ? "" : $"({trip.PlateNumber})")</span>
+                        <span>التاريخ: @trip.TripDate.ToString("yyyy/MM/dd")</span>
+                    </div>
+                    <div class="trip-block-body">
+                        <div class="trip-route" dir="ltr">
+                            <span class="route-node" dir="auto">@(string.IsNullOrWhiteSpace(trip.FromLocation) ? "-" : trip.FromLocation)</span>
+                            <span class="arr" dir="ltr">→</span>
+                            <span class="route-node" dir="auto">@(string.IsNullOrWhiteSpace(trip.ToLocation) ? "-" : trip.ToLocation)</span>
+                        </div>
+                        <div class="seat-group-list">
+                            <div class="seat-group-row head">
+                                <div>المقاعد</div>
+                                <div>الخط</div>
+                                <div>النوع</div>
+                                <div>سعر المقعد</div>
+                                <div>الإجمالي</div>
+                            </div>
+                            @foreach (var g in sGroups)
+                            {
+                                <div class="seat-group-row">
+                                    <div class="seat-group-seats">
+                                        @foreach (var seatLabel in g.Seats)
+                                        {
+                                            <span class="seat-mini-chip">@seatLabel</span>
+                                        }
+                                    </div>
+                                    <div class="seat-route-mini" dir="ltr">
+                                        <span dir="auto">@(string.IsNullOrWhiteSpace(g.From) ? trip.FromLocation : g.From)</span>
+                                        <strong dir="ltr">→</strong>
+                                        <span dir="auto">@(string.IsNullOrWhiteSpace(g.To) ? trip.ToLocation : g.To)</span>
+                                    </div>
+                                    <div>@g.Type (@g.Count)</div>
+                                    <div><strong>@g.Price.ToString("N2")</strong></div>
+                                    <div><strong>@g.Total.ToString("N2")</strong></div>
+                                </div>
+                            }
+                            <div class="seat-total-line">
+                                <span>إجمالي رحلة @dirAr (@seats.Count مقعد)</span>
+                                <strong>@trip.Total.ToString("N2")</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- FINANCIALS -->
+    <div class="rpt-sec">الحسابات المالية</div>
+    <table class="money-table">
+        <thead>
+            <tr>
+                <th>إجمالي الفندق</th>
+                <th>إجمالي الانتقالات</th>
+                <th>الخصم</th>
+                <th>الإجمالي الكلي</th>
+                <th>المدفوع</th>
+                <th>المتبقي</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.HotelTotal.ToString("N2")</td>
+                <td>@Model.TransportationTotal.ToString("N2")</td>
+                <td>@Model.Discount.ToString("N2")</td>
+                <td><strong>@Model.GrandTotal.ToString("N2")</strong></td>
+                <td>@Model.PaidAmount.ToString("N2")</td>
+                <td><strong style="color:@(Model.RemainingAmount > 0 ? "#b91c1c" : "#166534")">@Model.RemainingAmount.ToString("N2")</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- PAYMENTS BREAKDOWN -->
+    @if (Model.Payments != null && Model.Payments.Any())
+    {
+        <div class="rpt-sec" style="margin-top:12px;">تفاصيل المدفوعات</div>
+        <table class="pay-table">
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>طريقة الدفع</th>
+                    <th>المبلغ</th>
+                    <th>ملاحظات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.Payments)
+                {
+                    <tr>
+                        <td>@p.PaidAt.ToString("yyyy/MM/dd")</td>
+                        <td>@p.PayType</td>
+                        <td><strong>@p.Amount.ToString("N2")</strong></td>
+                        <td>@(string.IsNullOrWhiteSpace(p.Notes) ? "—" : p.Notes)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" style="text-align:right;">إجمالي المدفوع</td>
+                    <td><strong>@Model.PaidAmount.ToString("N2")</strong></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+
+    <!-- NOTES -->
+    <div class="rpt-sec" style="margin-top:12px;">ملاحظات</div>
+    <div class="rpt-notes">
+        @(string.IsNullOrWhiteSpace(Model.Notes) ? "لا توجد ملاحظات." : Model.Notes)
+    </div>
+
+    <!-- TERMS -->
+    <div class="rpt-terms">
+        <strong>الشروط والأحكام:</strong>
+        عزيزي العميل؛ نحرص على تقديم خدمة مميزة والسعر المناسب ولأننا حريصون على علاقة طيبة ومستمرة مع عملائنا التزام. يُرجى قراءة ما يلي:<br/>
+        أولاً القواعد العامة: يجب أن تحضر معك الأوراق الآتية وقت تسجيل الدخول للفندق — البطاقة الشخصية لكل شخص بالغ — وثيقة الزواج أو البطاقة الشخصية الخاصة بالزوجة مذكور بها اسم الزوج — شهادة ميلاد الأطفال عند الطلب — جواز السفر لغير المصريين — تسجيل الدخول يبدأ من الساعة الثانية ظهراً — وتسجيل الخروج من الساعة الثانية عشر الظهر.<br/>
+        ثانياً سياسة الإلغاء: الإلغاء قبل 21 يوماً: استرداد كامل — الإلغاء قبل أقل من 21 يوماً: خصم 50% — الإلغاء قبل أقل من 7 أيام: خصم كامل المبلغ.
+    </div>
+
+    <!-- SIGNATURES -->
+    <div class="sig-grid">
+        <div class="sig-line">توقيع العميل</div>
+        <div class="sig-line">توقيع الموظف</div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="rpt-footer">
+        <span><strong>AM Travel</strong> · الفؤاد ترافيل</span>
+        <span>أسيوط – شارع النميس الرئيسي أمام بوابة نادي الواي بجوار محل سانت كلوز للهداية الدور الأرضي</span>
+        <span>أرقام الشركة: <strong>01558902881 – 01066178170 – 01028494157 – 01061761944</strong></span>
+    </div>
+
+</div>
+
+
+<script>
+    function fitReportToA4() {
+        const report = document.querySelector('.report');
+        if (!report) return;
+
+        report.style.setProperty('--print-scale', '1');
+
+        const a4WidthPx = 210 * 3.7795275591;
+        const a4HeightPx = 297 * 3.7795275591;
+
+        const scaleX = a4WidthPx / report.scrollWidth;
+        const scaleY = a4HeightPx / report.scrollHeight;
+
+        const scale = Math.min(scaleX, scaleY, 1);
+        report.style.setProperty('--print-scale', scale);
+    }
+
+    window.addEventListener('beforeprint', fitReportToA4);
+</script>
+
+</body>
+</html>
+

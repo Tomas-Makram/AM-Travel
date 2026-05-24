@@ -1,0 +1,834 @@
+@using AM_Travel.Resources
+@using Microsoft.Extensions.Localization
+@model BusinessLayer.DTOs.Book.BookingDetailsDTO
+@inject IStringLocalizer<SharedResource> L
+
+@{
+    ViewData["Title"] = $"{L["AUD_TitleWord"]} – {Model.Code}";
+
+    var mainPhone = Model.PhoneNumbers.FirstOrDefault(x => x.Prime)?.PhoneNumber
+                 ?? Model.PhoneNumbers.FirstOrDefault()?.PhoneNumber
+                 ?? L["AUD_NA"].Value;
+
+    var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+}
+
+<style>
+    :root {
+        --aud-hero-bg: linear-gradient(135deg, #172033 0%, #2d3a52 100%);
+        --aud-hero-glow: rgba(255,122,24,.18);
+        --aud-card: #fff;
+        --aud-card-border: #f0d8c2;
+        --aud-card-shadow: rgba(255,122,24,.09);
+        --aud-card-shadow-soft: rgba(255,122,24,.07);
+        --aud-text: #172033;
+        --aud-text-strong: #172033;
+        --aud-muted: #667085;
+        --aud-faint: #98a2b3;
+        --aud-soft: #fffaf5;
+        --aud-line: #f0d8c2;
+        --aud-diff-line: #f5f0eb;
+        --aud-orange: #ff7a18;
+        --aud-danger: #dc2626;
+        --aud-success: #16a34a;
+        --aud-note-bg: #fffaf5;
+        --aud-empty-icon-op: 1;
+    }
+
+    html[data-theme="dark"] {
+        --aud-hero-bg: linear-gradient(135deg, #0f1626 0%, #1c2740 100%);
+        --aud-hero-glow: rgba(196,92,10,.20);
+        --aud-card: #1a2236;
+        --aud-card-border: #283148;
+        --aud-card-shadow: rgba(0,0,0,.35);
+        --aud-card-shadow-soft: rgba(0,0,0,.30);
+        --aud-text: #dce3ed;
+        --aud-text-strong: #f5f7fa;
+        --aud-muted: #7a8ba0;
+        --aud-faint: #6b7488;
+        --aud-soft: #212c3f;
+        --aud-line: #283148;
+        --aud-diff-line: #2e3a4f;
+        --aud-danger: #f87171;
+        --aud-success: #34d399;
+        --aud-note-bg: #212c3f;
+    }
+
+    .aud-page {
+        color: var(--aud-text);
+    }
+
+    /* ── hero ── */
+    .aud-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: #fff;
+        background: linear-gradient(135deg,#c45c0a,#d97c2a);
+        box-shadow: 0 24px 70px var(--aud-hero-glow);
+        margin-bottom: 24px;
+    }
+
+        .aud-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.22), transparent 26%);
+            pointer-events: none;
+        }
+
+        .aud-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            bottom: -110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            pointer-events: none;
+        }
+
+    .aud-page[dir="rtl"] .aud-hero::after {
+        right: auto;
+        left: -90px;
+    }
+
+    .aud-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .aud-hero-content {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+        flex: 1 1 520px;
+    }
+
+    .aud-badge {
+        width: fit-content;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 18px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: #fff;
+        box-shadow: none;
+        margin-bottom: 0;
+        font-size: 16px;
+        letter-spacing: 0;
+        text-transform: none;
+    }
+
+    .aud-hero h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1;
+        letter-spacing: -1px;
+        color: #fff;
+        font-weight: 1000;
+        text-wrap: balance;
+    }
+
+    .aud-hero p {
+        margin: 0;
+        color: rgba(255,255,255,.92);
+        font-size: 17px;
+        line-height: 1.7;
+        font-weight: 500;
+    }
+
+    .aud-hero-visual {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+        flex-shrink: 0;
+        justify-self: auto;
+        margin-top: 0;
+    }
+
+        .aud-hero-visual::before {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .aud-hero-visual::after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: aud-avatar-spin 4s linear infinite;
+        }
+
+    .aud-logo-card {
+        position: relative;
+        top: auto;
+        right: auto;
+        left: auto;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)), linear-gradient(135deg, #ffffff, #fff3e6);
+        color: #ff7a18;
+        border: 1px solid rgba(255,255,255,.55);
+        font-size: 42px;
+        font-weight: 1000;
+        letter-spacing: -1px;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .aud-logo-card::before,
+    .aud-logo-card::after {
+        display: none;
+    }
+
+    .aud-logo-dot {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+        box-shadow: 0 8px 18px rgba(18,183,106,.35);
+    }
+
+    .aud-page[dir="rtl"] .aud-logo-dot {
+        right: auto;
+        left: 13px;
+    }
+
+    @@keyframes aud-avatar-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .aud-hero-actions {
+        position: relative;
+        z-index: 1;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 24px;
+    }
+
+    .aud-page[dir="rtl"] .aud-hero-actions {
+        left: auto;
+        right: auto;
+    }
+
+    .aud-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        font-weight: 900;
+        transition: .2s ease;
+        border: 0;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .aud-btn:hover { transform: translateY(-2px); }
+
+        .aud-btn::before {
+            width: 24px;
+            height: 24px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex: 0 0 24px;
+            background: rgba(255,255,255,.22);
+        }
+
+    .aud-btn-white {
+        background: #fff;
+        color: #344054;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .aud-btn-orange {
+        background: #7c3aed;
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(124,58,237,.24);
+    }
+
+    .aud-btn-ghost {
+        background: #2563eb;
+        color: #fff;
+        border: 0;
+        box-shadow: 0 14px 30px rgba(37,99,235,.25);
+    }
+
+    .aud-btn-back { color: #ff6a13; }
+
+        .aud-btn-back::before {
+            content: "←";
+            background: #fff4ea;
+            color: #ff6a13;
+        }
+
+    .aud-page[dir="rtl"] .aud-btn-back::before { content: "→"; }
+
+    .aud-btn-details::before {
+        content: "◴";
+        background: rgba(255,122,24,.12);
+        color: #344054;
+    }
+
+    .aud-btn-edit::before {
+        content: "✎";
+        background: rgba(255,255,255,.18);
+        color: #fff;
+    }
+
+    /* Table direction fix: keep table columns stable in English and Arabic */
+    .diff-wrap {
+        direction: ltr;
+    }
+
+    .aud-page[dir="rtl"] .diff-wrap {
+        direction: ltr;
+    }
+
+    .diff-table {
+        direction: ltr;
+        table-layout: fixed;
+        min-width: 760px;
+    }
+
+        .diff-table th,
+        .diff-table td {
+            width: 33.333%;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+    .aud-page[dir="rtl"] .diff-table th,
+    .aud-page[dir="rtl"] .diff-table td {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .aud-page:not([dir="rtl"]) .diff-table th,
+    .aud-page:not([dir="rtl"]) .diff-table td {
+        direction: ltr;
+        text-align: left;
+    }
+
+    /* ── summary strip ── */
+    .aud-summary {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .aud-sum-card {
+        background: var(--aud-card);
+        border: 1px solid var(--aud-card-border);
+        border-radius: 22px;
+        padding: 18px 20px;
+        box-shadow: 0 14px 34px var(--aud-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+        .aud-sum-card small {
+            display: block;
+            color: var(--aud-muted);
+            font-weight: 900;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .aud-sum-card strong {
+            display: block;
+            color: var(--aud-text-strong);
+            font-size: 20px;
+            font-weight: 1000;
+        }
+
+    .remaining-danger {
+        color: var(--aud-danger) !important;
+        font-weight: 900;
+    }
+
+    .remaining-ok {
+        color: var(--aud-success) !important;
+        font-weight: 900;
+    }
+
+    /* ── timeline ── */
+    .aud-timeline {
+        display: grid;
+        gap: 16px;
+    }
+
+    .aud-card {
+        background: var(--aud-card);
+        border: 1px solid var(--aud-card-border);
+        border-radius: 26px;
+        padding: 22px;
+        box-shadow: 0 16px 38px var(--aud-card-shadow-soft);
+        border-inline-start: 5px solid #ff7a18;
+        transition: background .3s, border-color .3s;
+    }
+
+    .aud-card-create {
+        border-inline-start-color: #16a34a;
+    }
+
+    .aud-card-update {
+        border-inline-start-color: #2563eb;
+    }
+
+    .aud-card-delete {
+        border-inline-start-color: #dc2626;
+    }
+
+    .aud-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .aud-card-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        color: var(--aud-text-strong);
+        font-weight: 1000;
+    }
+
+    .aud-card-date {
+        color: var(--aud-muted);
+        font-weight: 900;
+        font-size: 14px;
+    }
+
+    .aud-note {
+        color: var(--aud-muted);
+        background: var(--aud-note-bg);
+        border: 1px solid var(--aud-line);
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-weight: 800;
+        margin-bottom: 14px;
+    }
+
+    /* ── action pill ── */
+    .action-pill {
+        display: inline-flex;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 1000;
+        color: #fff;
+    }
+
+    .action-create {
+        background: #16a34a;
+    }
+
+    .action-update {
+        background: #2563eb;
+    }
+
+    .action-delete {
+        background: #dc2626;
+    }
+
+    .action-default {
+        background: #6b7280;
+    }
+
+    /* ── diff table ── */
+    .diff-wrap {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--aud-orange) var(--aud-soft);
+    }
+
+        .diff-wrap::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .diff-wrap::-webkit-scrollbar-track {
+            background: var(--aud-soft);
+            border-radius: 999px;
+        }
+
+        .diff-wrap::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg,#ff7a18,#ffad42);
+            border-radius: 999px;
+            border: 2px solid var(--aud-soft);
+        }
+
+    .diff-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .diff-table th {
+            background: var(--aud-soft);
+            color: var(--aud-muted);
+            font-size: 12px;
+            font-weight: 1000;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--aud-line);
+            white-space: nowrap;
+        }
+
+    .aud-page:not([dir="rtl"]) .diff-table th {
+        text-align: left;
+    }
+
+    .aud-page[dir="rtl"] .diff-table th {
+        text-align: right;
+    }
+
+    .diff-table td {
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--aud-diff-line);
+        font-weight: 800;
+        vertical-align: top;
+        color: var(--aud-text);
+    }
+
+    .diff-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .field-name {
+        font-weight: 1000;
+        color: var(--aud-text-strong);
+    }
+
+    .old-val {
+        color: var(--aud-danger);
+        font-weight: 900;
+    }
+
+    .new-val {
+        color: var(--aud-success);
+        font-weight: 900;
+    }
+
+    /* ── empty ── */
+    .aud-empty {
+        background: var(--aud-card);
+        border: 1px solid var(--aud-card-border);
+        border-radius: 26px;
+        padding: 60px 30px;
+        text-align: center;
+        color: var(--aud-faint);
+        font-weight: 900;
+        box-shadow: 0 16px 38px var(--aud-card-shadow-soft);
+    }
+
+    .aud-no-changes {
+        color: var(--aud-faint);
+        font-weight: 800;
+        font-size: 14px;
+    }
+
+    /* ── alerts ── */
+    .aud-alert {
+        padding: 14px 20px;
+        border-radius: 18px;
+        font-weight: 900;
+        margin-bottom: 18px;
+        font-size: 14px;
+    }
+
+    .aud-alert-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .aud-alert-danger {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    /* ── responsive ── */
+    @@media(max-width: 1100px) {
+        .aud-summary {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @@media(max-width: 700px) {
+        .aud-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .aud-hero h1 {
+            font-size: 22px;
+        }
+    }
+
+    @@media(max-width: 480px) {
+        .aud-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media(max-width: 900px) {
+        .aud-hero {
+            padding: 30px 26px;
+        }
+
+        .aud-hero-inner {
+            align-items: flex-start;
+        }
+
+        .aud-hero-visual {
+            width: 110px;
+            height: 110px;
+            border-radius: 32px;
+        }
+
+        .aud-logo-card {
+            width: 86px;
+            height: 86px;
+            font-size: 34px;
+            border-radius: 26px;
+        }
+
+        .aud-logo-dot {
+            width: 16px;
+            height: 16px;
+            right: 10px;
+            bottom: 10px;
+            border-width: 3px;
+        }
+
+        .aud-page[dir="rtl"] .aud-logo-dot {
+            right: auto;
+            left: 10px;
+        }
+
+        .aud-hero-actions {
+            margin-top: 22px;
+        }
+    }
+
+    @@media(max-width: 560px) {
+        .aud-hero h1 { font-size: 32px; }
+        .aud-hero p { font-size: 15px; }
+        .aud-badge {
+            font-size: 14px;
+            padding: 10px 16px;
+        }
+        .aud-btn { width: 100%; }
+    }
+
+</style>
+
+<div class="aud-page" dir="@(isRtl ? "rtl" : "ltr")">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="aud-alert aud-alert-success">✓ @TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="aud-alert aud-alert-danger">✗ @TempData["Error"]</div>
+    }
+
+    <!-- ══ HERO ══ -->
+    <div class="aud-hero">
+        <div class="aud-hero-inner">
+            <div class="aud-hero-content">
+                <span class="aud-badge">@L["AUD_BookingWord"] @Model.Code</span>
+                <h1>@Model.ClientName</h1>
+                <p>
+                    @(Model.HasHotel && !Model.HasTransportation ? L["AUD_TypeHotel"].Value : Model.HasTransportation && !Model.HasHotel ? L["AUD_TypeTransport"].Value : L["AUD_TypeHT"].Value)
+                    · @L["AUD_PrimaryPhone"]: @mainPhone
+                    · @L["AUD_Subtitle"]
+                </p>
+            </div>
+
+            <div class="aud-hero-visual" aria-hidden="true">
+                <div class="aud-logo-card">
+                    AA
+                    <span class="aud-logo-dot"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="aud-hero-actions">
+            <a class="aud-btn aud-btn-white aud-btn-back" asp-action="Index">@L["AUD_AllBookings"]</a>
+            <a class="aud-btn aud-btn-white aud-btn-details" asp-action="Details" asp-route-id="@Model.BookingID">@L["AUD_Details"]</a>
+            @if (User.IsInRole("Admin") || User.IsInRole("Helper"))
+            {
+                <a class="aud-btn aud-btn-orange aud-btn-edit" asp-action="Edit" asp-route-id="@Model.BookingID">@L["AUD_Edit"]</a>
+            }
+        </div>
+    </div>
+
+    <!-- ══ SUMMARY STRIP ══ -->
+    <div class="aud-summary">
+        <div class="aud-sum-card">
+            <small>@L["AUD_Client"]</small>
+            <strong>@Model.ClientName</strong>
+        </div>
+        <div class="aud-sum-card">
+            <small>@L["AUD_PrimaryPhone"]</small>
+            <strong>@mainPhone</strong>
+        </div>
+        <div class="aud-sum-card">
+            <small>@L["AUD_BookingType"]</small>
+            <strong>@(Model.HasHotel && Model.HasTransportation ? L["AUD_TypeHT"].Value : Model.HasHotel ? L["AUD_TypeHotel"].Value : L["AUD_TypeTransport"].Value)</strong>
+        </div>
+        <div class="aud-sum-card">
+            <small>@L["AUD_GrandTotal"]</small>
+            <strong>@Model.GrandTotal.ToString("N2")</strong>
+        </div>
+        <div class="aud-sum-card">
+            <small>@L["AUD_Remaining"]</small>
+            <strong class="@(Model.RemainingAmount > 0 ? "remaining-danger" : "remaining-ok")">
+                @Model.RemainingAmount.ToString("N2")
+            </strong>
+        </div>
+    </div>
+
+    <!-- ══ AUDIT TIMELINE ══ -->
+    @if (Model.AuditLogs == null || Model.AuditLogs.Count == 0)
+    {
+        <div class="aud-empty">
+            <div style="font-size:40px;margin-bottom:12px;">📋</div>
+            <div>@L["AUD_NoLogs"]</div>
+        </div>
+    }
+    else
+    {
+        <div class="aud-timeline">
+            @foreach (var audit in Model.AuditLogs.OrderByDescending(x => x.ChangedAtUtc))
+            {
+                var actionKey = audit.ActionType.ToLower();
+
+                var actionClass = actionKey switch
+                {
+                    "create" => "action-create",
+                    "update" => "action-update",
+                    "delete" => "action-delete",
+                    _        => "action-default"
+                };
+                var cardClass = actionKey switch
+                {
+                    "create" => "aud-card-create",
+                    "update" => "aud-card-update",
+                    "delete" => "aud-card-delete",
+                    _        => ""
+                };
+                var actionText = actionKey switch
+                {
+                    "create" => L["AUD_ActionCreate"].Value,
+                    "update" => L["AUD_ActionUpdate"].Value,
+                    "delete" => L["AUD_ActionDelete"].Value,
+                    _        => audit.ActionType
+                };
+
+                <div class="aud-card @cardClass">
+
+                    <div class="aud-card-head">
+                        <div class="aud-card-user">
+                            <span class="action-pill @actionClass">@actionText</span>
+                            <strong>@audit.ChangedBy</strong>
+                        </div>
+                        <span class="aud-card-date">
+                            @audit.ChangedAtUtc.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                        </span>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(audit.Notes))
+                    {
+                        <div class="aud-note">@audit.Notes</div>
+                    }
+
+                    @if (audit.Details == null || audit.Details.Count == 0)
+                    {
+                        <div class="aud-no-changes">@L["AUD_NoFieldChanges"]</div>
+                    }
+                    else
+                    {
+                        <div class="diff-wrap">
+                            <table class="diff-table">
+                                <thead>
+                                    <tr>
+                                        <th>@L["AUD_ColField"]</th>
+                                        <th>@L["AUD_ColOldValue"]</th>
+                                        <th>@L["AUD_ColNewValue"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var d in audit.Details)
+                                    {
+                                        <tr>
+                                            <td class="field-name">@d.FieldName</td>
+                                            <td class="old-val">@(string.IsNullOrWhiteSpace(d.OldValue) ? "—" : d.OldValue)</td>
+                                            <td class="new-val">@(string.IsNullOrWhiteSpace(d.NewValue) ? "—" : d.NewValue)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+</div>

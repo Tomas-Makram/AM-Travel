@@ -1,0 +1,1991 @@
+@using AM_Travel.Resources
+@using Microsoft.Extensions.Localization
+@model BusinessLayer.DTOs.Book.BookingDetailsDTO
+@using BusinessLayer.DTOs.Book
+@using DataLayer.Models
+@inject IStringLocalizer<SharedResource> L
+
+@{
+    ViewData["Title"] = $"{L["BkDet_BookingWord"]} {Model.Code}";
+
+    var bookingType =
+        Model.HasHotel && Model.HasTransportation ? L["BkDet_TypeHT"].Value :
+        Model.HasHotel ? L["BkDet_TypeHotelOnly"].Value :
+        Model.HasTransportation ? L["BkDet_TypeTransportOnly"].Value :
+        L["BkDet_TypeNA"].Value;
+
+    var mainPhone = Model.PhoneNumbers?.FirstOrDefault(x => x.Prime)?.PhoneNumber
+                 ?? Model.PhoneNumbers?.FirstOrDefault()?.PhoneNumber
+                 ?? L["BkDet_TypeNA"].Value;
+
+    string fullName = Model.CreatedBy ?? "Admin Administrator";
+    var cleanName = fullName.Trim().Replace("  ", " ");
+
+    var userName = string.Join("", cleanName
+        .Split(' ')
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Take(2)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(userName))
+    {
+        userName = "AA";
+    }
+
+    var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+}
+
+<style>
+    :root {
+        --bd-hero-bg: linear-gradient(135deg,#ff7a18,#ffad42);
+        --bd-hero-glow: rgba(255,122,24,.18);
+        --bd-hero-text: #fff;
+        --bd-hero-sub: rgba(255,255,255,.92);
+        --bd-glass: rgba(255,255,255,.16);
+        --bd-card: #fff;
+        --bd-card-border: #f0d8c2;
+        --bd-card-shadow: rgba(255,122,24,.09);
+        --bd-text: #172033;
+        --bd-text-strong: #172033;
+        --bd-muted: #667085;
+        --bd-faint: #98a2b3;
+        --bd-line: #f3dfcc;
+        --bd-line-soft: #f7eee6;
+        --bd-soft: #fffaf5;
+        --bd-soft2: #fff3e6;
+        --bd-soft3: #fff7ed;
+        --bd-orange: #ff7a18;
+        --bd-danger: #dc2626;
+        --bd-success: #16a34a;
+        --bd-code-bg: #eff6ff;
+        --bd-code-text: #2563eb;
+        --bd-ok-bg: #dcfce7;
+        --bd-ok-text: #166534;
+        --bd-go-bg: #eff6ff;
+        --bd-go-text: #1d4ed8;
+        --bd-return-bg: #fef3c7;
+        --bd-return-text: #b45309;
+        --bd-busshell-bg: #fff;
+        --bd-buscell-bg: #fff;
+        --bd-buscell-border: #f0c9a5;
+        --bd-busgrid-bg: #fffaf5;
+        --bd-road-a: #f2f4f7;
+        --bd-road-b: #e4e7ec;
+        --bd-road-border: #d0d5dd;
+        --bd-loc-bg: #f0fdf4;
+        --bd-loc-border: #bbf7d0;
+        --bd-loc-text: #166534;
+        --bd-loc-chip-bg: #dcfce7;
+        --bd-loc-chip-border: #86efac;
+        --bd-modal-bg: #fffaf5;
+    }
+
+    html[data-theme="dark"] {
+        --bd-hero-bg: linear-gradient(135deg,#c45c0a,#d97c2a);
+        --bd-hero-glow: rgba(196,92,10,.22);
+        --bd-hero-text: #f5f0eb;
+        --bd-hero-sub: rgba(245,240,235,.85);
+        --bd-glass: rgba(255,255,255,.12);
+        --bd-card: #1a2236;
+        --bd-card-border: #283148;
+        --bd-card-shadow: rgba(0,0,0,.35);
+        --bd-text: #dce3ed;
+        --bd-text-strong: #f5f7fa;
+        --bd-muted: #7a8ba0;
+        --bd-faint: #6b7488;
+        --bd-line: #3a4d66;
+        --bd-line-soft: #2e3a4f;
+        --bd-soft: #212c3f;
+        --bd-soft2: #3a2b18;
+        --bd-soft3: #232b3b;
+        --bd-danger: #f87171;
+        --bd-success: #34d399;
+        --bd-code-bg: #1e2a44;
+        --bd-code-text: #7aa7ff;
+        --bd-ok-bg: #1f3329;
+        --bd-ok-text: #6ee7b7;
+        --bd-go-bg: #1e2a44;
+        --bd-go-text: #93b8ff;
+        --bd-return-bg: #3a3320;
+        --bd-return-text: #fcd34d;
+        --bd-busshell-bg: #1a2236;
+        --bd-buscell-bg: #212c3f;
+        --bd-buscell-border: #3a4d66;
+        --bd-busgrid-bg: #232b3b;
+        --bd-road-a: #2a3346;
+        --bd-road-b: #1f2738;
+        --bd-road-border: #3a4d66;
+        --bd-loc-bg: #16291f;
+        --bd-loc-border: #2c5440;
+        --bd-loc-text: #6ee7b7;
+        --bd-loc-chip-bg: #1f3329;
+        --bd-loc-chip-border: #2c5440;
+        --bd-modal-bg: #1a2236;
+    }
+
+    .booking-page {
+        display: grid;
+        gap: 20px;
+        color: var(--bd-text);
+    }
+
+    .booking-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: var(--bd-hero-text);
+        background: var(--bd-hero-bg);
+        box-shadow: 0 24px 70px var(--bd-hero-glow);
+    }
+
+        .booking-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.22), transparent 26%);
+            pointer-events: none;
+        }
+
+        .booking-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            bottom: -110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            pointer-events: none;
+        }
+
+    .booking-page[dir="rtl"] .booking-hero::after {
+        right: auto;
+        left: -90px;
+    }
+
+    .booking-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .booking-title {
+        display: grid;
+        gap: 10px;
+    }
+
+    .booking-badge {
+        width: fit-content;
+        padding: 8px 18px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: var(--bd-hero-text);
+    }
+
+    .booking-title h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1;
+        letter-spacing: -1px;
+        color: var(--bd-hero-text);
+    }
+
+    .booking-title p {
+        margin: 0;
+        color: var(--bd-hero-sub);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .booking-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+        flex-shrink: 0;
+    }
+
+        .booking-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .booking-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: booking-avatar-spin 4s linear infinite;
+        }
+
+    .booking-avatar {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)), linear-gradient(135deg, #ffffff, #fff3e6);
+        color: #ff7a18;
+        border: 1px solid rgba(255,255,255,.55);
+        font-size: 42px;
+        font-weight: 1000;
+        letter-spacing: -1px;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .booking-avatar-status {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+        box-shadow: 0 8px 18px rgba(18,183,106,.35);
+    }
+
+    .booking-page[dir="rtl"] .booking-avatar-status {
+        right: auto;
+        left: 13px;
+    }
+
+    @@keyframes booking-avatar-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .booking-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .booking-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 900;
+        transition: .2s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+        .booking-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .btn-white {
+        background: #fff;
+        color: #ff7a18;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .btn-glass {
+        background: var(--bd-glass);
+        color: var(--bd-hero-text);
+        border: 1px solid rgba(255,255,255,.24);
+    }
+
+    .btn-report {
+        background: #ffffff;
+        color: #344054;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .btn-ticket {
+        background: #12b76a;
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(18,183,106,.28);
+    }
+
+    .btn-audit {
+        background: #2563eb;
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(37,99,235,.25);
+    }
+
+    .btn-edit {
+        background: #7c3aed;
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(124,58,237,.24);
+    }
+
+    .btn-delete {
+        background: #dc2626;
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(220,38,38,.26);
+    }
+
+    .delete-inline-form {
+        margin: 0;
+        display: inline-flex;
+    }
+
+    .booking-btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.22);
+        font-size: 13px;
+        margin-inline-end: 8px;
+    }
+
+    .btn-white .booking-btn-icon,
+    .btn-report .booking-btn-icon {
+        background: rgba(255,122,24,.12);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+    }
+
+    .summary-card,
+    .details-card {
+        background: var(--bd-card);
+        border: 1px solid var(--bd-card-border);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 16px 38px var(--bd-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+        .summary-card small {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--bd-muted);
+            font-weight: 900;
+        }
+
+        .summary-card strong {
+            display: block;
+            color: var(--bd-text-strong);
+            font-size: 28px;
+            font-weight: 1000;
+        }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 18px;
+    }
+
+    .details-card {
+        grid-column: span 6;
+        border-radius: 30px;
+        padding: 24px;
+    }
+
+        .details-card.wide {
+            grid-column: span 12;
+        }
+
+        .details-card h3 {
+            margin: 0 0 18px;
+            color: var(--bd-text-strong);
+            font-size: 21px;
+            font-weight: 1000;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--bd-line);
+        }
+
+    .info-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 170px 1fr;
+        gap: 12px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--bd-line-soft);
+    }
+
+        .info-row:last-child {
+            border-bottom: 0;
+        }
+
+    .info-label {
+        color: var(--bd-muted);
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .info-value {
+        color: var(--bd-text);
+        font-weight: 900;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        width: fit-content;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 900;
+        color: #ff7a18;
+        background: var(--bd-soft2);
+        white-space: nowrap;
+    }
+
+    .code-pill {
+        color: var(--bd-code-text);
+        background: var(--bd-code-bg);
+        font-family: monospace;
+    }
+
+    .ok-pill {
+        background: var(--bd-ok-bg);
+        color: var(--bd-ok-text);
+    }
+
+    .go-pill {
+        background: var(--bd-go-bg);
+        color: var(--bd-go-text);
+    }
+
+    .return-pill {
+        background: var(--bd-return-bg);
+        color: var(--bd-return-text);
+    }
+
+    .success {
+        color: var(--bd-success) !important;
+    }
+
+    .danger {
+        color: var(--bd-danger) !important;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--bd-orange) var(--bd-soft2);
+    }
+
+        .table-wrap::-webkit-scrollbar {
+            height: 12px;
+        }
+
+        .table-wrap::-webkit-scrollbar-track {
+            background: var(--bd-soft2);
+            border-radius: 999px;
+        }
+
+        .table-wrap::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg,#ff7a18,#ffad42);
+            border-radius: 999px;
+            border: 3px solid var(--bd-soft2);
+        }
+
+    .details-table {
+        width: 100%;
+        min-width: 760px;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        direction: ltr;
+    }
+
+    .booking-page[dir="rtl"] .details-table {
+        direction: rtl;
+    }
+
+        .details-table th {
+            color: var(--bd-muted);
+            font-size: 13px;
+            padding: 0 12px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+    .booking-page:not([dir="rtl"]) .details-table th,
+    .booking-page:not([dir="rtl"]) .details-table td {
+        text-align: left;
+    }
+
+    .booking-page[dir="rtl"] .details-table th,
+    .booking-page[dir="rtl"] .details-table td {
+        text-align: right;
+    }
+
+    .details-table th,
+    .details-table td {
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .details-table td {
+        background: var(--bd-soft);
+        border-top: 1px solid var(--bd-line);
+        border-bottom: 1px solid var(--bd-line);
+        padding: 14px 12px;
+        color: var(--bd-text);
+        font-weight: 800;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .booking-page:not([dir="rtl"]) .details-table td:first-child {
+        border-left: 1px solid var(--bd-line);
+        border-radius: 18px 0 0 18px;
+    }
+
+    .booking-page:not([dir="rtl"]) .details-table td:last-child {
+        border-right: 1px solid var(--bd-line);
+        border-radius: 0 18px 18px 0;
+    }
+
+    .booking-page[dir="rtl"] .details-table td:first-child {
+        border-right: 1px solid var(--bd-line);
+        border-radius: 0 18px 18px 0;
+    }
+
+    .booking-page[dir="rtl"] .details-table td:last-child {
+        border-left: 1px solid var(--bd-line);
+        border-radius: 18px 0 0 18px;
+    }
+
+
+    .details-table .total-label {
+        font-weight: 1000;
+    }
+
+    .booking-page:not([dir="rtl"]) .details-table .total-label {
+        text-align: right;
+    }
+
+    .booking-page[dir="rtl"] .details-table .total-label {
+        text-align: left;
+    }
+
+    .transport-card {
+        background: var(--bd-soft);
+        border: 1px solid var(--bd-line);
+        border-radius: 28px;
+        padding: 22px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+    }
+
+    .transport-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .transport-title {
+        font-size: 22px;
+        color: var(--bd-text-strong);
+        font-weight: 1000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .transport-sub {
+        color: var(--bd-muted);
+        font-weight: 900;
+        margin-top: 8px;
+        line-height: 1.7;
+    }
+
+    .route-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .route-point {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--bd-card);
+        border: 1px solid var(--bd-line);
+        color: var(--bd-text);
+        font-weight: 1000;
+    }
+
+    .route-arrow {
+        display: inline-flex;
+        width: 38px;
+        height: 38px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: #fff;
+        background: #ff7a18;
+        font-weight: 1000;
+    }
+
+    .booking-page[dir="rtl"] .route-arrow {
+        transform: scaleX(-1);
+    }
+
+    .trip-mini-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(150px, 1fr));
+        gap: 12px;
+        margin: 16px 0;
+    }
+
+    .trip-mini-card {
+        background: var(--bd-card);
+        border: 1px solid var(--bd-line);
+        border-radius: 20px;
+        padding: 14px;
+    }
+
+        .trip-mini-card small {
+            display: block;
+            color: var(--bd-muted);
+            font-size: 12px;
+            font-weight: 1000;
+            margin-bottom: 7px;
+        }
+
+        .trip-mini-card strong {
+            display: block;
+            color: var(--bd-text-strong);
+            font-size: 18px;
+            font-weight: 1000;
+        }
+
+    .bus-shell {
+        overflow: auto;
+        padding: 20px;
+        border-radius: 26px;
+        border: 1px solid var(--bd-line);
+        background: radial-gradient(circle at 20% 10%, rgba(255,122,24,.08), transparent 28%), var(--bd-busshell-bg);
+    }
+
+    .bus-stage {
+        width: max-content;
+        margin: auto;
+        display: grid;
+        justify-items: center;
+        position: relative;
+        padding: 0 45px;
+        --bus-width: 420px;
+        --cols: 5;
+        --cell-size: 54px;
+        --cell-gap: 7px;
+    }
+
+    .bus-nose {
+        width: var(--bus-width);
+        height: 76px;
+        position: relative;
+        border-radius: 54px 54px 18px 18px;
+        background: linear-gradient(180deg, #ffb266 0%, #ff7a18 100%);
+        border: 4px solid #ffcfaa;
+        border-bottom: 0;
+        box-shadow: inset 0 9px 0 rgba(255,255,255,.18), 0 16px 30px rgba(255,122,24,.14);
+        z-index: 3;
+    }
+
+    .bus-windshield {
+        position: absolute;
+        left: 50%;
+        top: 13px;
+        transform: translateX(-50%);
+        width: 62%;
+        height: 34px;
+        border-radius: 30px 30px 12px 12px;
+        background: linear-gradient(135deg, #172033, #344054);
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,.18);
+    }
+
+    .bus-headlight {
+        position: absolute;
+        bottom: 12px;
+        width: 28px;
+        height: 15px;
+        border-radius: 999px;
+        background: #fff7d6;
+    }
+
+        .bus-headlight.left {
+            left: 28px;
+        }
+
+        .bus-headlight.right {
+            right: 28px;
+        }
+
+    .bus-body-wrap {
+        position: relative;
+        width: var(--bus-width);
+    }
+
+    .bus-body {
+        width: var(--bus-width);
+        padding: 18px;
+        background: var(--bd-busshell-bg);
+        border-left: 4px solid #ffcfaa;
+        border-right: 4px solid #ffcfaa;
+        border-bottom: 4px solid #ffcfaa;
+        border-radius: 0 0 38px 38px;
+        box-shadow: inset 0 0 0 8px var(--bd-soft3), 0 20px 38px rgba(255,122,24,.11);
+        position: relative;
+        z-index: 2;
+    }
+
+    .bus-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 0 18px;
+        color: var(--bd-muted);
+        font-size: 12px;
+        font-weight: 1000;
+        text-transform: uppercase;
+    }
+
+    .bus-grid {
+        display: grid;
+        gap: var(--cell-gap);
+        grid-template-columns: repeat(var(--cols), var(--cell-size));
+        width: max-content;
+        margin: auto;
+        padding: 12px;
+        border-radius: 24px;
+        background: var(--bd-busgrid-bg);
+        border: 1px solid var(--bd-line);
+    }
+
+    .bus-cell {
+        width: var(--cell-size);
+        height: calc(var(--cell-size) * .82);
+        border-radius: calc(var(--cell-size) * .22);
+        border: 1px dashed var(--bd-buscell-border);
+        background: var(--bd-buscell-bg);
+        display: grid;
+        place-items: center;
+        user-select: none;
+        font-weight: 1000;
+        position: relative;
+        font-size: 12px;
+        color: var(--bd-text);
+    }
+
+        .bus-cell.empty::after {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ffd5b4;
+        }
+
+        .bus-cell.normal {
+            background: linear-gradient(180deg, #ff9340, #ff6a00);
+            color: #fff;
+            border: none;
+        }
+
+        .bus-cell.vip {
+            background: linear-gradient(180deg, #ffd166, #ff9f1c);
+            color: #172033;
+            border: none;
+        }
+
+        .bus-cell.driver {
+            background: #172033;
+            color: #fff;
+            border: none;
+        }
+
+        .bus-cell.assistant {
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+        }
+
+        .bus-cell.road {
+            background: repeating-linear-gradient(135deg, var(--bd-road-a), var(--bd-road-a) 8px, var(--bd-road-b) 8px, var(--bd-road-b) 16px);
+            color: var(--bd-muted);
+            border: 2px solid var(--bd-road-border);
+        }
+
+        .bus-cell.wc {
+            background: #e8f3ff;
+            color: #1570ef;
+            border: 2px solid #84caff;
+        }
+
+        .bus-cell.door {
+            background: transparent;
+            border: 1px dashed var(--bd-buscell-border);
+            color: transparent;
+        }
+
+        .bus-cell.disabled-seat {
+            opacity: .35;
+            filter: grayscale(.5);
+        }
+
+        .bus-cell.selected-booking {
+            outline: 4px solid rgba(18,183,106,.55);
+            box-shadow: 0 0 0 7px rgba(18,183,106,.12);
+            transform: translateY(-1px);
+        }
+
+            .bus-cell.selected-booking::after {
+                content: attr(data-booked-label);
+                position: absolute;
+                font-size: 9px;
+                bottom: -16px;
+                color: #16a34a;
+                font-weight: 1000;
+            }
+
+    .selected-seat-list {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+
+    .seat-summary-groups {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+    }
+
+    .seat-summary-card {
+        background: var(--bd-card);
+        border: 1px solid var(--bd-line);
+        border-radius: 24px;
+        padding: 18px;
+        box-shadow: 0 10px 26px var(--bd-card-shadow);
+    }
+
+    .seat-summary-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .seat-summary-title {
+        color: var(--bd-text-strong);
+        font-size: 18px;
+        font-weight: 1000;
+        margin: 0;
+    }
+
+    .seat-location-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        padding: 10px 14px;
+        background: var(--bd-loc-bg);
+        border: 1px solid var(--bd-loc-border);
+        border-radius: 14px;
+    }
+
+    .seat-location-label {
+        font-size: 11px;
+        font-weight: 1000;
+        color: var(--bd-loc-text);
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        margin-inline-end: 4px;
+    }
+
+    .seat-location-point {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 12px;
+        border-radius: 999px;
+        background: var(--bd-loc-chip-bg);
+        border: 1px solid var(--bd-loc-chip-border);
+        color: var(--bd-loc-text);
+        font-weight: 1000;
+        font-size: 13px;
+    }
+
+    .seat-location-arrow {
+        display: inline-flex;
+        width: 26px;
+        height: 26px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: #16a34a;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 1000;
+    }
+
+    .booking-page[dir="rtl"] .seat-location-arrow {
+        transform: scaleX(-1);
+    }
+
+    .seat-chip-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .seat-number-chip {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: var(--bd-loc-chip-bg);
+        color: #067647;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 1000;
+        border: 1px solid rgba(18,183,106,.22);
+    }
+
+    html[data-theme="dark"] .seat-number-chip {
+        color: #6ee7b7;
+    }
+
+    .seat-summary-footer {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .seat-summary-metric {
+        background: var(--bd-soft);
+        border: 1px solid var(--bd-line);
+        border-radius: 18px;
+        padding: 12px;
+    }
+
+        .seat-summary-metric small {
+            display: block;
+            color: var(--bd-muted);
+            font-size: 12px;
+            font-weight: 1000;
+            margin-bottom: 6px;
+        }
+
+        .seat-summary-metric strong {
+            color: var(--bd-text-strong);
+            font-size: 17px;
+            font-weight: 1000;
+        }
+
+    .seat-type-normal {
+        color: #ff7a18;
+    }
+
+    .seat-type-vip {
+        color: var(--bd-return-text);
+    }
+
+    .notes-box,
+    .empty-box {
+        background: var(--bd-soft);
+        border: 1px solid var(--bd-line);
+        border-radius: 22px;
+        padding: 18px;
+        color: var(--bd-text);
+        font-weight: 800;
+        line-height: 1.8;
+    }
+
+    .empty-box {
+        text-align: center;
+        color: var(--bd-faint);
+        font-weight: 900;
+        padding: 28px;
+    }
+
+    .summary-card-action {
+        margin-top: 14px;
+        width: 100%;
+        min-height: 42px;
+        border: 0;
+        border-radius: 14px;
+        background: #12b76a;
+        color: #fff;
+        font-weight: 1000;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(18,183,106,.22);
+        transition: .2s ease;
+    }
+
+        .summary-card-action:hover {
+            transform: translateY(-2px);
+            background: #039855;
+        }
+
+    /* ── PAYMENT MODAL ── */
+    .payment-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: none;
+        place-items: center;
+        padding: 18px;
+        background: rgba(15,23,42,.58);
+        backdrop-filter: blur(8px);
+    }
+
+        .payment-modal-overlay.show {
+            display: grid;
+        }
+
+    .payment-modal {
+        width: min(980px, 100%);
+        border-radius: 30px;
+        background: var(--bd-modal-bg);
+        border: 1px solid var(--bd-line);
+        box-shadow: 0 28px 90px rgba(15,23,42,.28);
+        overflow: hidden;
+    }
+
+    .payment-modal-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 22px 24px;
+        color: #fff;
+        background: var(--bd-hero-bg);
+    }
+
+    .payment-modal-title {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 1000;
+    }
+
+    .payment-modal-subtitle {
+        margin-top: 6px;
+        color: rgba(255,255,255,.9);
+        font-weight: 800;
+    }
+
+    .payment-modal-close {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,.35);
+        background: rgba(255,255,255,.18);
+        color: #fff;
+        font-size: 22px;
+        font-weight: 1000;
+        cursor: pointer;
+    }
+
+    .payment-modal-body {
+        padding: 24px;
+    }
+
+    .payment-form-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(160px, 1fr));
+        gap: 14px;
+        align-items: end;
+    }
+
+    .payment-form-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--bd-muted);
+        font-size: 13px;
+        font-weight: 1000;
+    }
+
+    .payment-form-field input,
+    .payment-form-field select {
+        width: 100%;
+        min-height: 56px;
+        border: 1px solid var(--bd-line);
+        border-radius: 16px;
+        background: var(--bd-card);
+        color: var(--bd-text);
+        font-weight: 1000;
+        padding: 0 16px;
+        outline: none;
+    }
+
+        .payment-form-field input:focus,
+        .payment-form-field select:focus {
+            border-color: #ff7a18;
+            box-shadow: 0 0 0 4px rgba(255,122,24,.13);
+        }
+
+    .payment-form-field select option {
+        background: #fff;
+        color: #172033;
+    }
+
+    html[data-theme="dark"] .payment-form-field select option {
+        background: #212c3f;
+        color: #dce3ed;
+    }
+
+    .payment-modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 0 24px 24px;
+        flex-wrap: wrap;
+    }
+
+    .payment-modal-btn {
+        min-height: 46px;
+        border: 0;
+        border-radius: 15px;
+        padding: 0 18px;
+        font-weight: 1000;
+        cursor: pointer;
+    }
+
+    .payment-modal-cancel {
+        background: var(--bd-card);
+        color: var(--bd-text);
+        border: 1px solid var(--bd-line);
+    }
+
+    .payment-modal-submit {
+        background: #12b76a;
+        color: #fff;
+        box-shadow: 0 12px 24px rgba(18,183,106,.20);
+    }
+
+    /* ── USER MODAL ── */
+    .booking-created-user-btn {
+        border: 1px solid rgba(255,255,255,.42);
+        background: rgba(255,255,255,.18);
+        color: #fff;
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-weight: 1000;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: .2s ease;
+        vertical-align: middle;
+        box-shadow: 0 8px 18px rgba(0,0,0,.08);
+    }
+
+        .booking-created-user-btn:hover {
+            background: #fff;
+            color: #ff7a18;
+            transform: translateY(-1px);
+        }
+
+        .booking-created-user-btn::before {
+            content: "👤";
+            font-size: 13px;
+        }
+
+    .details-created-user-btn {
+        border: 1px solid rgba(255,122,24,.30);
+        background: var(--bd-soft2);
+        color: #ff7a18;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-weight: 1000;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: .2s ease;
+        box-shadow: 0 8px 18px rgba(255,122,24,.10);
+    }
+
+        .details-created-user-btn:hover {
+            background: #ff7a18;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .details-created-user-btn::before {
+            content: "👤";
+            font-size: 13px;
+        }
+
+    .user-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: none;
+        place-items: center;
+        padding: 18px;
+        background: rgba(15,23,42,.58);
+        backdrop-filter: blur(8px);
+    }
+
+        .user-modal-overlay.show {
+            display: grid;
+        }
+
+    .user-modal {
+        width: min(480px, 100%);
+        overflow: hidden;
+        border-radius: 30px;
+        background: var(--bd-card);
+        border: 1px solid var(--bd-card-border);
+        box-shadow: 0 28px 90px rgba(15,23,42,.25);
+    }
+
+    .user-modal-head {
+        position: relative;
+        overflow: hidden;
+        padding: 24px;
+        color: #fff;
+        background: var(--bd-hero-bg);
+    }
+
+        .user-modal-head::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            right: -48px;
+            bottom: -70px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+        }
+
+    .user-modal-title {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        font-size: 26px;
+        font-weight: 1000;
+    }
+
+    .user-modal-subtitle {
+        position: relative;
+        z-index: 1;
+        margin-top: 7px;
+        color: rgba(255,255,255,.92);
+        font-weight: 800;
+    }
+
+    .user-modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 2;
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,.30);
+        background: rgba(255,255,255,.18);
+        color: #fff;
+        font-size: 24px;
+        font-weight: 1000;
+        cursor: pointer;
+    }
+
+    .booking-page[dir="rtl"] .user-modal-close {
+        right: auto;
+        left: 16px;
+    }
+
+    .user-modal-body {
+        padding: 22px;
+        display: grid;
+        gap: 12px;
+    }
+
+    .user-info-row {
+        padding: 16px;
+        border-radius: 20px;
+        background: var(--bd-soft);
+        border: 1px solid var(--bd-line);
+    }
+
+        .user-info-row small {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--bd-muted);
+            font-size: 12px;
+            font-weight: 1000;
+        }
+
+        .user-info-row strong {
+            display: block;
+            color: var(--bd-text-strong);
+            font-size: 18px;
+            font-weight: 1000;
+            word-break: break-word;
+        }
+
+    .user-modal-loading {
+        padding: 16px;
+        border-radius: 18px;
+        font-weight: 1000;
+        background: #fff7ed;
+        color: #ff7a18;
+    }
+
+    .user-modal-error {
+        padding: 16px;
+        border-radius: 18px;
+        font-weight: 1000;
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    @@media(max-width:1100px) {
+        .summary-grid {
+            grid-template-columns: repeat(2,1fr);
+        }
+
+        .details-card {
+            grid-column: span 12;
+        }
+    }
+
+    @@media(max-width:700px) {
+        .summary-grid,
+        .trip-mini-summary,
+        .seat-summary-groups,
+        .seat-summary-footer {
+            grid-template-columns: 1fr;
+        }
+
+        .info-row {
+            grid-template-columns: 1fr;
+            gap: 4px;
+        }
+    }
+</style>
+
+<div class="booking-page" dir="@(isRtl ? "rtl" : "ltr")">
+
+    <section class="booking-hero">
+        <div class="booking-hero-inner">
+            <div class="booking-title">
+                <span class="booking-badge">@L["BkDet_BookingWord"] @Model.Code</span>
+                <h1>@Model.ClientName</h1>
+                <p>
+                    @bookingType · @L["BkDet_MainPhone"]: @mainPhone · @L["BkDet_CreatedBy"]:
+                    @if (!string.IsNullOrWhiteSpace(Model.CreatedBy))
+                    {
+                        <button type="button" class="booking-created-user-btn" data-booking-id="@Model.BookingID" title="@L["BkDet_ViewUserContact"]">
+                            @Model.CreatedBy
+                        </button>
+                    }
+                    else { <span>-</span> }
+                </p>
+            </div>
+            <div class="booking-avatar-wrap">
+                <div class="booking-avatar">@userName</div>
+                <span class="booking-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="booking-actions">
+            <a class="booking-btn btn-white" asp-action="Index"><span class="booking-btn-icon">←</span>@L["BkDet_BtnBack"]</a>
+            <a class="booking-btn btn-report" asp-action="Report" asp-route-id="@Model.BookingID" target="_blank"><span class="booking-btn-icon">⎙</span>@L["BkDet_BtnReport"]</a>
+
+            @if (Model.HasTransportation)
+            {
+                <a class="booking-btn btn-ticket" asp-action="Ticket" asp-route-id="@Model.BookingID" target="_blank"><span class="booking-btn-icon">🎟</span>@L["BkDet_BtnTicket"]</a>
+            }
+
+            <a class="booking-btn btn-audit" asp-action="Audit" asp-route-id="@Model.BookingID"><span class="booking-btn-icon">≡</span>@L["BkDet_BtnAudit"]</a>
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Helper"))
+            {
+                <a class="booking-btn btn-edit" asp-action="Edit" asp-route-id="@Model.BookingID"><span class="booking-btn-icon">✎</span>@L["BkDet_BtnEdit"]</a>
+            }
+
+            @if (User.IsInRole("Admin"))
+            {
+                <form class="delete-inline-form" asp-action="Delete" asp-route-id="@Model.BookingID" method="post" onsubmit="return confirm('@(L["BkDet_ConfirmDelete"].Value) @Model.Code?');">
+                    @Html.AntiForgeryToken()
+                    <button class="booking-btn btn-delete" type="submit"><span class="booking-btn-icon">🗑</span>@L["BkDet_BtnDelete"]</button>
+                </form>
+            }
+        </div>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-card"><small>@L["BkDet_HotelTotal"]</small><strong>@Model.HotelTotal.ToString("N2")</strong></div>
+        <div class="summary-card"><small>@L["BkDet_TransportTotal"]</small><strong>@Model.TransportationTotal.ToString("N2")</strong></div>
+        <div class="summary-card"><small>@L["BkDet_GrandTotal"]</small><strong>@Model.GrandTotal.ToString("N2")</strong></div>
+        <div class="summary-card">
+            <small>@L["BkDet_Paid"]</small>
+            <strong class="success">@Model.PaidAmount.ToString("N2")</strong>
+            @if (User.IsInRole("Admin") || User.IsInRole("Helper"))
+            {
+                <button type="button" class="summary-card-action" onclick="openPaymentModal()">@L["BkDet_AddPaymentBtn"]</button>
+            }
+        </div>
+        <div class="summary-card">
+            <small>@L["BkDet_Remaining"]</small>
+            <strong class="@(Model.RemainingAmount > 0 ? "danger" : "success")">@Model.RemainingAmount.ToString("N2")</strong>
+        </div>
+    </section>
+
+    <section class="content-grid">
+
+        <div class="details-card">
+            <h3>@L["BkDet_ClientData"]</h3>
+            <div class="info-list">
+                <div class="info-row"><span class="info-label">@L["BkDet_Code"]</span><span class="info-value"><span class="pill code-pill">@Model.Code</span></span></div>
+                <div class="info-row"><span class="info-label">@L["BkDet_ClientName"]</span><span class="info-value">@Model.ClientName</span></div>
+                <div class="info-row"><span class="info-label">@L["BkDet_BookingType"]</span><span class="info-value"><span class="pill">@bookingType</span></span></div>
+                <div class="info-row">
+                    <span class="info-label">@L["BkDet_CreatedBy"]</span>
+                    <span class="info-value">
+                        @if (!string.IsNullOrWhiteSpace(Model.CreatedBy))
+                        {
+                            <button type="button" class="details-created-user-btn" data-booking-id="@Model.BookingID" title="@L["BkDet_ViewUserContact"]">
+                                @Model.CreatedBy
+                            </button>
+                        }
+                        else { <span>-</span> }
+                    </span>
+                </div>
+                <div class="info-row"><span class="info-label">@L["BkDet_CreatedAt"]</span><span class="info-value">@Model.CreatedAtUtc.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt")</span></div>
+            </div>
+        </div>
+
+        <div class="details-card">
+            <h3>@L["BkDet_PhoneNumbers"]</h3>
+            @if (Model.PhoneNumbers == null || !Model.PhoneNumbers.Any())
+            {
+                <div class="empty-box">@L["BkDet_NoPhones"]</div>
+            }
+            else
+            {
+                <div class="selected-seat-list">
+                    @foreach (var phone in Model.PhoneNumbers)
+                    {
+                        <span class="pill @(phone.Prime ? "ok-pill" : "")">@phone.PhoneNumber @(phone.Prime ? $" - {L["BkDet_Primary"].Value}" : "")</span>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Model.HasHotel)
+        {
+            <div class="details-card wide">
+                <h3>@L["BkDet_HotelDetails"]</h3>
+                <div class="info-list">
+                    <div class="info-row"><span class="info-label">@L["BkDet_HotelName"]</span><span class="info-value">@Model.HotelName</span></div>
+                    <div class="info-row"><span class="info-label">@L["BkDet_CheckIn"]</span><span class="info-value">@Model.CheckInDate.ToString("yyyy-MM-dd")</span></div>
+                    <div class="info-row"><span class="info-label">@L["BkDet_CheckOut"]</span><span class="info-value">@Model.CheckOutDate.ToString("yyyy-MM-dd")</span></div>
+                    <div class="info-row"><span class="info-label">@L["BkDet_Nights"]</span><span class="info-value">@Model.NightsCount</span></div>
+                    <div class="info-row"><span class="info-label">@L["BkDet_Rooms"]</span><span class="info-value">@Model.NumberOfRooms - @Model.RoomTypeName</span></div>
+                    <div class="info-row"><span class="info-label">@L["BkDet_Children"]</span><span class="info-value">@Model.TotalChildrenCount</span></div>
+                </div>
+            </div>
+
+            @if (Model.Rooms != null && Model.Rooms.Any())
+            {
+                <div class="details-card wide">
+                    <h3>@L["BkDet_RoomsBreakdown"]</h3>
+                    <div class="table-wrap">
+                        <table class="details-table">
+                            <colgroup>
+                                <col style="width:23%;" />
+                                <col style="width:15%;" />
+                                <col style="width:23%;" />
+                                <col style="width:16%;" />
+                                <col style="width:23%;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>@L["BkDet_RoomType"]</th><th>@L["BkDet_Count"]</th><th>@L["BkDet_NightPrice"]</th><th>@L["BkDet_Nights"]</th><th>@L["BkDet_Total"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var room in Model.Rooms)
+                                {
+                                    var total = room.Count * room.NightPrice * Model.NightsCount;
+                                    <tr>
+                                        <td>@room.RoomType</td>
+                                        <td>@room.Count</td>
+                                        <td>@room.NightPrice.ToString("N2")</td>
+                                        <td>@Model.NightsCount</td>
+                                        <td><strong>@total.ToString("N2")</strong></td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td colspan="4" class="total-label">@L["BkDet_HotelTotal"]</td>
+                                    <td><strong>@Model.HotelTotal.ToString("N2")</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        }
+
+        @if (Model.HasTransportation)
+        {
+            <div class="details-card wide">
+                <h3>@L["BkDet_TransportDetails"]</h3>
+
+                @if (Model.TransportationTrips == null || !Model.TransportationTrips.Any())
+                {
+                    <div class="empty-box">@L["BkDet_NoTrips"]</div>
+                }
+                else
+                {
+                    foreach (var trip in Model.TransportationTrips)
+                    {
+                        var isReturn          = trip.Direction == TripDirection.Return;
+                        var directionLabel    = isReturn ? L["BkDet_DirReturn"].Value : L["BkDet_DirGo"].Value;
+                        var busDirectionLabel = isReturn ? L["BkDet_ReturnBus"].Value : L["BkDet_GoBus"].Value;
+                        var directionClass    = isReturn ? "return-pill" : "go-pill";
+
+                        var columns  = trip.LayoutColumns <= 0 ? 4 : trip.LayoutColumns;
+                        var rows     = trip.LayoutRows    <= 0 ? 1 : trip.LayoutRows;
+                        var cellSize = columns >= 8 ? 46 : columns >= 6 ? 50 : 54;
+                        var gap      = columns >= 8 ? 5  : 7;
+                        var busWidth = (columns * cellSize) + ((columns - 1) * gap) + 82;
+
+                        var bookedSeatIds = trip.BookedSeats?
+                            .Select(x => x.SeatId)
+                            .ToHashSet() ?? new HashSet<Guid>();
+
+                        var tripRouteFrom = string.IsNullOrWhiteSpace(trip.FromLocation) ? "-" : trip.FromLocation;
+                        var tripRouteTo   = string.IsNullOrWhiteSpace(trip.ToLocation)   ? "-" : trip.ToLocation;
+
+                        var seatGroups = (trip.BookedSeats ?? new List<BookingSeatDTO>())
+                            .GroupBy(x => new
+                            {
+                                x.SeatType,
+                                x.SeatPrice,
+                                From = string.IsNullOrWhiteSpace(x.FromLocation) ? tripRouteFrom : x.FromLocation,
+                                To = string.IsNullOrWhiteSpace(x.ToLocation) ? tripRouteTo : x.ToLocation,
+
+                                x.IsTransferredToCompany,
+                                x.TransferredToCompanyName,
+                                x.TransferredToCompanyPhone
+                            })
+                            .Select(g => new
+                            {
+                                SeatType = g.Key.SeatType,
+                                Count = g.Count(),
+                                Labels = g.Select(x => string.IsNullOrWhiteSpace(x.SeatLabel)
+                                                ? x.SeatNumber.ToString()
+                                                : x.SeatLabel).ToList(),
+                                Total = g.Sum(x => x.SeatPrice),
+                                Price = g.Key.SeatPrice,
+                                RouteFrom = g.Key.From,
+                                RouteTo = g.Key.To,
+
+                                IsTransferredToCompany = g.Key.IsTransferredToCompany,
+                                TransferredToCompanyName = g.Key.TransferredToCompanyName,
+                                TransferredToCompanyPhone = g.Key.TransferredToCompanyPhone
+                            })
+                            .OrderBy(x => x.IsTransferredToCompany)
+                            .ThenBy(x => x.SeatType.ToString())
+                            .ThenBy(x => x.Price)
+                            .ToList();
+
+                        <div class="transport-card">
+                            <div class="transport-head">
+                                <div>
+                                    <div class="transport-title">
+                                        <span class="pill @directionClass">@busDirectionLabel</span>
+                                        <span>@trip.BusName</span>
+                                        @if (!string.IsNullOrWhiteSpace(trip.PlateNumber))
+                                        {
+                                            <span>- @trip.PlateNumber</span>
+                                        }
+                                    </div>
+                                    <div class="transport-sub">@L["BkDet_Date"]: @trip.TripDate.ToString("yyyy-MM-dd")</div>
+                                    <div class="route-line">
+                                        <span class="route-point">@tripRouteFrom</span>
+                                        <span class="route-arrow">→</span>
+                                        <span class="route-point">@tripRouteTo</span>
+                                    </div>
+                                </div>
+                                <span class="pill ok-pill">@L["BkDet_Total"]: @trip.Total.ToString("N2")</span>
+                            </div>
+
+                            <div class="trip-mini-summary">
+                                <div class="trip-mini-card"><small>@L["BkDet_Direction"]</small><strong>@directionLabel</strong></div>
+                                <div class="trip-mini-card"><small>@L["BkDet_Bus"]</small><strong>@trip.BusName</strong></div>
+                                <div class="trip-mini-card"><small>@L["BkDet_Plate"]</small><strong>@(string.IsNullOrWhiteSpace(trip.PlateNumber) ? "-" : trip.PlateNumber)</strong></div>
+                                <div class="trip-mini-card"><small>@L["BkDet_BookedSeats"]</small><strong>@(trip.BookedSeats?.Count ?? 0)</strong></div>
+                            </div>
+
+                            <div class="bus-shell">
+                                <div class="bus-stage" style="--cols:@columns;--cell-size:@(cellSize)px;--cell-gap:@(gap)px;--bus-width:@(busWidth)px;">
+                                    <div class="bus-nose">
+                                        <div class="bus-windshield"></div>
+                                        <div class="bus-headlight left"></div>
+                                        <div class="bus-headlight right"></div>
+                                    </div>
+                                    <div class="bus-body-wrap">
+                                        <div class="bus-body">
+                                            <div class="bus-meta">
+                                                <span>@busDirectionLabel</span>
+                                                <span>@rows x @columns</span>
+                                            </div>
+                                            <div class="bus-grid">
+                                                @for (var r = 1; r <= rows; r++)
+                                                {
+                                                    for (var c = 1; c <= columns; c++)
+                                                    {
+                                                        var seat   = trip.BusSeats?.FirstOrDefault(x => x.RowNumber == r && x.ColumnNumber == c);
+                                                        var booked = seat != null && bookedSeatIds.Contains(seat.SeatId);
+
+                                                        if (seat == null)
+                                                        {
+                                                            <div class="bus-cell empty"></div>
+                                                        }
+                                                        else
+                                                        {
+                                                            var st = seat.SeatType.ToString().ToLower();
+                                                            var seatClass =
+                                                                st.Contains("vip")       ? "vip" :
+                                                                st.Contains("driver")    ? "driver" :
+                                                                st.Contains("assistant") ? "assistant" :
+                                                                st.Contains("road") || st.Contains("aisle") ? "road" :
+                                                                st.Contains("wc")   || st.Contains("bath")  ? "wc" :
+                                                                st.Contains("door")      ? "door" : "normal";
+
+                                                            <div class="bus-cell @seatClass @(booked ? "selected-booking" : "") @(!seat.IsActive ? "disabled-seat" : "")"
+                                                                 data-booked-label="@L["BkDet_Booked"]"
+                                                                 title="@seat.SeatLabel - @seat.SeatType">
+                                                                @seat.SeatLabel
+                                                            </div>
+                                                        }
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        @if (seatGroups.Any())
+                        {
+                            <div class="seat-summary-groups">
+                                @foreach (var group in seatGroups)
+                                {
+                                    var typeName  = group.SeatType.ToString();
+                                    var typeClass = typeName.Equals("VIP", StringComparison.OrdinalIgnoreCase)
+                                        ? "seat-type-vip" : "seat-type-normal";
+
+                                    <div class="seat-summary-card">
+                                        <div class="seat-summary-top">
+                                            <h4 class="seat-summary-title @typeClass">@typeName @L["BkDet_SeatsWord"]</h4>
+                                            <span class="pill @directionClass">@directionLabel</span>
+                                        </div>
+
+                                        <div class="seat-location-box">
+                                            <span class="seat-location-label">📍 @L["BkDet_SeatRoute"]</span>
+                                            <span class="seat-location-point">@group.RouteFrom</span>
+                                            <span class="seat-location-arrow">→</span>
+                                            <span class="seat-location-point">@group.RouteTo</span>
+                                        </div>
+
+                                        <div class="seat-chip-list">
+                                            @foreach (var label in group.Labels)
+                                            {
+                                                <span class="seat-number-chip">@label</span>
+                                            }
+                                        </div>
+                                            @if (group.IsTransferredToCompany)
+                                            {
+                                                <div class="mt-2" style="margin-top:14px;padding:12px 14px;border-radius:16px;background:#fef3c7;border:1px solid #fde68a;">
+                                                    <span class="pill" style="background:#fff7ed;color:#92400e;">
+                                                        تم تحويلها لشركة أخرى
+                                                    </span>
+
+                                                    <div style="margin-top:8px;font-weight:900;color:var(--bd-muted);">
+                                                        الشركة:
+                                                        <span style="color:var(--bd-text-strong);">
+                                                            @(group.TransferredToCompanyName ?? "-")
+                                                        </span>
+                                                    </div>
+
+                                                    <div style="margin-top:4px;font-weight:900;color:var(--bd-muted);">
+                                                        رقم الشركة:
+                                                        <span style="color:var(--bd-text-strong);direction:ltr;display:inline-block;">
+                                                            @(group.TransferredToCompanyPhone ?? "-")
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        <div class="seat-summary-footer">
+                                            <div class="seat-summary-metric">
+                                                <small>@L["BkDet_Count"]</small>
+                                                <strong>@group.Count</strong>
+                                            </div>
+                                            <div class="seat-summary-metric">
+                                                <small>@L["BkDet_PricePerSeat"]</small>
+                                                <strong>@group.Price.ToString("N2")</strong>
+                                            </div>
+                                            <div class="seat-summary-metric">
+                                                <small>@L["BkDet_Total"]</small>
+                                                <strong>@group.Total.ToString("N2")</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-box" style="margin-top:16px;">@L["BkDet_NoSeats"]</div>
+                        }
+                        </div>
+                    }
+
+                    <div class="summary-grid" style="margin-top:18px;">
+                        <div class="summary-card">
+                            <small>@L["BkDet_TransportTotal"]</small>
+                            <strong>@Model.TransportationTotal.ToString("N2")</strong>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="details-card wide">
+            <h3>@L["BkDet_Payments"]</h3>
+            @if (Model.Payments == null || !Model.Payments.Any())
+            {
+                <div class="empty-box">@L["BkDet_NoPayments"]</div>
+            }
+            else
+            {
+                <div class="table-wrap">
+                    <table class="details-table">
+                        <colgroup>
+                            <col style="width:31%;" />
+                            <col style="width:27%;" />
+                            <col style="width:23%;" />
+                            <col style="width:19%;" />
+                        </colgroup>
+                        <thead>
+                            <tr><th>@L["BkDet_Date"]</th><th>@L["BkDet_PayType"]</th><th>@L["BkDet_Amount"]</th><th>@L["BkDet_NotesCol"]</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payment in Model.Payments)
+                            {
+                                <tr>
+                                    <td>@payment.PaidAt.ToString("yyyy-MM-dd")</td>
+                                    <td>@Html.DisplayFor(x => payment.PayType)</td>
+                                    <td><strong>@payment.Amount.ToString("N2")</strong></td>
+                                    <td>@(string.IsNullOrWhiteSpace(payment.Notes) ? "-" : payment.Notes)</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="2" class="total-label">@L["BkDet_PaidTotal"]</td>
+                                <td><strong>@Model.PaidAmount.ToString("N2")</strong></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Notes))
+        {
+            <div class="details-card wide">
+                <h3>@L["BkDet_Notes"]</h3>
+                <div class="notes-box">@Model.Notes</div>
+            </div>
+        }
+
+    </section>
+</div>
+
+<!-- USER MODAL -->
+<div id="bookingUserModal" class="user-modal-overlay" onclick="closeBookingUserModal(event)">
+    <div class="user-modal" onclick="event.stopPropagation()">
+        <div class="user-modal-head">
+            <button type="button" class="user-modal-close" onclick="hideBookingUserModal()">×</button>
+            <h3 class="user-modal-title">@L["BkDet_ModalTitle"]</h3>
+            <div class="user-modal-subtitle">@L["BkDet_ModalSubtitle"]</div>
+        </div>
+        <div class="user-modal-body">
+            <div id="bookingUserLoading" class="user-modal-loading">@L["BkDet_ModalLoading"]</div>
+            <div id="bookingUserError"   class="user-modal-error"   style="display:none;"></div>
+            <div id="bookingUserContent"                             style="display:none;">
+                <div class="user-info-row"><small>@L["BkDet_ModalUserName"]</small><strong id="bookingUserFullName">-</strong></div>
+                <div class="user-info-row"><small>@L["BkDet_ModalPhone"]</small><strong id="bookingUserPhone">-</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+@if (User.IsInRole("Admin") || User.IsInRole("Helper"))
+{
+    <div id="paymentModalOverlay" class="payment-modal-overlay" onclick="closePaymentModal(event)">
+        <div class="payment-modal" onclick="event.stopPropagation()">
+            <form asp-action="AddPayment" asp-route-id="@Model.BookingID" method="post">
+                @Html.AntiForgeryToken()
+                <div class="payment-modal-head">
+                    <div>
+                        <h3 class="payment-modal-title">@L["BkDet_AddPaymentTitle"]</h3>
+                        <div class="payment-modal-subtitle">@L["BkDet_BookingWord"] @Model.Code · @L["BkDet_Remaining"]: @Model.RemainingAmount.ToString("N2")</div>
+                    </div>
+                    <button type="button" class="payment-modal-close" onclick="hidePaymentModal()">×</button>
+                </div>
+                <div class="payment-modal-body">
+                    <input type="hidden" name="BookingId" value="@Model.BookingID" />
+                    <div class="payment-form-grid">
+                        <div class="payment-form-field">
+                            <label>@L["BkDet_Amount"]</label>
+                            <input name="Amount" type="number" min="1"
+                                   max="@Model.RemainingAmount.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                                   step="0.01" value="0" required />
+                        </div>
+                        <div class="payment-form-field">
+                            <label>@L["BkDet_PayType"]</label>
+                            <select name="PayType" required asp-items="Html.GetEnumSelectList<PayType>()">
+                            </select>
+                        </div>
+                        <div class="payment-form-field">
+                            <label>@L["BkDet_PaidAt"]</label>
+                            <input name="PaidAt" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                        </div>
+                        <div class="payment-form-field">
+                            <label>@L["BkDet_NotesCol"]</label>
+                            <input name="Notes" placeholder="@L["BkDet_PaymentNotesPH"]" maxlength="500" />
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-modal-actions">
+                    <button type="button" class="payment-modal-btn payment-modal-cancel" onclick="hidePaymentModal()">@L["BkDet_Cancel"]</button>
+                    <button type="submit" class="payment-modal-btn payment-modal-submit">@L["BkDet_SavePayment"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<script>
+    const BkDet_I18N = {
+        loadFailed:   @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["BkDet_JsLoadFailed"].Value)),
+        connectFailed:@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["BkDet_JsConnectFailed"].Value))
+    };
+
+    function showBookingUserModal() { document.getElementById("bookingUserModal")?.classList.add("show"); }
+    function hideBookingUserModal() { document.getElementById("bookingUserModal")?.classList.remove("show"); }
+    function closeBookingUserModal(e) { if (e.target?.id === "bookingUserModal") hideBookingUserModal(); }
+
+    function setBookingUserModalLoading() {
+        document.getElementById("bookingUserLoading").style.display = "";
+        document.getElementById("bookingUserError").style.display   = "none";
+        document.getElementById("bookingUserContent").style.display = "none";
+    }
+
+    function setBookingUserModalError(msg) {
+        document.getElementById("bookingUserLoading").style.display = "none";
+        document.getElementById("bookingUserContent").style.display = "none";
+        const e = document.getElementById("bookingUserError");
+        e.innerText = msg || BkDet_I18N.loadFailed;
+        e.style.display = "";
+    }
+
+    function setBookingUserModalContent(data) {
+        document.getElementById("bookingUserLoading").style.display = "none";
+        document.getElementById("bookingUserError").style.display   = "none";
+        document.getElementById("bookingUserContent").style.display = "";
+        document.getElementById("bookingUserFullName").innerText = data.fullName    || "-";
+        document.getElementById("bookingUserPhone").innerText    = data.phoneNumber || "-";
+    }
+
+    async function loadBookingUserInfo(bookingId) {
+        setBookingUserModalLoading();
+        showBookingUserModal();
+        try {
+            const url  = '@Url.Action("BookingUserInfo", "Bookings")' + '?bookingId=' + encodeURIComponent(bookingId);
+            const resp = await fetch(url, { method: "GET", headers: { "X-Requested-With": "XMLHttpRequest" } });
+            const data = await resp.json();
+            if (!resp.ok || !data.success) { setBookingUserModalError(data.message || BkDet_I18N.loadFailed); return; }
+            setBookingUserModalContent(data.data);
+        } catch { setBookingUserModalError(BkDet_I18N.connectFailed); }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".booking-created-user-btn, .details-created-user-btn").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault(); e.stopPropagation();
+                const id = btn.getAttribute("data-booking-id");
+                if (id) loadBookingUserInfo(id);
+            });
+        });
+    });
+
+    function openPaymentModal()  { document.getElementById("paymentModalOverlay")?.classList.add("show"); }
+    function hidePaymentModal()  { document.getElementById("paymentModalOverlay")?.classList.remove("show"); }
+    function closePaymentModal(e){ if (e.target?.id === "paymentModalOverlay") hidePaymentModal(); }
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") { hidePaymentModal(); hideBookingUserModal(); }
+    });
+</script>

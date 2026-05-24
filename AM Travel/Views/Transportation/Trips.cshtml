@@ -1,0 +1,532 @@
+﻿@using BusinessLayer.DTOs.Bus
+@using DataLayer.Models
+
+@model BusinessLayer.DTOs.Trip.GetTripDTO
+
+@{
+    ViewData["Title"] = L["Trips_Title"];
+    var buses = ViewBag.Buses as List<BusDTO> ?? new List<BusDTO>();
+
+    string fullName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName   = fullName.Trim().Replace("  ", " ");
+    var userName    = string.Join("", cleanName
+        .Split(' ')
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Take(2)
+        .Select(x => x[0]))
+        .ToUpper();
+    if (string.IsNullOrWhiteSpace(userName)) userName = "U";
+}
+
+<style>
+    /* ── CSS Variables ────────────────────────────────────────────────────── */
+    :root {
+        --tr-hero-bg:        linear-gradient(135deg, #ff7a18, #ffad42);
+        --tr-hero-glow:      rgba(255,122,24,.18);
+        --tr-hero-text:      #fff;
+        --tr-hero-sub:       rgba(255,255,255,.92);
+        --tr-card-bg:        #fff;
+        --tr-card-border:    #f0d8c2;
+        --tr-card-shadow:    rgba(255,122,24,.10);
+        --tr-label:          #667085;
+        --tr-input-bg:       #fff;
+        --tr-input-border:   #f3dfcc;
+        --tr-input-text:     #172033;
+        --tr-th-txt:         #667085;
+        --tr-row-bg:         #fffaf5;
+        --tr-row-border:     #f3dfcc;
+        --tr-row-text:       #172033;
+        --tr-row-hover:      #fff5eb;
+        --tr-empty-txt:      #98a2b3;
+        --tr-edit-border:    #f3dfcc;
+        --tr-edit-txt:       #ff7a18;
+        --tr-light-btn-bg:   transparent;
+        --tr-light-btn-bdr:  #f3dfcc;
+        --tr-light-btn-txt:  #172033;
+        --tr-active-bg:      rgba(18,183,106,.12);
+        --tr-active-txt:     #12b76a;
+        --tr-warning-bg:     rgba(247,144,9,.13);
+        --tr-warning-txt:    #f79009;
+        --tr-divider:        #f0d8c2;
+    }
+
+    html[data-theme="dark"] {
+        --tr-hero-bg:        linear-gradient(135deg, #c45c0a, #d97c2a);
+        --tr-hero-glow:      rgba(196,92,10,.22);
+        --tr-hero-text:      #f5f0eb;
+        --tr-hero-sub:       rgba(245,240,235,.85);
+        --tr-card-bg:        #182133;
+        --tr-card-border:    #283148;
+        --tr-card-shadow:    rgba(0,0,0,.35);
+        --tr-label:          #91a0b8;
+        --tr-input-bg:       #212c3f;
+        --tr-input-border:   #34445f;
+        --tr-input-text:     #f5f7fa;
+        --tr-th-txt:         #91a0b8;
+        --tr-row-bg:         #212c3f;
+        --tr-row-border:     #2c3b55;
+        --tr-row-text:       #f5f7fa;
+        --tr-row-hover:      #273247;
+        --tr-empty-txt:      #5a6a7e;
+        --tr-edit-border:    #34445f;
+        --tr-edit-txt:       #f6ba72;
+        --tr-light-btn-bg:   transparent;
+        --tr-light-btn-bdr:  #34445f;
+        --tr-light-btn-txt:  #f5f7fa;
+        --tr-active-bg:      rgba(18,183,106,.16);
+        --tr-active-txt:     #34d399;
+        --tr-warning-bg:     rgba(247,144,9,.18);
+        --tr-warning-txt:    #fbb040;
+        --tr-divider:        #283148;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .tr-page { display: grid; gap: 24px; max-width: 100%; overflow-x: hidden; }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       HERO — نفس النظام الموحد في كل صفحات المشروع
+    ═══════════════════════════════════════════════════════════════════════ */
+    .tr-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--tr-hero-text);
+        background: var(--tr-hero-bg);
+        box-shadow: 0 24px 70px var(--tr-hero-glow);
+    }
+
+        /* Radial highlight top-left */
+        .tr-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.20), transparent 28%);
+            pointer-events: none;
+        }
+
+        /* Decorative circle bottom-right */
+        .tr-hero::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            right: -95px;
+            bottom: -115px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+            pointer-events: none;
+        }
+
+    .tr-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .tr-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: var(--tr-hero-text);
+    }
+
+    .tr-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(42px, 6vw, 66px);
+        line-height: 1;
+        letter-spacing: -1.5px;
+        color: var(--tr-hero-text);
+    }
+
+    .tr-hero p {
+        margin: 16px 0 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--tr-hero-sub);
+    }
+
+    /* ── Avatar — spin ring مطابق باقي الصفحات ──────────────────────────── */
+    .tr-avatar-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+        /* Static ring */
+        .tr-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        /* Spinning arc */
+        .tr-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: tr-spin 4s linear infinite;
+        }
+
+    @@keyframes tr-spin { to { transform: rotate(360deg); } }
+
+    .tr-avatar {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        background: #fff;
+        color: #ff6a00;
+        display: grid;
+        place-items: center;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .tr-avatar-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    /* ── Action buttons ──────────────────────────────────────────────────── */
+    .tr-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        margin-top: 28px;
+        flex-wrap: wrap;
+    }
+
+    .tr-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 16px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        cursor: pointer;
+        border: none;
+        white-space: nowrap;
+        transition: .2s ease;
+    }
+
+        .tr-btn:hover { transform: translateY(-2px); }
+
+    .tr-btn-white  { background: #fff; color: #ff7a18; box-shadow: 0 14px 30px rgba(0,0,0,.12); }
+    .tr-btn-glass  { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); color: var(--tr-hero-text); }
+    .tr-btn-orange { background: linear-gradient(135deg,#ff7a18,#ffad42); color: #fff; box-shadow: 0 8px 22px rgba(255,122,24,.22); }
+    .tr-btn-light  { background: var(--tr-light-btn-bg); border: 1px solid var(--tr-light-btn-bdr); color: var(--tr-light-btn-txt); transition: border-color .3s, color .3s; }
+
+    /* ── Card ────────────────────────────────────────────────────────────── */
+    .tr-card {
+        background: var(--tr-card-bg);
+        border: 1px solid var(--tr-card-border);
+        border-radius: 30px;
+        padding: 24px;
+        box-shadow: 0 18px 42px var(--tr-card-shadow);
+        transition: background .3s, border-color .3s;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    /* ── Create form ─────────────────────────────────────────────────────── */
+    .tr-create-form {
+        display: grid;
+        grid-template-columns: minmax(220px,1.5fr) minmax(160px,1fr) minmax(160px,1fr) minmax(160px,1fr) auto;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .tr-form-group { display: grid; gap: 7px; min-width: 0; }
+    .tr-form-group label { color: var(--tr-label); font-size: 13px; font-weight: 900; transition: color .3s; }
+
+    .tr-input,
+    .tr-select {
+        min-height: 46px;
+        border-radius: 16px;
+        border: 1px solid var(--tr-input-border);
+        background: var(--tr-input-bg);
+        color: var(--tr-input-text);
+        padding: 0 14px;
+        font-weight: 800;
+        font-size: 14px;
+        width: 100%;
+        min-width: 0;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color .2s, background .3s, color .3s;
+    }
+
+        .tr-input:focus, .tr-select:focus  { border-color: rgba(255,122,24,.55); background: var(--tr-card-bg); box-shadow: 0 0 0 4px rgba(255,122,24,.09); }
+        .tr-input::placeholder              { color: var(--tr-label); opacity: .7; }
+        .tr-select option                   { background: #fff; color: #172033; }
+
+    /* ── Divider ─────────────────────────────────────────────────────────── */
+    .tr-section-divider { height: 1px; background: var(--tr-divider); margin: 24px 0; transition: background .3s; }
+
+    /* ── Filter form ─────────────────────────────────────────────────────── */
+    .tr-filter-form { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 22px; }
+
+    /* ── Table scroll ────────────────────────────────────────────────────── */
+    .tr-table-scroll {
+        width: 100%;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 12px;
+        direction: ltr;
+    }
+
+        .tr-table-scroll::-webkit-scrollbar       { height: 14px; }
+        .tr-table-scroll::-webkit-scrollbar-track { background: rgba(128,128,128,.08); border-radius: 999px; }
+        .tr-table-scroll::-webkit-scrollbar-thumb { background: linear-gradient(135deg,#ff7a18,#ffad42); border-radius: 999px; }
+
+    /* ── Table ───────────────────────────────────────────────────────────── */
+    .tr-table {
+        min-width: 1560px;
+        width: 1560px;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        direction: ltr;
+        table-layout: fixed;
+    }
+
+    .tr-table th {
+        text-align: center;
+        color: var(--tr-th-txt);
+        font-size: 12px;
+        font-weight: 1000;
+        padding: 0 14px 8px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        white-space: nowrap;
+        transition: color .3s;
+    }
+
+    .tr-table td {
+        background: var(--tr-row-bg);
+        border-top: 1px solid var(--tr-row-border);
+        border-bottom: 1px solid var(--tr-row-border);
+        padding: 13px 14px;
+        color: var(--tr-row-text);
+        font-weight: 800;
+        font-size: 14px;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+        transition: background .3s, border-color .3s, color .3s;
+    }
+
+        .tr-table tr:hover td { background: var(--tr-row-hover); }
+        .tr-table td:first-child { border-left: 1px solid var(--tr-row-border); border-radius: 16px 0 0 16px; }
+        .tr-table td:last-child  { border-right: 1px solid var(--tr-row-border); border-radius: 0 16px 16px 0; }
+
+    /* Column widths */
+    .tr-col-date      { width: 140px; }
+    .tr-col-company   { width: 200px; }
+    .tr-col-bus       { width: 180px; }
+    .tr-col-plate     { width: 140px; }
+    .tr-col-route     { width: 280px; }
+    .tr-col-type      { width: 120px; }
+    .tr-col-total     { width: 130px; }
+    .tr-col-reserved  { width: 130px; }
+    .tr-col-available { width: 130px; }
+    .tr-col-action    { width: 150px; }
+
+    /* ── Route cell ──────────────────────────────────────────────────────── */
+    .tr-route { display: inline-flex; align-items: center; justify-content: center; gap: 8px; direction: ltr; max-width: 100%; }
+    .tr-route-part  { direction: rtl; unicode-bidi: isolate; display: inline-block; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tr-route-arrow { direction: ltr; font-weight: 1000; flex: 0 0 auto; }
+
+    /* ── Pills ───────────────────────────────────────────────────────────── */
+    .pill         { display: inline-flex; align-items: center; justify-content: center; padding: 7px 12px; border-radius: 999px; font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .pill-active  { background: var(--tr-active-bg);  color: var(--tr-active-txt); }
+    .pill-warning { background: var(--tr-warning-bg); color: var(--tr-warning-txt); }
+
+    /* ── Edit button ─────────────────────────────────────────────────────── */
+    .tr-edit-btn { min-height: 36px; padding: 0 14px; border-radius: 13px; border: 1px solid var(--tr-edit-border); background: transparent; color: var(--tr-edit-txt); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; white-space: nowrap; transition: color .3s, border-color .3s; }
+
+    .tr-empty { padding: 34px; text-align: center; color: var(--tr-empty-txt); font-weight: 900; transition: color .3s; }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @@media (max-width: 1100px) { .tr-create-form { grid-template-columns: 1fr; } }
+    @@media (max-width: 700px) {
+        .tr-filter-form, .tr-actions { flex-direction: column; align-items: stretch; }
+        .tr-btn { width: 100%; }
+        .tr-avatar-wrap { width: 112px; height: 112px; border-radius: 32px; }
+        .tr-avatar-wrap::before, .tr-avatar-wrap::after { border-radius: 38px; }
+        .tr-avatar { width: 88px; height: 88px; font-size: 34px; border-radius: 27px; }
+    }
+</style>
+
+<div class="tr-page">
+
+    @* ── Hero ── *@
+    <section class="tr-hero">
+        <div class="tr-hero-inner">
+            <div>
+                <span class="tr-badge">@L["Trips_Badge"]</span>
+                <h1>@L["Trips_Heading"]</h1>
+                <p>@L["Trips_Subtitle"]</p>
+            </div>
+
+            <div class="tr-avatar-wrap">
+                <div class="tr-avatar">@userName</div>
+                <span class="tr-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="tr-actions">
+            <a class="tr-btn tr-btn-white" asp-action="Buses">@L["Trips_Buses"]</a>
+            <a class="tr-btn tr-btn-glass" asp-action="Companies">@L["Trips_Companies"]</a>
+        </div>
+    </section>
+
+    @* ── Card: Create + Filter + Table ── *@
+    <section class="tr-card">
+
+        <div class="tr-section-divider"></div>
+
+        @* Filter *@
+        <form method="get" asp-action="Trips" class="tr-filter-form">
+            <div class="tr-form-group">
+                <label>@L["Trips_FilterDate"]</label>
+                <input type="date" name="date" class="tr-input"
+                       value="@(Model?.Search?.DateFrom?.ToString("yyyy-MM-dd") ?? "")" />
+            </div>
+
+            <button class="tr-btn tr-btn-orange" type="submit">@L["Trips_FilterApply"]</button>
+            <a class="tr-btn tr-btn-light" asp-action="Trips">@L["Trips_FilterReset"]</a>
+        </form>
+
+        @* Table *@
+        <div class="tr-table-scroll">
+            <table class="tr-table">
+                <colgroup>
+                    <col class="tr-col-date" />
+                    <col class="tr-col-company" />
+                    <col class="tr-col-bus" />
+                    <col class="tr-col-plate" />
+                    <col class="tr-col-route" />
+                    <col class="tr-col-type" />
+                    <col class="tr-col-total" />
+                    <col class="tr-col-reserved" />
+                    <col class="tr-col-available" />
+                    <col class="tr-col-action" />
+                </colgroup>
+
+                <thead>
+                    <tr>
+                        <th>@L["Trips_ColDate"]</th>
+                        <th>@L["Trips_ColCompany"]</th>
+                        <th>@L["Trips_ColBus"]</th>
+                        <th>@L["Trips_ColPlate"]</th>
+                        <th>@L["Trips_ColRoute"]</th>
+                        <th>@L["Trips_ColType"]</th>
+                        <th>@L["Trips_ColSeats"]</th>
+                        <th>@L["Trips_ColReserved"]</th>
+                        <th>@L["Trips_ColAvailable"]</th>
+                        <th>@L["Trips_ColSeatsMap"]</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model?.AccountingTrips == null || !Model.AccountingTrips.Any())
+                    {
+                        <tr>
+                            <td colspan="10">
+                                <div class="tr-empty">@L["Trips_NoTrips"]</div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.AccountingTrips)
+                        {
+                            <tr>
+                                <td>@item.TripDate.ToString("yyyy-MM-dd")</td>
+
+                                <td>
+                                    <span class="pill @(string.IsNullOrWhiteSpace(item.CompanyName) || item.CompanyName == "Not Linked" ? "pill-warning" : "pill-active")">
+                                        @(string.IsNullOrWhiteSpace(item.CompanyName) ? L["Trips_PillNotLinked"].Value : item.CompanyName)
+                                    </span>
+                                </td>
+
+                                <td>@item.BusName</td>
+                                <td>@(string.IsNullOrWhiteSpace(item.PlateNumber) ? "-" : item.PlateNumber)</td>
+
+                                <td>
+                                    <span class="tr-route">
+                                        <span class="tr-route-part" title="@item.FromLocation">
+                                            @(string.IsNullOrWhiteSpace(item.FromLocation) ? "-" : item.FromLocation)
+                                        </span>
+                                        <span class="tr-route-arrow">→</span>
+                                        <span class="tr-route-part" title="@item.ToLocation">
+                                            @(string.IsNullOrWhiteSpace(item.ToLocation) ? "-" : item.ToLocation)
+                                        </span>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="pill @(item.Direction == TripDirection.Departure ? "pill-active" : "pill-warning")">
+                                        @(item.Direction == TripDirection.Departure ? L["Trips_PillGo"].Value : L["Trips_PillReturn"].Value)
+                                    </span>
+                                </td>
+
+                                <td>@item.TotalSeats</td>
+                                <td>@item.ReservedSeats</td>
+
+                                <td>
+                                    <span class="pill @(item.AvailableSeats > 0 ? "pill-active" : "pill-warning")">
+                                        @item.AvailableSeats
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <a class="tr-edit-btn"
+                                       asp-action="Seats"
+                                       asp-route-tripId="@item.TripId">
+                                        @L["Trips_BtnOpenSeats"]
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+</div>

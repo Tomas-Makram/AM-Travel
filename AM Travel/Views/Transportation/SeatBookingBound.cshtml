@@ -1,0 +1,1042 @@
+@using BusinessLayer.DTOs.CompanyBookSeat
+@using DataLayer.Models
+@using BusinessLayer.DTOs.Company
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model BusinessLayer.DTOs.CompanyBookSeat.SeatBookingBoundPageDTO
+
+@{
+    ViewData["Title"] = L["SB_PageTitle"];
+
+    var activeTab = string.IsNullOrWhiteSpace(Model.ActiveTab) ? "bookTab" : Model.ActiveTab;
+    var hiddenDirection = Model.Direction;
+    var search = Model.Search ?? new CompanySeatBookingSearchDTO();
+    var transferSearch = Model.TransferTripSearch ?? new TransferTripSearchDTO();
+
+    var successMessage = TempData["Success"]?.ToString() ?? ViewBag.SuccessMessage as string;
+    var errorMessage = TempData["Error"]?.ToString() ?? ViewBag.ErrorMessage as string;
+
+    var currentName = ViewBag.Name as string ?? User.Identity?.Name ?? "Account";
+    var role = User.IsInRole("Admin") ? "Administrator Account" :
+               User.IsInRole("Helper") ? "Helper Account" :
+               User.IsInRole("Viewer") ? "Viewer Account" :
+               "User Account";
+
+    var initials = currentName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(x => x[0])
+        .Aggregate("", (a, b) => a + b)
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials)) initials = "AM";
+
+    var tripDateValue = Model.TripDate?.ToString("yyyy-MM-dd") ?? DateTime.Today.ToString("yyyy-MM-dd");
+
+    string DirTextEn(TripDirection d) => d == TripDirection.Return ? "Return" : "Go";
+
+    string SeatCss(SeatType t) => t switch
+    {
+        SeatType.Normal => "seat",
+        SeatType.VIP => "vip",
+        SeatType.Driver => "driver",
+        SeatType.Assistant => "assistant",
+        SeatType.Aisle => "road",
+        SeatType.Door => "road",
+        SeatType.Bathroom => "wc",
+        _ => "empty"
+    };
+
+    string TripTypeText(TransportationTripType t) => t switch
+    {
+        TransportationTripType.Return => "Return",
+        TransportationTripType.RoundTrip => "Round Trip",
+        _ => "Go"
+    };
+
+    var autoClientTripType = Model.Direction == TripDirection.Return
+        ? TransportationTripType.Return
+        : TransportationTripType.Departure;
+}
+
+<style>
+:root{
+    --or:#ff7a18;--or2:#ffad42;--dk:#172033;--mu:#667085;--ln:#f0d8c2;
+    --sf:#fff7ed;--sf2:#fffaf5;--gr:#079455;--re:#dc2626;--vi:#7c3aed;
+    --card:#fff;--card-border:#f0d8c2;--card-shadow:rgba(255,122,24,.09);
+    --text:#172033;--sub:#667085;--input:#fffaf5;
+    /* dark mode additions */
+    --hero-bg:linear-gradient(135deg,#ff7a18,#ffad42);
+    --hero-glow:rgba(255,122,24,.18);
+}
+html[data-theme="dark"]{
+    --card:#1a2236;--card-border:#283148;--card-shadow:rgba(0,0,0,.35);
+    --text:#dce3ed;--sub:#9aaabb;--input:#212c3f;--ln:#283148;
+    --sf2:#212c3f;--dk:#dce3ed;--mu:#9aaabb;--sf:#1e2940;
+    --gr:#34d399;--re:#f87171;--vi:#a78bfa;
+    --hero-bg:linear-gradient(135deg,#c45c0a,#d97c2a);
+    --hero-glow:rgba(196,92,10,.22);
+}
+*{box-sizing:border-box}
+.dashboard-page,.csb-page{display:grid;gap:22px}
+.dashboard-hero{position:relative;overflow:hidden;border-radius:32px;padding:32px;color:#fff;background:var(--hero-bg);box-shadow:0 24px 70px var(--hero-glow)}
+.dashboard-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 12% 15%,rgba(255,255,255,.16),transparent 26%);pointer-events:none}
+.dashboard-hero:after{content:"";position:absolute;width:260px;height:260px;right:-90px;bottom:-110px;border-radius:50%;background:rgba(255,255,255,.10)}
+.dashboard-hero-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
+.dashboard-title{display:grid;gap:10px}
+.dashboard-badge{width:fit-content;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.24);font-weight:900;color:#fff}
+.dashboard-title h1{margin:0;font-size:clamp(34px,5vw,54px);line-height:1;letter-spacing:-1px;color:#fff}
+.dashboard-title p{margin:0;color:rgba(255,255,255,.92);font-size:17px;line-height:1.7}
+.dashboard-avatar-wrap{position:relative;width:132px;height:132px;display:grid;place-items:center;border-radius:38px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(12px);flex-shrink:0}
+.dashboard-avatar-wrap:before{content:"";position:absolute;inset:-7px;border-radius:44px;border:3px solid rgba(255,255,255,.22)}
+.dashboard-avatar-wrap:after{content:"";position:absolute;inset:-7px;border-radius:44px;border:3px solid transparent;border-top-color:#fff;border-right-color:rgba(255,255,255,.72);animation:db-spin 4s linear infinite}
+.dashboard-avatar{position:relative;z-index:2;width:104px;height:104px;border-radius:32px;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,.9),rgba(255,255,255,.72)),linear-gradient(135deg,#fff,#fff3e6);color:#ff7a18;font-size:42px;font-weight:1000;text-transform:uppercase;box-shadow:0 18px 38px rgba(0,0,0,.16)}
+.dashboard-avatar-status{position:absolute;right:13px;bottom:13px;z-index:3;width:20px;height:20px;border-radius:50%;background:#12b76a;border:4px solid #fff}
+@@keyframes db-spin{to{transform:rotate(360deg)}}
+.dashboard-actions{position:relative;z-index:1;display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.dashboard-btn{min-height:46px;padding:12px 18px;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:900;transition:.2s ease}
+.dashboard-btn:hover{transform:translateY(-2px)}
+.btn-glass{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.28)}
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.summary-card{background:var(--card);border:1px solid var(--card-border);border-radius:24px;padding:20px;box-shadow:0 16px 38px var(--card-shadow);transition:background .3s,border-color .3s}
+.summary-card small{display:block;margin-bottom:8px;color:var(--sub);font-weight:900;transition:color .3s}
+.summary-card strong{display:block;color:var(--text);font-size:20px;word-break:break-word;transition:color .3s}
+.dashboard-filter-card,.table-card,.panel{background:var(--card);border:1px solid var(--card-border);border-radius:30px;padding:22px;box-shadow:0 18px 42px var(--card-shadow);transition:background .3s,border-color .3s}
+.panel-title{margin:0 0 16px;font-size:20px;font-weight:1000;color:var(--dk);transition:color .3s}
+.tab-bar{display:flex;gap:8px;flex-wrap:wrap}
+.tab-btn{min-height:42px;padding:9px 16px;border-radius:14px;font-weight:1000;border:0;cursor:pointer;background:var(--input);color:var(--text);transition:.15s;font-size:13px}
+.tab-btn.active{background:linear-gradient(135deg,var(--or),var(--or2));color:#fff;box-shadow:0 10px 24px rgba(255,122,24,.22)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.field label{display:block;color:var(--mu);font-size:13px;font-weight:1000;margin-bottom:6px;transition:color .3s}
+.fc{width:100%;min-height:46px;border:1px solid var(--ln);background:var(--input);border-radius:14px;padding:0 13px;outline:none;font-weight:900;color:var(--dk);font-size:14px;transition:border-color .2s,background .3s,color .3s}
+.fc:focus{border-color:var(--or);box-shadow:0 0 0 4px rgba(255,122,24,.12);background:var(--card)}
+.fc option{background:#fff;color:#172033}
+.btn{min-height:42px;padding:9px 16px;border-radius:14px;font-weight:1000;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:.15s;font-size:13px;text-decoration:none}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,var(--or),var(--or2));color:#fff;box-shadow:0 10px 24px rgba(255,122,24,.2)}
+.btn-light{background:var(--input);color:var(--text);border:1px solid var(--ln)}
+.btn-danger{background:rgba(220,38,38,.12);color:var(--re);border:1px solid rgba(220,38,38,.2)}
+.btn-success{background:rgba(7,148,85,.12);color:var(--gr);border:1px solid rgba(7,148,85,.2)}
+.btn-sm{min-height:34px;padding:6px 11px;font-size:12px}
+.alert{border-radius:14px;padding:12px 16px;font-weight:900;margin-bottom:10px}
+.alert-ok{background:rgba(7,148,85,.12);color:var(--gr);border:1px solid rgba(7,148,85,.25)}
+.alert-err{background:rgba(220,38,38,.12);color:var(--re);border:1px solid rgba(220,38,38,.25)}
+.bus-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:13px;margin-bottom:18px}
+.bus-card{border:2px solid var(--ln);border-radius:20px;padding:15px;background:var(--sf2);transition:.18s;position:relative;text-decoration:none;display:block;color:var(--dk)}
+.bus-card:hover:not(.full){border-color:var(--or);box-shadow:0 8px 24px rgba(255,122,24,.14);transform:translateY(-2px)}
+.bus-card.selected{border-color:var(--gr);background:rgba(7,148,85,.06);box-shadow:0 8px 24px rgba(7,148,85,.18)}
+.bus-card.full{opacity:.55}
+.bc-name{font-size:15px;font-weight:1000;color:var(--dk);margin-bottom:3px}
+.bc-stats{display:flex;gap:7px;flex-wrap:wrap}
+.bc-stat{padding:3px 9px;border-radius:999px;font-size:11px;font-weight:1000}
+.bc-stat.total{background:var(--input);color:var(--text)}
+.bc-stat.client{background:rgba(220,38,38,.12);color:var(--re)}
+.bc-stat.company{background:rgba(245,158,11,.12);color:#d97706}
+.bc-stat.avail{background:rgba(7,148,85,.12);color:var(--gr)}
+.bc-stat.zero{background:var(--input);color:var(--mu)}
+.bc-new{padding:3px 8px;border-radius:999px;font-size:10px;font-weight:1000;background:rgba(124,58,237,.12);color:var(--vi)}
+.bc-enough{background:rgba(7,148,85,.12);color:var(--gr)}
+.bc-create{background:rgba(255,122,24,.12);color:var(--or)}
+.bc-dir{background:rgba(14,165,233,.12);color:#0369a1}
+.trip-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.trip-card-route{padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--ln);margin:10px 0;font-weight:1000;color:var(--dk);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;transition:background .3s,border-color .3s,color .3s}
+.trip-card-meta{font-size:12px;color:var(--mu);font-weight:900}
+.trip-card-badge{position:static;display:inline-flex;align-items:center;white-space:nowrap;margin-bottom:0}
+.trip-card-empty{border-style:dashed;background:var(--sf2)}
+.trip-card-ready{background:rgba(7,148,85,.04);border-color:rgba(7,148,85,.3)}
+.bus-shell{overflow:auto;padding:20px;border-radius:26px;border:1px solid var(--ln);min-height:360px;background:var(--card);display:flex;align-items:flex-start;justify-content:center;transition:background .3s,border-color .3s}
+.bus-stage{width:max-content;margin:auto;display:grid;justify-items:center;position:relative;padding:0 45px}
+.bus-nose{width:var(--bus-width,340px);height:72px;border-radius:54px 54px 16px 16px;background:linear-gradient(180deg,#ffb266,#ff7a18);border:4px solid #ffcfaa;border-bottom:0;box-shadow:inset 0 8px 0 rgba(255,255,255,.18),0 16px 30px rgba(255,122,24,.14);position:relative}
+.bus-windshield{position:absolute;left:50%;top:12px;transform:translateX(-50%);width:60%;height:30px;border-radius:30px 30px 10px 10px;background:linear-gradient(135deg,#172033,#344054)}
+.bus-body{padding:16px;background:var(--card);border-left:4px solid #ffcfaa;border-right:4px solid #ffcfaa;border-bottom:4px solid #ffcfaa;border-radius:0 0 36px 36px;box-shadow:inset 0 0 0 7px var(--sf2);transition:background .3s}
+.bus-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 14px;color:var(--mu);font-size:12px;font-weight:1000;text-transform:uppercase}
+.bus-grid{display:grid;gap:var(--cell-gap,7px);grid-template-columns:repeat(var(--cols,5),var(--cell-size,54px));width:max-content;margin:auto;padding:10px;border-radius:22px;background:var(--sf2);border:1px solid var(--ln);transition:background .3s,border-color .3s}
+.seat-check{display:none}
+.bus-cell{width:var(--cell-size,54px);height:calc(var(--cell-size,54px)*.82);border-radius:calc(var(--cell-size,54px)*.22);border:1px dashed var(--ln);background:var(--card);display:grid;place-items:center;font-weight:1000;font-size:12px;position:relative;transition:.12s;user-select:none;cursor:default;color:var(--text)}
+.bus-cell.empty{background:transparent}
+.bus-cell.seat,.bus-cell.normal{background:linear-gradient(180deg,#ff9340,#ff6a00);color:#fff;border:none}
+.bus-cell.vip{background:linear-gradient(180deg,#ffd166,#ff9f1c);color:#172033;border:none}
+.bus-cell.driver{background:#172033;color:#fff;border:none}
+.bus-cell.assistant{background:#7c3aed;color:#fff;border:none}
+.bus-cell.road{background:repeating-linear-gradient(135deg,rgba(100,116,139,.15),rgba(100,116,139,.15) 8px,rgba(100,116,139,.25) 8px,rgba(100,116,139,.25) 16px);border:2px solid var(--ln);color:var(--mu)}
+.bus-cell.wc{background:rgba(21,112,239,.12);color:#1570ef;border:2px solid rgba(84,202,255,.4)}
+.bus-cell.selectable{cursor:pointer}
+.bus-cell.selectable:hover{box-shadow:0 0 0 4px rgba(255,122,24,.18);transform:translateY(-1px)}
+.seat-check:checked+.bus-cell{outline:4px solid rgba(7,148,85,.55);transform:translateY(-1px)}
+.bus-cell.reserved-seat{opacity:.42;filter:grayscale(.4);cursor:not-allowed}
+.bus-cell.reserved-seat:after{content:"Client";position:absolute;font-size:8px;bottom:-17px;color:var(--re);font-weight:1000;white-space:nowrap}
+.bus-cell.company-reserved{opacity:.42;filter:grayscale(.35) sepia(.5);cursor:not-allowed;border:2px solid #f59e0b!important}
+.bus-cell.company-reserved:after{content:"Company";position:absolute;font-size:8px;bottom:-17px;color:#b45309;font-weight:1000;white-space:nowrap}
+.bus-cell.disabled-seat{opacity:.3;cursor:not-allowed}
+.info-box{border-radius:16px;padding:12px 16px;font-weight:900;font-size:13px;margin-bottom:16px}
+.info-box.green{background:rgba(7,148,85,.10);border:1px solid rgba(7,148,85,.3);color:var(--gr)}
+.info-box.amber{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:#d97706}
+.sum-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.sum-card{background:var(--sf2);border:1px solid var(--ln);border-radius:18px;padding:14px;transition:background .3s,border-color .3s}
+.sum-card small{display:block;color:var(--mu);font-size:11px;font-weight:1000;margin-bottom:5px;transition:color .3s}
+.sum-card strong{font-size:20px;font-weight:1000;color:var(--dk);transition:color .3s}
+/* =========================
+   TABLE SCROLLBAR - ADDED / FIXED
+   One native horizontal scrollbar under each table.
+   No logic or form fields changed.
+========================= */
+.tw{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    display:block;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    direction:ltr;
+    padding-bottom:14px;
+    margin-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;
+    scrollbar-gutter:stable;
+}
+.tw::-webkit-scrollbar{height:14px}
+.tw::-webkit-scrollbar-track{background:var(--input);border-radius:999px;border:1px solid var(--ln)}
+.tw::-webkit-scrollbar-thumb{background:linear-gradient(135deg,var(--or),var(--or2));border-radius:999px;border:2px solid var(--input)}
+.tw::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg,#ff8f33,#ffbb5c)}
+.tw{scrollbar-width:thin;scrollbar-color:var(--or) var(--input)}
+.tw table{
+    direction:ltr;
+    width:max-content !important;
+    min-width:1500px !important;
+    max-width:none !important;
+    table-layout:auto;
+    border-collapse:separate;
+    border-spacing:0 5px;
+}
+.tw th{text-align:left;color:var(--mu);font-size:11px;font-weight:1000;padding:0 12px 6px;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;transition:color .3s}
+.tw td{padding:11px 12px;background:var(--sf2);border-top:1px solid var(--ln);border-bottom:1px solid var(--ln);color:var(--text);font-weight:850;vertical-align:middle;font-size:13px;transition:background .3s,color .3s,border-color .3s;white-space:nowrap;text-align:left}
+.tw td:first-child{border-left:1px solid var(--ln);border-radius:12px 0 0 12px}
+.tw td:last-child{border-right:1px solid var(--ln);border-radius:0 12px 12px 0}
+.tw tbody tr:hover td{background:var(--card)}
+.route-cell{direction:ltr!important;unicode-bidi:isolate;white-space:nowrap}
+.route-cell .route-text{display:inline-flex;align-items:center;gap:7px;direction:ltr;unicode-bidi:isolate}
+.route-cell bdi{direction:auto;unicode-bidi:isolate}
+.route-cell .route-arrow{direction:ltr;color:var(--mu);font-weight:1000}
+.force-table{min-width:1400px!important}
+.tag{padding:4px 9px;border-radius:999px;font-size:11px;font-weight:1000;display:inline-block}
+.tag-in{background:rgba(7,148,85,.12);color:var(--gr)}
+.tag-trip{background:rgba(255,122,24,.12);color:var(--or)}
+.ok{color:var(--gr);font-weight:1000}
+.bad{color:var(--re);font-weight:1000}
+.empty-msg{text-align:center;color:var(--mu);font-weight:1000;padding:26px;border:1px dashed var(--ln);border-radius:20px;background:var(--sf2);margin:0;font-size:13px;transition:background .3s,border-color .3s,color .3s}
+.tr-seat-row.transferred{opacity:.55}
+.client-section{border:1px solid var(--ln);border-radius:18px;padding:14px;margin-bottom:16px;transition:border-color .3s}
+.client-section legend{font-weight:1000;color:var(--dk);padding:0 8px;transition:color .3s}
+.force-modal{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.72);display:grid;place-items:center;padding:20px}
+.force-modal-box{width:min(980px,100%);max-height:90vh;overflow:auto;background:var(--card);border:1px solid var(--ln);border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.35);transition:background .3s,border-color .3s}
+.force-modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--ln)}
+.force-modal-head h3{margin:0;color:var(--dk);font-weight:1000;transition:color .3s}
+.force-modal-head button{width:38px;height:38px;border:0;border-radius:12px;background:rgba(220,38,38,.12);color:var(--re);font-size:24px;font-weight:1000;cursor:pointer}
+.force-modal-body{padding:20px 22px;color:var(--text);transition:color .3s}
+.force-warning{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);color:#d97706;padding:14px 16px;border-radius:16px;font-weight:900;margin-bottom:16px}
+.force-table{width:max-content!important;min-width:1400px!important;max-width:none!important;border-collapse:separate;border-spacing:0}
+.force-table th,.force-table td{padding:10px 12px;border-bottom:1px solid var(--ln);color:var(--text);text-align:left;font-size:13px}
+.force-modal-actions{padding:18px 22px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.force-delete-loader{font-weight:1000;color:var(--dk);padding:10px 0;transition:color .3s}
+.force-danger-text{color:var(--re);font-weight:1000}
+.force-muted{color:var(--mu);font-weight:900;font-size:13px;margin-bottom:12px;transition:color .3s}
+@@media(max-width:900px){.grid,.grid-3,.sum-strip,.summary-grid{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}.bus-cards{grid-template-columns:1fr}}
+@@media(max-width:650px){.dashboard-hero{padding:24px;border-radius:24px}.dashboard-actions{flex-direction:column}.dashboard-btn{width:100%}.dashboard-avatar-wrap{width:112px;height:112px;border-radius:32px}.dashboard-avatar{width:88px;height:88px;font-size:34px;border-radius:27px}.grid,.grid-3,.grid-2,.sum-strip,.summary-grid{grid-template-columns:1fr}}
+
+
+/* =========================================================
+   FORCE BOTTOM TABLE SCROLLBAR - FINAL FIX
+   This hides the browser native scrollbar on .tw and adds one
+   visible synced scrollbar directly under each table.
+   No forms, names, actions, or logic are changed.
+========================================================= */
+.dashboard-page,
+.csb-page,
+.panel,
+.dashboard-filter-card,
+.table-card,
+.csb-tab{
+    min-width:0 !important;
+    max-width:100% !important;
+}
+
+.tw{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    display:block !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    direction:ltr !important;
+    padding-bottom:0 !important;
+    margin-bottom:0 !important;
+    -webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;
+    scrollbar-width:none !important;
+    -ms-overflow-style:none !important;
+}
+
+.tw::-webkit-scrollbar{
+    width:0 !important;
+    height:0 !important;
+    display:none !important;
+}
+
+.tw table{
+    direction:ltr !important;
+    width:max-content !important;
+    min-width:1800px !important;
+    max-width:none !important;
+    table-layout:auto !important;
+    border-collapse:separate;
+    border-spacing:0 5px;
+}
+
+.tw table.force-table,
+.force-table{
+    width:max-content !important;
+    min-width:1500px !important;
+    max-width:none !important;
+}
+
+.tw-scrollbar{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    height:18px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    direction:ltr;
+    margin-top:8px;
+    margin-bottom:4px;
+    display:block;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+    scrollbar-color:var(--or) var(--input);
+}
+
+.tw-scrollbar::-webkit-scrollbar{
+    height:14px;
+}
+
+.tw-scrollbar::-webkit-scrollbar-track{
+    background:var(--input);
+    border-radius:999px;
+    border:1px solid var(--ln);
+}
+
+.tw-scrollbar::-webkit-scrollbar-thumb{
+    background:linear-gradient(135deg,var(--or),var(--or2));
+    border-radius:999px;
+    border:2px solid var(--input);
+}
+
+.tw-scrollbar::-webkit-scrollbar-thumb:hover{
+    background:linear-gradient(135deg,#ff8f33,#ffbb5c);
+}
+
+.tw-scrollbar-inner{
+    height:1px;
+    width:1800px;
+}
+
+@@media(max-width:1200px){
+    .tw table{
+        min-width:1900px !important;
+    }
+}
+
+@@media(max-width:800px){
+    .tw table{
+        min-width:2000px !important;
+    }
+}
+
+</style>
+
+<div class="dashboard-page csb-page">
+    <section class="dashboard-hero">
+        <div class="dashboard-hero-inner">
+            <div class="dashboard-title">
+                <span class="dashboard-badge">@L["SB_Badge"]</span>
+                <h1>@L["SB_Heading"]</h1>
+                <p>@L["SB_WelcomeBack"] @currentName. @L["SB_SubtitleRole"]</p>
+            </div>
+            <div class="dashboard-avatar-wrap" title="@currentName">
+                <div class="dashboard-avatar">@initials</div>
+                <span class="dashboard-avatar-status"></span>
+            </div>
+        </div>
+        <div class="dashboard-actions">
+            <a class="dashboard-btn btn-glass" asp-controller="Transportation" asp-action="CompanySeatAccounting">@L["SB_BtnAccounting"]</a>
+            <a class="dashboard-btn btn-glass" asp-controller="Transportation" asp-action="Trips">@L["SB_BtnTrips"]</a>
+            <a class="dashboard-btn btn-glass" asp-controller="Transportation" asp-action="Index">@L["SB_BtnCompanyTrips"]</a>
+        </div>
+    </section>
+
+    <section class="summary-grid">
+        <div class="summary-card"><small>@L["SB_CardActiveTab"]</small><strong>@activeTab</strong></div>
+        <div class="summary-card"><small>@L["SB_CardLocations"]</small><strong>@(Model.Locations?.Count ?? 0)</strong></div>
+        <div class="summary-card"><small>@L["SB_CardBuses"]</small><strong>@(Model.Buses?.Count ?? 0)</strong></div>
+        <div class="summary-card">
+            <small>@L["SB_CardSearchRows"]</small>
+            <strong>
+                @(Model.SearchResults?
+                    .Sum(x => x.Seats?.Sum(s => Math.Max(1, s.SeatsCount)) ?? 0) ?? 0)
+            </strong>
+        </div>
+    </section>
+
+    <datalist id="locList">
+        @foreach (var loc in Model.Locations ?? new List<string>())
+        {
+            <option value="@loc"></option>
+        }
+    </datalist>
+
+    <div class="dashboard-filter-card">
+        <div class="tab-bar">
+            <button type="button" class="tab-btn @(activeTab == "bookTab" ? "active" : "")" onclick="showTab('bookTab', this)">@L["SB_TabBook"]</button>
+            <button type="button" class="tab-btn @(activeTab == "transferTab" ? "active" : "")" onclick="showTab('transferTab', this)">@L["SB_TabTransfer"]</button>
+            <button type="button" class="tab-btn @(activeTab == "searchTab" ? "active" : "")" onclick="showTab('searchTab', this)">@L["SB_TabSearch"]</button>
+        </div>
+    </div>
+
+    @* ═══════════════ BOOK TAB ═══════════════ *@
+    <section id="bookTab" class="csb-tab" style="display:@(activeTab == "bookTab" ? "" : "none")">
+        <div class="dashboard-filter-card">
+            <h2 class="panel-title">@L["SB_BookTitle"]</h2>
+            <form asp-controller="Transportation" asp-action="SeatBookingBound" method="get" id="routeSearchForm">
+                <input type="hidden" name="ActiveTab" value="bookTab" />
+                <div class="grid" style="margin-bottom:16px;align-items:flex-end;">
+                    <div class="field">
+                        <label>@L["SB_TripDate"]</label>
+                        <input class="fc" type="date" name="TripDate" value="@tripDateValue" />
+                    </div>
+                    <div class="field">
+                        <label>@L["SB_RouteFrom"]</label>
+                        <select class="fc" name="RouteFrom" id="routeFrom" required>
+                            <option value="">@L["SB_SelectRouteFrom"]</option>
+                            @foreach (var loc in Model.Locations ?? new List<string>())
+                            {
+                                <option value="@loc" selected="@(Model.RouteFrom == loc)">@loc</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>@L["SB_RouteTo"]</label>
+                        <select class="fc" name="RouteTo" id="routeTo" required>
+                            <option value="">@L["SB_SelectRouteTo"]</option>
+                            @foreach (var loc in Model.Locations ?? new List<string>())
+                            {
+                                <option value="@loc" selected="@(Model.RouteTo == loc)">@loc</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>@L["SB_SeatsCount"]</label>
+                        <input class="fc" type="number" min="1" step="1" name="RequiredSeats" value="@(Model.RequiredSeats < 1 ? 1 : Model.RequiredSeats)" required />
+                    </div>
+                    <div class="field" style="display:flex;align-items:flex-end;">
+                        <button class="btn btn-primary" type="submit">@L["SB_BtnShowTrips"]</button>
+                    </div>
+                </div>
+            </form>
+
+            @if (string.IsNullOrWhiteSpace(Model.RouteFrom) || string.IsNullOrWhiteSpace(Model.RouteTo))
+            {
+                <p class="empty-msg">@L["SB_SelectRoute"]</p>
+            }
+            else if (Model.Buses == null || !Model.Buses.Any())
+            {
+                <p class="empty-msg">@L["SB_NoTrips"]</p>
+            }
+            else
+            {
+                if (Model.Buses.All(x => x.IsFallbackOption))
+                {
+                    <div class="info-box amber">@L["SB_FallbackInfo"]</div>
+                }
+                <div class="bus-cards">
+                    @foreach (var b in Model.Buses)
+                    {
+                        var selected = Model.SelectedBusId == b.BusId && Model.SelectedTripId == b.TripId;
+                        <a class="bus-card @(selected ? "selected" : "") @(b.HasTrip ? "trip-card-ready" : "trip-card-empty")"
+                           asp-controller="Transportation" asp-action="SeatBookingBound"
+                           asp-route-ActiveTab="bookTab" asp-route-TripDate="@tripDateValue"
+                           asp-route-RouteFrom="@Model.RouteFrom" asp-route-RouteTo="@Model.RouteTo"
+                           asp-route-RequiredSeats="@Model.RequiredSeats" asp-route-Direction="@b.Direction"
+                           asp-route-SelectedBusId="@b.BusId" asp-route-SelectedTripId="@b.TripId">
+                            <div class="trip-card-head">
+                                <div>
+                                    <div class="bc-name">🚌 @b.BusName</div>
+                                    @if (!string.IsNullOrWhiteSpace(b.PlateNumber))
+                                    {
+                                        <div class="trip-card-meta">@L["SB_Plate"] @b.PlateNumber</div>
+                                    }
+                                    <div class="trip-card-meta">@L["SB_Direction"] <strong>@DirTextEn(b.Direction)</strong></div>
+                                    @if (b.TripDate.HasValue)
+                                    {
+                                        <div class="trip-card-meta">@L["SB_Date"] @b.TripDate.Value.ToString("yyyy-MM-dd")</div>
+                                    }
+                                </div>
+                                @if (!b.HasTrip)
+                                {
+                                    <span class="bc-new bc-create trip-card-badge">@L["SB_NewTrip"]</span>
+                                }
+                                else
+                                {
+                                    <span class="bc-new bc-enough trip-card-badge">@L["SB_AvailTrip"]</span>
+                                }
+                            </div>
+                            <div class="trip-card-route"><span>@b.FromLocation</span><span>→</span><span>@b.ToLocation</span></div>
+                            <div class="bc-stats">
+                                <span class="bc-stat bc-dir">@DirTextEn(b.Direction)</span>
+                                <span class="bc-stat total">@L["SB_Total"] @b.TotalSeats</span>
+                                @if (b.ClientReserved > 0){<span class="bc-stat client">@L["SB_Clients"] @b.ClientReserved</span>}
+                                @if (b.CompanyReserved > 0){<span class="bc-stat company">@L["SB_Companies"] @b.CompanyReserved</span>}
+                                <span class="bc-stat avail">@L["SB_Available"] @b.AvailableSeats</span>
+                                <span class="bc-stat @(b.AvailableSeats >= Model.RequiredSeats ? "avail" : "zero")">@L["SB_Required"] @Model.RequiredSeats</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Model.SeatMap != null)
+        {
+            var map = Model.SeatMap;
+            var cellSize = map.Columns >= 8 ? 46 : map.Columns >= 6 ? 50 : 54;
+            var gap = map.Columns >= 8 ? 5 : 7;
+            var busWidth = map.Columns * cellSize + (map.Columns - 1) * gap + 82;
+            var byPos = map.Seats.ToDictionary(x => $"{x.RowNumber}_{x.ColumnNumber}", x => x);
+
+            <form asp-controller="Transportation" asp-action="SeatBookingBoundBook" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="BusId" value="@map.BusId" />
+                <input type="hidden" name="TripId" value="@(map.TripId?.ToString() ?? string.Empty)" />
+                <input type="hidden" name="TripDate" value="@tripDateValue" />
+                <input type="hidden" name="Direction" value="@hiddenDirection" />
+                <input type="hidden" name="RequiredSeats" value="@Model.RequiredSeats" />
+                <input type="hidden" name="ClientTripType" value="@autoClientTripType" />
+
+                <div class="panel">
+                    <h2 class="panel-title">@L["SB_BookDetails"]</h2>
+                    @if (!map.TripId.HasValue)
+                    {
+                        <div class="info-box amber">⚠️ @L["SB_NoSeatsWarning"]</div>
+                    }
+                    <div class="grid-3" style="margin-bottom:14px;">
+                        <div class="field">
+                            <label>@L["SB_Company"]</label>
+                            <select class="fc" name="CompanyId" required>
+                                <option value="">@L["SB_SelectCompany"]</option>
+                                @foreach (var c in Model.Companies ?? new List<SelectListItem>())
+                                {
+                                    <option value="@c.Value">@c.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="field"><label>@L["SB_PricePerSeat"]</label><input class="fc" type="number" min="0" step="0.01" name="PricePerSeat" value="0" /></div>
+                        <div class="field"><label>@L["SB_Notes"]</label><input class="fc" name="Notes" placeholder='@L["SB_NotesOptional"].Value' /></div>
+                    </div>
+                    <fieldset class="client-section">
+                        <legend>@L["SB_ClientInfo"]</legend>
+                        <div class="grid-3">
+                            <div class="field"><label>@L["SB_ClientTripType"]</label><input class="fc" value="@DirTextEn(Model.Direction)" readonly /></div>
+                            <div class="field"><label>@L["SB_ClientName"]</label><input class="fc" name="ClientName" placeholder='@L["SB_ClientName"].Value' required/></div>
+                            <div class="field"><label>@L["SB_ClientPhone"]</label><input class="fc" name="ClientPhone" placeholder="01xxxxxxxxx" maxlength="11" required/></div>
+                        </div>
+                    </fieldset>
+                    <div class="grid-2" style="margin-bottom:16px;">
+                        <div class="field"><label>@L["SB_FromLocation"]</label><input class="fc" list="locList" name="FromLocation" value="@(string.IsNullOrWhiteSpace(Model.RouteFrom) ? map.FromLocation : Model.RouteFrom)" required /></div>
+                        <div class="field"><label>@L["SB_ToLocation"]</label><input class="fc" list="locList" name="ToLocation" value="@(string.IsNullOrWhiteSpace(Model.RouteTo) ? map.ToLocation : Model.RouteTo)" required /></div>
+                    </div>
+                    <h2 class="panel-title">@L["SB_SeatMap"] - @map.BusName</h2>
+                    <div class="bus-shell">
+                        <div class="bus-stage" style="--cols:@map.Columns;--cell-size:@(cellSize)px;--cell-gap:@(gap)px;--bus-width:@(busWidth)px;">
+                            <div class="bus-nose"><div class="bus-windshield"></div></div>
+                            <div class="bus-body">
+                                <div class="bus-meta"><span>@map.BusName</span><span>@DirTextEn(Model.Direction)</span><span>@map.Rows × @map.Columns</span></div>
+                                <div class="bus-grid">
+                                    @for (var r = 1; r <= map.Rows; r++)
+                                    {
+                                        for (var c = 1; c <= map.Columns; c++)
+                                        {
+                                            var key = $"{r}_{c}";
+                                            if (!byPos.TryGetValue(key, out var seat))
+                                            {
+                                                <div class="bus-cell empty"></div>
+                                                continue;
+                                            }
+                                            var css = SeatCss(seat.SeatType);
+                                            var label = string.IsNullOrWhiteSpace(seat.SeatLabel) ? seat.SeatNumber.ToString() : seat.SeatLabel;
+                                            var extra = !seat.IsActive ? "disabled-seat" : seat.IsClientReserved ? "reserved-seat" : seat.IsCompanyReserved ? "company-reserved" : seat.IsSelectable ? "selectable" : "";
+                                            if (seat.IsSelectable)
+                                            {
+                                                <label><input class="seat-check" type="checkbox" name="SeatIds" value="@seat.SeatId" /><span class="bus-cell @css @extra">@label</span></label>
+                                            }
+                                            else
+                                            {
+                                                <div class="bus-cell @css @extra">@label</div>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;">
+                        <button class="btn btn-primary" type="submit">@L["SB_BtnConfirm"]</button>
+                        <a class="btn btn-light" asp-controller="Transportation" asp-action="SeatBookingBound">@L["SB_BtnReset"]</a>
+                    </div>
+                </div>
+            </form>
+        }
+    </section>
+
+    @* ═══════════════ TRANSFER TAB ═══════════════ *@
+    <section id="transferTab" class="csb-tab" style="display:@(activeTab == "transferTab" ? "" : "none")">
+        <div class="dashboard-filter-card">
+            <h2 class="panel-title">@L["SB_TransferTitle"]</h2>
+            <form asp-controller="Transportation" asp-action="SeatBookingBoundFindTransfer" method="get">
+                <input type="hidden" name="ActiveTab" value="transferTab" />
+                <div class="grid" style="margin-bottom:14px;align-items:flex-end;">
+                    <div class="field"><label>@L["SB_TripDate"]</label><input class="fc" type="date" name="TransferTripSearch.TripDate" value="@(transferSearch.TripDate?.ToString("yyyy-MM-dd") ?? DateTime.Today.ToString("yyyy-MM-dd"))" required /></div>
+                    <div class="field"><label>@L["SB_RouteFrom"]</label><select class="fc" name="TransferTripSearch.RouteFrom" required><option value="">@L["SB_SelectRouteFrom"]</option>@foreach (var loc in Model.Locations ?? new List<string>()){<option value="@loc" selected="@(transferSearch.RouteFrom == loc)">@loc</option>}</select></div>
+                    <div class="field"><label>@L["SB_RouteTo"]</label><select class="fc" name="TransferTripSearch.RouteTo" required><option value="">@L["SB_SelectRouteTo"]</option>@foreach (var loc in Model.Locations ?? new List<string>()){<option value="@loc" selected="@(transferSearch.RouteTo == loc)">@loc</option>}</select></div>
+                    <div class="field" style="display:flex;align-items:flex-end;"><button class="btn btn-primary" type="submit">@L["SB_BtnShowTransfer"]</button></div>
+                </div>
+            </form>
+
+            @if (!string.IsNullOrWhiteSpace(transferSearch.RouteFrom) && !string.IsNullOrWhiteSpace(transferSearch.RouteTo))
+            {
+                if (Model.TransferTrips == null || !Model.TransferTrips.Any())
+                {
+                    <p class="empty-msg">@L["SB_NoTransferTrips"]</p>
+                }
+                else
+                {
+                    <h3 class="panel-title" style="font-size:16px;">@L["SB_AvailableTrips"]</h3>
+                    <div class="bus-cards">
+                        @foreach (var t in Model.TransferTrips)
+                        {
+                            var selected = transferSearch.SelectedTripId == t.TripId;
+                            <a class="bus-card @(selected ? "selected" : "") trip-card-ready" asp-controller="Transportation" asp-action="SeatBookingBoundFindTransfer" asp-route-ActiveTab="transferTab" asp-route-TransferTripSearch.TripDate="@t.TripDate.ToString("yyyy-MM-dd")" asp-route-TransferTripSearch.RouteFrom="@transferSearch.RouteFrom" asp-route-TransferTripSearch.RouteTo="@transferSearch.RouteTo" asp-route-TransferTripSearch.SelectedTripId="@t.TripId">
+                                <div class="trip-card-head"><div><div class="bc-name">🚌 @t.BusName</div><div class="trip-card-meta">@L["SB_Direction"] <strong>@t.DirectionText</strong></div><div class="trip-card-meta">@L["SB_Date"] @t.TripDate.ToString("yyyy-MM-dd")</div></div><span class="bc-new bc-enough trip-card-badge">@L["SB_Trip"]</span></div>
+                                <div class="trip-card-route"><span>@t.FromLocation</span><span>→</span><span>@t.ToLocation</span></div>
+                                <div class="bc-stats"><span class="bc-stat client">@L["SB_Bookings"] @t.ClientBookingsCount</span><span class="bc-stat avail">@L["SB_ClientSeats"] @t.ClientSeatsCount</span>@if (t.CompanySeatsCount > 0){<span class="bc-stat company">@L["SB_CompanySeats"] @t.CompanySeatsCount</span>}</div>
+                            </a>
+                        }
+                    </div>
+                }
+            }
+        </div>
+
+        @if (Model.TransferTripDetails != null)
+        {
+            var d = Model.TransferTripDetails;
+            <div class="panel">
+                <h2 class="panel-title">@L["SB_TripDetails"]</h2>
+                <div class="sum-strip" style="margin-bottom:16px;">
+                    <div class="sum-card"><small>@L["SB_Trip"]</small><strong style="font-size:14px;">@d.BusName</strong></div>
+                    <div class="sum-card"><small>@L["SB_Route"]</small><strong class="route-cell" style="font-size:14px;"><span class="route-text"><bdi>@d.FromLocation</bdi><span class="route-arrow">→</span><bdi>@d.ToLocation</bdi></span></strong></div>
+                    <div class="sum-card"><small>@L["SB_Bookings"]</small><strong>@d.BookingsCount</strong></div>
+                    <div class="sum-card"><small>@L["SB_TotalSeats"]</small><strong>@d.SeatsCount</strong></div>
+                    <div class="sum-card"><small>@L["SB_CompanySeats"]</small><strong>@d.CompanySeatsCount</strong></div>
+                </div>
+                @if ((d.PassengerSeats == null || !d.PassengerSeats.Any()) && (d.CompanySeats == null || !d.CompanySeats.Any()))
+                {
+                    <p class="empty-msg">@L["SB_NoSeats"]</p>
+                }
+                else
+                {
+                    <form asp-controller="Transportation" asp-action="SeatBookingBoundTransfer" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="TripId" value="@d.TripId" />
+                        <input type="hidden" name="ExternalTripDate" value="@d.TripDate.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" name="FromLocation" value="@d.FromLocation" />
+                        <input type="hidden" name="ToLocation" value="@d.ToLocation" />
+
+                        @if (d.PassengerSeats != null && d.PassengerSeats.Any())
+                        {
+                            <h3 class="panel-title" style="font-size:16px;margin-top:4px;">@L["SB_ClientSeatsTitle"]</h3>
+                            <div class="tw" style="margin-bottom:16px;"><table><thead><tr><th>@L["SB_ColCheck"]</th><th>@L["SB_ColCode"]</th><th>@L["SB_ColClient"]</th><th>@L["SB_ColPhone"]</th><th>@L["SB_ColSeat"]</th><th>@L["SB_ColDirection"]</th><th>@L["SB_ColRoute"]</th><th>@L["SB_ColPrice"]</th><th>@L["SB_ColStatus"]</th></tr></thead><tbody>
+                                @foreach (var s in d.PassengerSeats)
+                                {
+                                    <tr class="tr-seat-row @(s.AlreadyTransferred ? "transferred" : "")"><td>@if (s.AlreadyTransferred){<span class="tag tag-trip">@L["SB_TagTransferred"]</span>}else{<input type="checkbox" name="BookingSeatIds" value="@s.BookingSeatId" />}</td><td><b>@s.BookingCode</b></td><td>@s.ClientName</td><td>@(string.IsNullOrWhiteSpace(s.ClientPhone) ? "—" : s.ClientPhone)</td><td><b>@s.SeatLabel</b></td><td>@s.DirectionText</td><td class="route-cell"><span class="route-text"><bdi>@s.FromLocation</bdi><span class="route-arrow">→</span><bdi>@s.ToLocation</bdi></span></td><td class="ok">@s.SeatPrice.ToString("N2")</td><td>@if (s.AlreadyTransferred){<span class="tag tag-trip">@L["SB_TagTransferredTo"] @s.TransferredToCompany</span>}else{<span class="tag tag-in">@L["SB_TagAvailable"]</span>}</td></tr>
+                                }
+                            </tbody></table></div>
+                        }
+
+                        @if (d.CompanySeats != null && d.CompanySeats.Any())
+                        {
+                            <h3 class="panel-title" style="font-size:16px;margin-top:18px;">@L["SB_CompSeatsTitle"]</h3>
+                            <div class="tw" style="margin-bottom:16px;"><table><thead><tr><th>@L["SB_ColCheck"]</th><th>@L["SB_Company"]</th><th>@L["SB_ColCompPhone"]</th><th>@L["SB_ColSeat"]</th><th>@L["SB_ColCompClient"]</th><th>@L["SB_ColClientPhone"]</th><th>@L["SB_ColRoute"]</th><th>@L["SB_ColPrice"]</th><th>@L["SB_ColStatus"]</th></tr></thead><tbody>
+                                @foreach (var cs in d.CompanySeats)
+                                {
+                                    <tr><td><input type="checkbox" name="CompanySeatBookingIds" value="@cs.CompanySeatBookingId" /></td><td><b>@cs.CompanyName</b></td><td>@cs.CompanyPhone</td><td><b>@cs.SeatLabel</b></td><td>@(string.IsNullOrWhiteSpace(cs.ClientName) ? "—" : cs.ClientName)</td><td>@(string.IsNullOrWhiteSpace(cs.ClientPhone) ? "—" : cs.ClientPhone)</td><td class="route-cell"><span class="route-text"><bdi>@cs.FromLocation</bdi><span class="route-arrow">→</span><bdi>@cs.ToLocation</bdi></span></td><td class="ok">@cs.PricePerSeat.ToString("N2")</td><td><span class="tag tag-trip">@L["SB_TagCompanyBooked"]</span></td></tr>
+                                }
+                            </tbody></table></div>
+                        }
+
+                        <div class="grid-3" style="margin-bottom:14px;">
+                            <div class="field"><label>@L["SB_ExtCompany"]</label><select class="fc" name="CompanyId" required><option value="">@L["SB_SelectCompany"]</option>@foreach (var c in Model.Companies ?? new List<SelectListItem>()){<option value="@c.Value">@c.Text</option>}</select></div>
+                            <div class="field"><label>@L["SB_PricePerSeat"]</label><input class="fc" type="number" min="0" step="0.01" name="PricePerSeat" value="0" /></div>
+                            <div class="field"><label>@L["SB_Notes"]</label><input class="fc" name="Notes" placeholder='@L["SB_NotesOptional"].Value' /></div>
+                        </div>
+                        <button class="btn btn-primary" type="submit">@L["SB_BtnTransfer"]</button>
+                    </form>
+                }
+            </div>
+        }
+    </section>
+
+    @* ═══════════════ SEARCH TAB ═══════════════ *@
+    <section id="searchTab" class="csb-tab" style="display:@(activeTab == "searchTab" ? "" : "none")">
+        <div class="dashboard-filter-card">
+            <h2 class="panel-title">@L["SB_SearchTitle"]</h2>
+            <form asp-controller="Transportation" asp-action="SeatBookingBoundSearch" method="get">
+                <input type="hidden" name="ActiveTab" value="searchTab" />
+                <div class="grid" style="margin-bottom:14px;">
+                    <div class="field"><label>@L["SB_Company"]</label><select class="fc" name="Search.CompanyId"><option value="">@L["SB_AllCompanies"]</option>@foreach (var c in Model.Companies ?? new List<SelectListItem>()){<option value="@c.Value" selected="@(search.CompanyId?.ToString() == c.Value)">@c.Text</option>}</select></div>
+                    <div class="field"><label>@L["SB_DateFrom"]</label><input class="fc" type="date" name="Search.DateFrom" value="@search.DateFrom?.ToString("yyyy-MM-dd")" /></div>
+                    <div class="field"><label>@L["SB_DateTo"]</label><input class="fc" type="date" name="Search.DateTo" value="@search.DateTo?.ToString("yyyy-MM-dd")" /></div>
+                    <div class="field"><label>@L["SB_Location"]</label><input class="fc" list="locList" name="Search.Location" value="@search.Location" /></div>
+                    <div class="field"><label>@L["SB_PayStatus"]</label><select class="fc" name="Search.PaymentStatus"><option value="All" selected="@(search.PaymentStatus == CompanySeatPaymentStatus.All)">@L["SB_PayAll"]</option><option value="Paid" selected="@(search.PaymentStatus == CompanySeatPaymentStatus.Paid)">@L["SB_PayPaid"]</option><option value="Unpaid" selected="@(search.PaymentStatus == CompanySeatPaymentStatus.Unpaid)">@L["SB_PayUnpaid"]</option><option value="Partial" selected="@(search.PaymentStatus == CompanySeatPaymentStatus.Partial)">@L["SB_PayPartial"]</option></select></div>
+                    <div class="field" style="display:flex;align-items:flex-end;"><button class="btn btn-primary" type="submit">@L["SB_BtnSearch"]</button></div>
+                </div>
+            </form>
+        </div>
+
+        @if (activeTab == "searchTab")
+        {
+            var groups = Model.SearchResults ?? new List<CompanyTripSeatSummaryDTO>();
+            var rows = groups.SelectMany(g => (g.Seats ?? new List<CompanySeatBookingItemDTO>()).Select(s => new { Group = g, Seat = s })).OrderByDescending(x => x.Group.TripDate).ThenBy(x => x.Group.CompanyName).ThenBy(x => x.Seat.SeatNumber).ToList();
+
+            <div class="sum-strip" style="margin-bottom:14px;">
+                @{
+                    var totalSearchSeats = rows.Sum(x => Math.Max(1, x.Seat.SeatsCount));
+                    var totalSearchPrice = rows.Sum(x => x.Seat.TotalPrice);
+                }
+
+                <div class="sum-card"><small>@L["SB_SrRows"]</small><strong>@rows.Count</strong></div>
+                <div class="sum-card"><small>@L["SB_SrSeats"]</small><strong>@totalSearchSeats</strong></div>
+                <div class="sum-card"><small>@L["SB_SrPrice"]</small><strong>@totalSearchPrice.ToString("N2")</strong></div>
+                <div class="sum-card"><small>@L["SB_SrPaid"]</small><strong class="ok">@groups.Sum(x => x.TotalPaid).ToString("N2")</strong></div>
+                <div class="sum-card"><small>@L["SB_SrRemaining"]</small><strong class="bad">@groups.Sum(x => x.TotalRemaining).ToString("N2")</strong></div>
+            </div>
+
+            <div class="panel">
+                @if (!rows.Any())
+                {
+                    <p class="empty-msg">@L["SB_NoResults"]</p>
+                }
+                else
+                {
+                    <form id="bulkDeleteForm" asp-controller="Transportation" asp-action="SeatBookingBoundDelete" method="post" onsubmit="return confirmBulkDelete();">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="companyId" value="@search.CompanyId" />
+                        <input type="hidden" name="dateFrom" value="@search.DateFrom?.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" name="dateTo" value="@search.DateTo?.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" name="location" value="@search.Location" />
+                        <input type="hidden" name="paymentStatus" value="@search.PaymentStatus" />
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+                            <button class="btn btn-danger" type="submit">@L["SB_BtnDeleteSel"]</button>
+                            <button class="btn btn-light" type="button" onclick="openForceDeleteModal()">@L["SB_BtnForceDelete"]</button>
+                            <button class="btn btn-light" type="button" onclick="toggleAllSearchRows(this)">@L["SB_BtnSelectAll"]</button>
+                            <span style="font-weight:900;color:var(--mu);">@L["SB_HintDelete"]</span>
+                        </div>
+                        <div class="tw"><table><thead><tr>
+                            <th>@L["SB_ColCheck"]</th><th>@L["SB_ColDate"]</th><th>@L["SB_Company"]</th>
+                            <th>@L["SB_ColBus"]</th><th>@L["SB_ColBusRoute"]</th><th>@L["SB_ColSeatLoc"]</th>
+                            <th>@L["SB_ColSeat"]</th><th>@L["SB_ColType"]</th><th>@L["SB_ColClient"]</th>
+                            <th>@L["SB_ColPriceSeat"]</th><th>@L["SB_ColPaidTrip"]</th><th>@L["SB_ColRemTrip"]</th>
+                        </tr></thead><tbody>
+                            @foreach (var row in rows)
+                            {
+                                var g = row.Group;
+                                var s = row.Seat;
+                                <tr><td><input class="search-row-check" type="checkbox" name="bookingIds" value="@s.BookingId" /></td><td>@g.TripDate.ToString("yyyy-MM-dd")</td><td>@g.CompanyName</td><td>@g.BusName</td><td class="route-cell"><span class="route-text"><bdi>@g.TripFromLocation</bdi><span class="route-arrow">→</span><bdi>@g.TripToLocation</bdi></span></td><td class="route-cell"><span class="route-text"><bdi>@g.FromLocation</bdi><span class="route-arrow">→</span><bdi>@g.ToLocation</bdi></span></td>
+                                <td>
+                                    @if (s.BookingDirection == CompanySeatBookingDirection.Outbound)
+                                    {
+                                        <b>@s.SeatsCount مقعد</b>
+                                    }
+                                    else
+                                    {
+                                        <b>@(string.IsNullOrWhiteSpace(s.SeatLabel) ? s.SeatsCount.ToString() : s.SeatLabel)</b>
+                                    }
+                                </td>                                    
+                                <td>@if (s.IsTransferredToCompany){<span class="tag tag-trip">🔄 @s.TransferStatusText</span>}else{<span class="tag tag-in">📥 @g.BookingDirection</span>}</td><td>@if (!string.IsNullOrWhiteSpace(s.ClientName)){<div>@s.ClientName @if (!string.IsNullOrWhiteSpace(s.ClientPhone)){<span>(@s.ClientPhone)</span>}<br /><span>[@TripTypeText(s.ClientTripType)]</span></div>}else{<span style="color:var(--mu);">—</span>}</td><td>
+                                    <div>@s.PricePerSeat.ToString("N2") / مقعد</div>
+                                    @if (s.SeatsCount > 1)
+                                    {
+                                        <small style="color:var(--mu);font-weight:900;">
+                                            الإجمالي: @s.TotalPrice.ToString("N2")
+                                        </small>
+                                    }
+                                </td>
+                                <td class="ok">@g.TotalPaid.ToString("N2")</td><td class="@(g.TotalRemaining > 0 ? "bad" : "ok")">@g.TotalRemaining.ToString("N2")</td></tr>
+                                                }
+                        </tbody></table></div>
+                    </form>
+                }
+            </div>
+        }
+    </section>
+</div>
+
+@* ═══════════════ FORCE DELETE MODAL ═══════════════ *@
+<div id="forceDeleteModal" class="force-modal" style="display:none;">
+    <div class="force-modal-box">
+        <div class="force-modal-head">
+            <h3>@L["SB_ForceTitle"]</h3>
+            <button type="button" onclick="closeForceDeleteModal()">×</button>
+        </div>
+        <div id="forceDeleteBody" class="force-modal-body">
+            <div class="force-delete-loader">@L["SB_ForceLoading"]</div>
+        </div>
+        <form id="forceDeleteForm" asp-controller="Transportation" asp-action="SeatBookingBoundForceDelete" method="post">
+            @Html.AntiForgeryToken()
+            <div id="forceDeleteIds"></div>
+            <input type="hidden" name="companyId" value="@search.CompanyId" />
+            <input type="hidden" name="dateFrom" value="@search.DateFrom?.ToString("yyyy-MM-dd")" />
+            <input type="hidden" name="dateTo" value="@search.DateTo?.ToString("yyyy-MM-dd")" />
+            <input type="hidden" name="location" value="@search.Location" />
+            <input type="hidden" name="paymentStatus" value="@search.PaymentStatus" />
+            <div class="force-modal-actions">
+                <button type="button" class="btn btn-light" onclick="closeForceDeleteModal()">@L["SB_ForceBtnCancel"]</button>
+                <button type="submit" class="btn btn-danger">@L["SB_ForceBtnConfirm"]</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function showTab(id, btn){
+    document.querySelectorAll('.csb-tab').forEach(x => x.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+
+    const tab = document.getElementById(id);
+    if(tab) tab.style.display = '';
+
+    if(btn) btn.classList.add('active');
+}
+
+function toggleAllSearchRows(btn){
+    const checks = document.querySelectorAll('.search-row-check');
+    const shouldCheck = Array.from(checks).some(x => !x.checked);
+
+    checks.forEach(x => x.checked = shouldCheck);
+
+    if(btn){
+        btn.innerText = shouldCheck ? 'Deselect All' : 'Select All';
+    }
+}
+
+function getSelectedBookingIds(){
+    return Array.from(document.querySelectorAll('.search-row-check:checked'))
+        .map(x => x.value)
+        .filter(x => x && x !== '00000000-0000-0000-0000-000000000000');
+}
+
+function confirmBulkDelete(){
+    const selected = getSelectedBookingIds();
+
+    if(selected.length === 0){
+        alert('Select at least one seat to delete.');
+        return false;
+    }
+
+    return confirm(`Are you sure you want to delete ${selected.length} seat booking(s)?`);
+}
+
+function closeForceDeleteModal(){
+    const modal = document.getElementById('forceDeleteModal');
+    if(modal) modal.style.display = 'none';
+}
+
+function htmlEncode(value){
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+async function openForceDeleteModal(){
+    const ids = getSelectedBookingIds();
+
+    if(ids.length === 0){
+        alert('Select at least one seat to force delete.');
+        return;
+    }
+
+    const tokenInput = document.querySelector('#bulkDeleteForm input[name="__RequestVerificationToken"]')
+        || document.querySelector('input[name="__RequestVerificationToken"]');
+
+    const token = tokenInput ? tokenInput.value : '';
+
+    const modal = document.getElementById('forceDeleteModal');
+    const body = document.getElementById('forceDeleteBody');
+    const idsBox = document.getElementById('forceDeleteIds');
+
+    modal.style.display = 'grid';
+    body.innerHTML = '<div class="force-delete-loader">Loading...</div>';
+    idsBox.innerHTML = '';
+
+    ids.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'bookingIds';
+        input.value = id;
+        idsBox.appendChild(input);
+    });
+
+    try{
+        const response = await fetch('@Url.Action("SeatBookingBoundForceDeleteDetails", "Transportation")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': token
+            },
+            body: JSON.stringify(ids)
+        });
+
+        let result;
+        try{
+            result = await response.json();
+        }
+        catch{
+            body.innerHTML = '<div class="force-warning">Failed to load force delete details.</div>';
+            return;
+        }
+
+        if(!response.ok || !result.success){
+            body.innerHTML = `<div class="force-warning">${htmlEncode(result.message || 'Failed to load force delete details.')}</div>`;
+            return;
+        }
+
+        const data = result.data || {};
+        const seats = data.seats || [];
+
+        const rows = seats.map(s => `
+            <tr>
+                <td>${htmlEncode(s.tripDate ? String(s.tripDate).substring(0,10) : '-')}</td>
+                <td>${htmlEncode(s.companyName || '-')}</td>
+                <td>${htmlEncode(s.busName || '-')}</td>
+                <td class="route-cell">${htmlEncode(s.route || '-')}</td>
+                <td>${htmlEncode(s.seatLabel || '-')}</td>
+                <td>${htmlEncode(s.clientName || '-')}</td>
+                <td>${htmlEncode(s.clientPhone || '-')}</td>
+                <td>${htmlEncode(s.type || '-')}</td>
+            </tr>
+        `).join('');
+
+        body.innerHTML = `
+            <div class="force-warning">
+                <div class="force-danger-text">Warning: This is a permanent delete.</div>
+                This action will permanently delete the selected booking and all related transfer/conflict records.
+                Use it only if you want to remove everything from the database and enter the booking again from scratch.
+            </div>
+
+            <div class="force-muted">
+                Selected booking(s): ${ids.length}. Related/conflict row(s): ${seats.length}.
+            </div>
+
+            <div class="tw">
+                <table class="force-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Company</th>
+                            <th>Bus</th>
+                            <th>Route</th>
+                            <th>Seat</th>
+                            <th>Client</th>
+                            <th>Phone</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows || '<tr><td colspan="8">No details found.</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+    catch(e){
+        body.innerHTML = '<div class="force-warning">Failed to load force delete details.</div>';
+    }
+}
+
+
+function setupBottomTableScrollbars(){
+    document.querySelectorAll('.tw').forEach(function(tableWrap){
+        if(tableWrap.dataset.scrollbarReady === '1') return;
+        tableWrap.dataset.scrollbarReady = '1';
+
+        const table = tableWrap.querySelector('table');
+        if(!table) return;
+
+        const bar = document.createElement('div');
+        bar.className = 'tw-scrollbar';
+
+        const inner = document.createElement('div');
+        inner.className = 'tw-scrollbar-inner';
+        bar.appendChild(inner);
+
+        tableWrap.insertAdjacentElement('afterend', bar);
+
+        let locked = false;
+
+        function refreshWidth(){
+            const realWidth = Math.max(
+                table.scrollWidth,
+                table.offsetWidth,
+                tableWrap.scrollWidth
+            );
+
+            inner.style.width = realWidth + 'px';
+
+            if(realWidth <= tableWrap.clientWidth + 2){
+                bar.style.display = 'none';
+            }else{
+                bar.style.display = 'block';
+            }
+        }
+
+        tableWrap.addEventListener('scroll', function(){
+            if(locked) return;
+            locked = true;
+            bar.scrollLeft = tableWrap.scrollLeft;
+            locked = false;
+        });
+
+        bar.addEventListener('scroll', function(){
+            if(locked) return;
+            locked = true;
+            tableWrap.scrollLeft = bar.scrollLeft;
+            locked = false;
+        });
+
+        refreshWidth();
+        setTimeout(refreshWidth, 150);
+        setTimeout(refreshWidth, 500);
+        window.addEventListener('resize', refreshWidth);
+    });
+}
+
+if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', setupBottomTableScrollbars);
+}else{
+    setupBottomTableScrollbars();
+}
+
+</script>
+}

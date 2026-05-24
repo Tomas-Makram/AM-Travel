@@ -1,0 +1,1542 @@
+@using AM_Travel.Resources
+@using Microsoft.Extensions.Localization
+@model BusinessLayer.DTOs.Book.UpdateBookingDTO
+@using BusinessLayer.DTOs.Book
+@using DataLayer.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = $"{L["EB_Title"]} {(ViewBag.BookingCode ?? Model.BookingID.ToString())}";
+
+    var fullName = ViewBag.Name as string ?? User.FindFirstValue(ClaimTypes.GivenName) ?? "Unknown";
+
+    var initials = string.Join("", fullName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+        initials = "AM";
+
+    var bookingCode = ViewBag.BookingCode as string;
+    if (string.IsNullOrWhiteSpace(bookingCode))
+        bookingCode = Model.BookingID == Guid.Empty ? "Booking" : Model.BookingID.ToString("N")[..8].ToUpper();
+
+    var isAdmin = User.IsInRole("Admin");
+    var roomTypes = Enum.GetValues<RoomType>().Select(x => new SelectListItem { Value = ((int)x).ToString(), Text = x.ToString() }).ToList();
+
+    Model.PhoneNumbers ??= new List<BookingPhoneDTO>();
+    if (Model.PhoneNumbers.Count == 0)
+        Model.PhoneNumbers.Add(new BookingPhoneDTO { PhoneNumber = "", Prime = true });
+
+    Model.Transportation ??= new TransportationBookingDTO();
+
+    var selectedTripType = Model.Transportation?.TripType.ToString() ?? "Departure";
+
+    var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+
+    string ErrorFor(string key)
+    {
+        if (!ViewData.ModelState.TryGetValue(key, out var state) || state.Errors.Count == 0)
+            return "";
+        return string.Join(" ", state.Errors.Select(e => e.ErrorMessage));
+    }
+
+    string JsString(string? value) => System.Text.Json.JsonSerializer.Serialize(value ?? string.Empty);
+}
+
+<style>
+    :root {
+        --eb-hero-bg: linear-gradient(135deg, #ff7a18, #ffad42);
+        --eb-hero-glow: rgba(255,122,24,.18);
+        --eb-hero-text: #fff;
+        --eb-hero-sub: rgba(255,255,255,.95);
+        --eb-card: #fff;
+        --eb-card-border: #f0d8c2;
+        --eb-card-shadow: rgba(255,122,24,.10);
+        --eb-card-shadow-soft: rgba(255,122,24,.08);
+        --eb-text: #172033;
+        --eb-text-strong: #172033;
+        --eb-muted: #667085;
+        --eb-line: #f3dfcc;
+        --eb-soft: #fffaf5;
+        --eb-soft2: #fff3e6;
+        --eb-input-bg: #fffaf5;
+        --eb-input-text: #172033;
+        --eb-orange: #ff7a18;
+        --eb-danger: #dc2626;
+        --eb-note-bg: #fff7ed;
+        --eb-note-text: #9a3412;
+        --eb-note-border: #fed7aa;
+    }
+
+    html[data-theme="dark"] {
+        --eb-hero-bg: linear-gradient(135deg, #c45c0a, #d97c2a);
+        --eb-hero-glow: rgba(196,92,10,.22);
+        --eb-hero-text: #f5f0eb;
+        --eb-hero-sub: rgba(245,240,235,.88);
+        --eb-card: #1a2236;
+        --eb-card-border: #283148;
+        --eb-card-shadow: rgba(0,0,0,.35);
+        --eb-card-shadow-soft: rgba(0,0,0,.30);
+        --eb-text: #dce3ed;
+        --eb-text-strong: #f5f7fa;
+        --eb-muted: #7a8ba0;
+        --eb-line: #3a4d66;
+        --eb-soft: #212c3f;
+        --eb-soft2: #3a2b18;
+        --eb-input-bg: #212c3f;
+        --eb-input-text: #dce3ed;
+        --eb-danger: #f87171;
+        --eb-note-bg: #2e2716;
+        --eb-note-text: #fbbf24;
+        --eb-note-border: #6b5418;
+    }
+
+    .eb-page {
+        display: grid;
+        gap: 24px;
+        color: var(--eb-text);
+    }
+
+    .eb-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--eb-hero-text);
+        background: var(--eb-hero-bg);
+        box-shadow: 0 24px 70px var(--eb-hero-glow);
+    }
+
+        .eb-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.22), transparent 26%);
+            pointer-events: none;
+        }
+
+        .eb-hero::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            right: -95px;
+            bottom: -115px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            pointer-events: none;
+        }
+
+    .eb-page[dir="rtl"] .eb-hero::after {
+        right: auto;
+        left: -95px;
+    }
+
+    .eb-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .eb-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: var(--eb-hero-text);
+    }
+
+    .eb-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(42px,6vw,66px);
+        line-height: 1;
+        letter-spacing: -1.5px;
+        color: var(--eb-hero-text);
+    }
+
+    .eb-hero p {
+        margin: 16px 0 0;
+        color: var(--eb-hero-sub);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .eb-avatar-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+        .eb-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .eb-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: eb-spin 4s linear infinite;
+        }
+
+    @@keyframes eb-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .eb-avatar {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #ff6a00;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .eb-avatar-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .eb-page[dir="rtl"] .eb-avatar-status {
+        right: auto;
+        left: 22px;
+    }
+
+    .eb-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    .eb-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 16px;
+        border: none;
+        font-weight: 1000;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .eb-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .eb-btn-white {
+        background: #fff;
+        color: #ff7a18;
+    }
+
+    .eb-btn-orange {
+        background: #ff7a18;
+        color: #fff;
+        box-shadow: 0 14px 30px rgba(255,122,24,.28);
+    }
+
+    .eb-btn-light {
+        background: var(--eb-soft);
+        color: #ff7a18;
+        border: 1px solid var(--eb-line);
+    }
+
+    .eb-card {
+        background: var(--eb-card);
+        border: 1px solid var(--eb-card-border);
+        border-radius: 30px;
+        padding: 26px;
+        box-shadow: 0 18px 42px var(--eb-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .eb-section-head {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+    .eb-soft-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: var(--eb-soft2);
+        color: #ff7a18;
+        border: 1px solid var(--eb-line);
+        font-weight: 1000;
+    }
+
+    .eb-section-head h2 {
+        margin: 0;
+        color: var(--eb-text-strong);
+        font-size: 28px;
+        font-weight: 1000;
+    }
+
+    .eb-section-head p {
+        margin: 0;
+        color: var(--eb-muted);
+        font-weight: 800;
+        line-height: 1.6;
+    }
+
+    .edit-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+    }
+
+    .field {
+        grid-column: span 4;
+    }
+
+        .field.half {
+            grid-column: span 6;
+        }
+
+        .field.wide {
+            grid-column: span 12;
+        }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+        font-weight: 1000;
+        color: var(--eb-muted);
+    }
+
+    input,
+    select {
+        width: 100%;
+        min-height: 50px;
+        border: 1px solid var(--eb-line);
+        border-radius: 16px;
+        padding: 0 14px;
+        outline: none;
+        background: var(--eb-input-bg);
+        color: var(--eb-input-text);
+        font-weight: 900;
+        transition: background .3s, color .3s, border-color .2s;
+    }
+
+        input:focus,
+        select:focus {
+            border-color: #ff7a18;
+            box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+        }
+
+    select option {
+        background: #fff;
+        color: #172033;
+    }
+
+    html[data-theme="dark"] select option {
+        background: #212c3f;
+        color: #dce3ed;
+    }
+
+    .mini-card {
+        border: 1px solid var(--eb-card-border);
+        border-radius: 28px;
+        padding: 22px;
+        background: var(--eb-card);
+        box-shadow: 0 18px 42px var(--eb-card-shadow-soft);
+        margin-bottom: 18px;
+        transition: background .3s, border-color .3s;
+    }
+
+    .mini-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .mini-title {
+        font-size: 22px;
+        font-weight: 1000;
+        color: var(--eb-text-strong);
+    }
+
+    .mini-subtitle {
+        color: var(--eb-muted);
+        font-weight: 800;
+        margin-top: 4px;
+    }
+
+    .readonly-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .readonly-box {
+        background: var(--eb-soft);
+        border: 1px solid var(--eb-line);
+        border-radius: 20px;
+        padding: 16px;
+    }
+
+        .readonly-box small {
+            display: block;
+            color: var(--eb-muted);
+            font-weight: 1000;
+            margin-bottom: 8px;
+        }
+
+        .readonly-box strong {
+            color: var(--eb-text-strong);
+            font-size: 22px;
+            font-weight: 1000;
+        }
+
+    .phones-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .rooms-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .room-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+        border: 1px solid var(--eb-line);
+        border-radius: 24px;
+        background: var(--eb-soft);
+        padding: 16px;
+    }
+
+    .phone-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 12px;
+        align-items: center;
+        border: 1px solid var(--eb-line);
+        border-radius: 24px;
+        background: var(--eb-soft);
+        padding: 16px;
+    }
+
+    .primary-phone-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: var(--eb-text);
+        white-space: nowrap;
+        font-weight: 1000;
+    }
+
+        .primary-phone-label input {
+            width: auto;
+            min-height: auto;
+        }
+
+    .btn-small {
+        min-height: 44px;
+        border: 0;
+        border-radius: 14px;
+        padding: 0 16px;
+        font-weight: 1000;
+        cursor: pointer;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .btn-small:hover {
+            transform: translateY(-2px);
+        }
+
+    .btn-add {
+        background: #ff7a18;
+        color: #fff;
+    }
+
+    .btn-remove {
+        background: rgba(240,68,56,.10);
+        color: #f04438;
+    }
+
+    .text-danger,
+    .field-error {
+        color: var(--eb-danger);
+        font-weight: 900;
+        font-size: 13px;
+        margin-top: 7px;
+    }
+
+    .input-error {
+        border-color: var(--eb-danger) !important;
+        box-shadow: 0 0 0 4px rgba(220,38,38,.10) !important;
+    }
+
+    .validation-panel {
+        display: none;
+        border: 1px solid rgba(220,38,38,.25);
+        background: #fff5f5;
+        color: #991b1b;
+        border-radius: 20px;
+        padding: 16px;
+        margin-bottom: 18px;
+        font-weight: 900;
+    }
+
+        .validation-panel.show {
+            display: block;
+        }
+
+        .validation-panel ul {
+            margin: 8px 0 0;
+            padding-inline-start: 20px;
+        }
+
+    .info-note {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: var(--eb-note-bg);
+        color: var(--eb-note-text);
+        border: 1px solid var(--eb-note-border);
+        font-weight: 900;
+        line-height: 1.7;
+        margin-bottom: 18px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    @@media (max-width: 900px) {
+        .field,
+        .field.half {
+            grid-column: span 12;
+        }
+
+        .readonly-grid,
+        .room-row,
+        .phone-row {
+            grid-template-columns: 1fr;
+        }
+
+        .eb-hero {
+            padding: 28px;
+        }
+
+        .eb-avatar-wrap {
+            width: 120px;
+            height: 120px;
+        }
+
+        .eb-avatar {
+            width: 92px;
+            height: 92px;
+            font-size: 34px;
+        }
+    }
+</style>
+
+<div class="eb-page" dir="@(isRtl ? "rtl" : "ltr")">
+    <section class="eb-hero">
+        <div class="eb-hero-inner">
+            <div>
+                <span class="eb-badge">@L["EB_Badge"]</span>
+                <h1>@bookingCode</h1>
+                <p>@L["EB_Subtitle"]</p>
+            </div>
+
+            <div class="eb-avatar-wrap" title="@fullName">
+                <div class="eb-avatar">@initials</div>
+                <span class="eb-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="eb-actions">
+            <a class="eb-btn eb-btn-white" asp-action="Details" asp-route-id="@Model.BookingID">@L["EB_BackToDetails"]</a>
+            <a class="eb-btn eb-btn-light" asp-action="Index">@L["EB_AllBookings"]</a>
+        </div>
+    </section>
+
+    <section class="eb-card">
+        <div class="eb-section-head">
+            <span class="eb-soft-badge">@L["EB_LimitedEdit"]</span>
+            <h2>@L["EB_AllowedChanges"]</h2>
+            <p>@L["EB_AllowedChangesDesc"]</p>
+        </div>
+
+        <div class="readonly-grid">
+            <div class="readonly-box">
+                <small>@L["EB_Client"]</small>
+                <strong>@Model.ClientName</strong>
+            </div>
+            <div class="readonly-box">
+                <small>@L["EB_HotelTotal"]</small>
+                <strong>@Model.HotelTotal.ToString("N2")</strong>
+            </div>
+            <div class="readonly-box">
+                <small>@L["EB_TransportTotal"]</small>
+                <strong>@Model.TransportationTotal.ToString("N2")</strong>
+            </div>
+            <div class="readonly-box">
+                <small>@L["EB_Paid"]</small>
+                <strong>@Model.PaidAmount.ToString("N2")</strong>
+            </div>
+        </div>
+
+        <div class="info-note">
+            @L["EB_InfoNote"]
+        </div>
+    </section>
+
+    <section class="eb-card">
+        <form id="editLimitedForm" asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            <input asp-for="BookingID" type="hidden" />
+            <input asp-for="HasHotel" type="hidden" />
+            <input asp-for="HasTransportation" type="hidden" />
+
+            @* Preserve readonly fields so the posted DTO still binds safely. Backend still ignores forbidden changes. *@
+            <input asp-for="ClientName" type="hidden" />
+            <input asp-for="Notes" type="hidden" />
+            <input asp-for="NumberOfRooms" type="hidden" />
+            <input asp-for="RoomType" type="hidden" />
+            <input asp-for="HotelNightPrice" type="hidden" />
+            <input asp-for="HotelTotal" type="hidden" id="HotelTotal" />
+            <input asp-for="SeatsCount" type="hidden" />
+            <input asp-for="SeatPrice" type="hidden" />
+            <input asp-for="TransportationTotal" type="hidden" id="TransportationTotal" />
+            <input asp-for="PaidAmount" type="hidden" id="PaidAmount" />
+            <input asp-for="PayType" type="hidden" />
+            <input asp-for="GrandTotal" type="hidden" id="GrandTotal" />
+            <input asp-for="RemainingAmount" type="hidden" id="RemainingAmount" />
+
+            @for (var i = 0; i < Model.Payments.Count; i++)
+            {
+                <input type="hidden" name="Payments[@i].PaymentId" value="@Model.Payments[i].PaymentId" />
+                <input type="hidden" name="Payments[@i].Amount" value="@Model.Payments[i].Amount" />
+                <input type="hidden" name="Payments[@i].PayType" value="@((int)Model.Payments[i].PayType)" />
+                <input type="hidden" name="Payments[@i].PaidAt" value="@Model.Payments[i].PaidAt.ToString("yyyy-MM-dd")" />
+                <input type="hidden" name="Payments[@i].Notes" value="@Model.Payments[i].Notes" />
+            }
+
+            <div id="ClientValidationPanel" class="validation-panel">
+                <div>@L["EB_FixErrors"]</div>
+                <ul id="ClientValidationList"></ul>
+            </div>
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="mini-card @(Model.HasHotel ? "" : "hidden")">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["EB_HotelAllowedFields"]</div>
+                        <div class="mini-subtitle">@L["EB_HotelAllowedSub"]</div>
+                    </div>
+                </div>
+
+                <div class="edit-grid">
+                    <div class="field wide">
+                        <label asp-for="HotelName">@L["EB_HotelName"]</label>
+                        <input asp-for="HotelName" id="HotelName" placeholder="@L["EB_HotelNamePH"]" />
+                        <span asp-validation-for="HotelName" class="text-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="CheckInDate">@L["EB_CheckIn"]</label>
+                        <input asp-for="CheckInDate" type="date" id="CheckInDate" />
+                        <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="NightsCount">@L["EB_NightsCount"]</label>
+                        <input asp-for="NightsCount" type="number" min="1" id="NightsCount" />
+                        <span asp-validation-for="NightsCount" class="text-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="CheckOutDate">@L["EB_CheckOut"]</label>
+                        <input asp-for="CheckOutDate" type="date" id="CheckOutDate" />
+                        <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                        <div id="dateError" class="field-error"></div>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="Discount">@L["EB_Discount"] @(isAdmin ? "" : L["EB_AdminOnly"].Value)</label>
+                        @if (isAdmin)
+                        {
+                            <input asp-for="Discount" type="number" min="0" step="0.01" id="Discount" />
+                        }
+                        else
+                        {
+                            <input asp-for="Discount" type="number" min="0" step="0.01" id="Discount" readonly />
+                        }
+                        <span asp-validation-for="Discount" class="text-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label>@L["EB_NewHotelTotal"]</label>
+                        <input type="text" id="HotelTotalText" value="@Model.HotelTotal.ToString("N2")" readonly />
+                    </div>
+
+                    <div class="field">
+                        <label>@L["EB_NewGrandTotal"]</label>
+                        <input type="text" id="GrandTotalText" value="@Model.GrandTotal.ToString("N2")" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-card @(Model.HasTransportation ? "" : "hidden")">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["EB_TransportAllowedFields"]</div>
+                        <div class="mini-subtitle">@L["EB_TransportAllowedSub"]</div>
+                    </div>
+                </div>
+
+                <div class="edit-grid">
+                    <div class="field">
+                        <label>@L["EB_TripType"]</label>
+                        <select id="TripType" name="Transportation.TripType" onchange="toggleTripDates()">
+                            <option value="Departure" selected="@(selectedTripType == "Departure")">@L["EB_TripGoOnly"]</option>
+                            <option value="Return" selected="@(selectedTripType == "Return")">@L["EB_TripReturnOnly"]</option>
+                            <option value="RoundTrip" selected="@(selectedTripType == "RoundTrip")">@L["EB_TripRound"]</option>
+                        </select>
+                    </div>
+
+                    <div class="field" id="DepartureDateField">
+                        <label>@L["EB_GoTravelDate"]</label>
+                        <input type="date"
+                               id="DepartureDate"
+                               name="Transportation.DepartureDate"
+                               value="@(Model.Transportation?.DepartureDate?.ToString("yyyy-MM-dd") ?? Model.CheckInDate.ToString("yyyy-MM-dd"))" />
+                    </div>
+
+                    <div class="field" id="ReturnDateField">
+                        <label>@L["EB_ReturnTravelDate"]</label>
+                        <input type="date"
+                               id="ReturnDate"
+                               name="Transportation.ReturnDate"
+                               value="@(Model.Transportation?.ReturnDate?.ToString("yyyy-MM-dd") ?? Model.CheckOutDate.ToString("yyyy-MM-dd"))" />
+                    </div>
+                </div>
+
+                <input type="hidden" name="Transportation.DepartureTripId" value="@Model.Transportation?.DepartureTripId" />
+                <input type="hidden" name="Transportation.ReturnTripId" value="@Model.Transportation?.ReturnTripId" />
+                <input type="hidden" name="Transportation.DepartureBusId" value="@Model.Transportation?.DepartureBusId" />
+                <input type="hidden" name="Transportation.ReturnBusId" value="@Model.Transportation?.ReturnBusId" />
+                <input type="hidden" name="Transportation.DepartureFromLocation" value="@Model.Transportation?.DepartureFromLocation" />
+                <input type="hidden" name="Transportation.DepartureToLocation" value="@Model.Transportation?.DepartureToLocation" />
+                <input type="hidden" name="Transportation.ReturnFromLocation" value="@Model.Transportation?.ReturnFromLocation" />
+                <input type="hidden" name="Transportation.ReturnToLocation" value="@Model.Transportation?.ReturnToLocation" />
+                <input type="hidden" name="Transportation.CreateNewDepartureTrip" value="false" />
+                <input type="hidden" name="Transportation.CreateNewReturnTrip" value="false" />
+                <input type="hidden" name="Transportation.DepartureRequiredSeats" value="@(Model.Transportation?.DepartureSeats?.Count ?? 0)" />
+                <input type="hidden" name="Transportation.ReturnRequiredSeats" value="@(Model.Transportation?.ReturnSeats?.Count ?? 0)" />
+
+                @{
+                    var depSeats = Model.Transportation?.DepartureSeats ?? new List<BookingSeatDTO>();
+                    var retSeats = Model.Transportation?.ReturnSeats ?? new List<BookingSeatDTO>();
+                }
+
+                @for (var i = 0; i < depSeats.Count; i++)
+                {
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].Id" value="@depSeats[i].Id" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].Direction" value="Departure" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].TripId" value="@depSeats[i].TripId" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].SeatId" value="@depSeats[i].SeatId" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].SeatPrice" value="@depSeats[i].SeatPrice" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].SeatNumber" value="@depSeats[i].SeatNumber" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].SeatLabel" value="@depSeats[i].SeatLabel" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].SeatType" value="@((int)depSeats[i].SeatType)" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].RowNumber" value="@depSeats[i].RowNumber" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].ColumnNumber" value="@depSeats[i].ColumnNumber" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].FromLocation" value="@depSeats[i].FromLocation" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].ToLocation" value="@depSeats[i].ToLocation" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].BusId" value="@depSeats[i].BusId" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].BusName" value="@depSeats[i].BusName" />
+                    <input type="hidden" name="Transportation.DepartureSeats[@i].PlateNumber" value="@depSeats[i].PlateNumber" />
+                }
+
+                @for (var i = 0; i < retSeats.Count; i++)
+                {
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].Id" value="@retSeats[i].Id" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].Direction" value="Return" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].TripId" value="@retSeats[i].TripId" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].SeatId" value="@retSeats[i].SeatId" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].SeatPrice" value="@retSeats[i].SeatPrice" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].SeatNumber" value="@retSeats[i].SeatNumber" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].SeatLabel" value="@retSeats[i].SeatLabel" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].SeatType" value="@((int)retSeats[i].SeatType)" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].RowNumber" value="@retSeats[i].RowNumber" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].ColumnNumber" value="@retSeats[i].ColumnNumber" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].FromLocation" value="@retSeats[i].FromLocation" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].ToLocation" value="@retSeats[i].ToLocation" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].BusId" value="@retSeats[i].BusId" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].BusName" value="@retSeats[i].BusName" />
+                    <input type="hidden" name="Transportation.ReturnSeats[@i].PlateNumber" value="@retSeats[i].PlateNumber" />
+                }
+            </div>
+
+
+            <div class="mini-card @(Model.HasHotel ? "" : "hidden")">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["EB_RoomsBooking"]</div>
+                        <div class="mini-subtitle">@L["EB_RoomsBookingSub"]</div>
+                    </div>
+                    <button type="button" class="btn-small btn-add" onclick="addRoom()">@L["EB_AddRoom"]</button>
+                </div>
+
+                <div id="roomsRows" class="rooms-list">
+                    @for (var i = 0; i < Model.Rooms.Count; i++)
+                    {
+                        <div class="room-row">
+                            <input type="hidden" name="Rooms[@i].BookingRoomId" value="@Model.Rooms[i].BookingRoomId" />
+
+                            <div>
+                                <label>@L["EB_RoomType"]</label>
+                                <select name="Rooms[@i].RoomType" class="room-type">
+                                    @foreach (var item in roomTypes)
+                                    {
+                                        <option value="@item.Value" selected="@(item.Value == ((int)Model.Rooms[i].RoomType).ToString())">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div>
+                                <label>@L["EB_Count"]</label>
+                                <input name="Rooms[@i].Count"
+                                       class="room-count"
+                                       type="number"
+                                       min="1"
+                                       value="@Model.Rooms[i].Count" />
+                                <div class="field-error">@ErrorFor($"Rooms[{i}].Count")</div>
+                            </div>
+
+                            <div>
+                                <label>@L["EB_NightPrice"]</label>
+                                <input name="Rooms[@i].NightPrice"
+                                       class="room-price"
+                                       type="number"
+                                       min="0"
+                                       step="0.01"
+                                       value="@Model.Rooms[i].NightPrice" />
+                                <div class="field-error">@ErrorFor($"Rooms[{i}].NightPrice")</div>
+                            </div>
+
+                            <button type="button" class="btn-small btn-remove" onclick="removeRoom(this)">@L["EB_Remove"]</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mini-card @(Model.HasHotel ? "" : "hidden")">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["EB_Children"]</div>
+                        <div class="mini-subtitle">@L["EB_ChildrenSub"]</div>
+                    </div>
+                </div>
+
+                <div class="edit-grid">
+                    <div class="field">
+                        <label asp-for="ChildrenCountUntil6Years">@L["EB_Until6"]</label>
+                        <input asp-for="ChildrenCountUntil6Years" type="number" min="0" id="child6" />
+                        <span asp-validation-for="ChildrenCountUntil6Years" class="text-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="ChildrenCountUntil12Years">@L["EB_Until12"]</label>
+                        <input asp-for="ChildrenCountUntil12Years" type="number" min="0" id="child12" />
+                        <span asp-validation-for="ChildrenCountUntil12Years" class="text-danger"></span>
+                    </div>
+
+                    <div class="field">
+                        <label asp-for="TotalChildrenCount">@L["EB_TotalChildren"]</label>
+                        <input asp-for="TotalChildrenCount" type="number" min="0" id="childrenTotal" readonly />
+                        <span asp-validation-for="TotalChildrenCount" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mini-card phones">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["EB_PhoneNumbers"]</div>
+                        <div class="mini-subtitle">@L["EB_PhoneNumbersSub"]</div>
+                    </div>
+                    <button type="button" class="btn-small btn-add" onclick="addPhone()">@L["EB_AddPhone"]</button>
+                </div>
+
+                <div id="phonesRows" class="phones-list">
+                    @for (var i = 0; i < Model.PhoneNumbers.Count; i++)
+                    {
+                        <div class="phone-row">
+                            <div>
+                                <label>@L["EB_Phone"]</label>
+                                <input name="PhoneNumbers[@i].PhoneNumber"
+                                       class="phone-input"
+                                       value="@Model.PhoneNumbers[i].PhoneNumber"
+                                       placeholder="01012345678" />
+                                <div class="field-error">@ErrorFor($"PhoneNumbers[{i}].PhoneNumber")</div>
+                            </div>
+
+                            <label class="primary-phone-label">
+                                <input type="radio"
+                                       name="primePhone"
+                                       onchange="syncPrimePhones()"
+                                @(Model.PhoneNumbers[i].Prime ? "checked" : "") />
+                                @L["EB_Primary"]
+                            </label>
+
+                            <input type="hidden"
+                                   name="PhoneNumbers[@i].Prime"
+                                   class="phone-prime"
+                                   value="@(Model.PhoneNumbers[i].Prime.ToString().ToLower())" />
+
+                            <button type="button" class="btn-small btn-remove" onclick="removePhone(this)">@L["EB_Remove"]</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="eb-btn eb-btn-orange">@L["EB_SaveChanges"]</button>
+                <a class="eb-btn eb-btn-light" asp-action="Details" asp-route-id="@Model.BookingID">@L["EB_Cancel"]</a>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const EB_I18N = {
+            checkoutAfterCheckin: @Html.Raw(JsString(L["EB_JsCheckoutAfterCheckin"].Value)),
+            roomCountPositive:    @Html.Raw(JsString(L["EB_JsRoomCountPositive"].Value)),
+            roomPriceNegative:    @Html.Raw(JsString(L["EB_JsRoomPriceNegative"].Value)),
+            phoneRequiredAdd:     @Html.Raw(JsString(L["EB_JsPhoneRequiredAdd"].Value)),
+            phoneIncorrectEx:     @Html.Raw(JsString(L["EB_JsPhoneIncorrectEx"].Value)),
+            hotelNameRequired:    @Html.Raw(JsString(L["EB_JsHotelNameRequired"].Value)),
+            checkInRequired:      @Html.Raw(JsString(L["EB_JsCheckInRequired"].Value)),
+            checkOutRequired:     @Html.Raw(JsString(L["EB_JsCheckOutRequired"].Value)),
+            nightsAtLeastOne:     @Html.Raw(JsString(L["EB_JsNightsAtLeastOne"].Value)),
+            discountNegative:     @Html.Raw(JsString(L["EB_JsDiscountNegative"].Value)),
+            roomRowCount:         @Html.Raw(JsString(L["EB_JsRoomRowCount"].Value)),
+            roomRowPrice:         @Html.Raw(JsString(L["EB_JsRoomRowPrice"].Value)),
+            child6Negative:       @Html.Raw(JsString(L["EB_JsChild6Negative"].Value)),
+            child12Negative:      @Html.Raw(JsString(L["EB_JsChild12Negative"].Value)),
+            checkoutAfter:        @Html.Raw(JsString(L["EB_JsCheckoutAfter"].Value)),
+            goDateRequired:       @Html.Raw(JsString(L["EB_JsGoDateRequired"].Value)),
+            returnDateRequired:   @Html.Raw(JsString(L["EB_JsReturnDateRequired"].Value)),
+            phoneRowRequired:     @Html.Raw(JsString(L["EB_JsPhoneRowRequired"].Value)),
+            phoneRowIncorrect:    @Html.Raw(JsString(L["EB_JsPhoneRowIncorrect"].Value)),
+            onePrimaryRequired:   @Html.Raw(JsString(L["EB_JsOnePrimaryRequired"].Value)),
+            phoneIncorrect:       @Html.Raw(JsString(L["EB_JsPhoneIncorrect"].Value)),
+            roomType:             @Html.Raw(JsString(L["EB_RoomType"].Value)),
+            count:                @Html.Raw(JsString(L["EB_Count"].Value)),
+            nightPrice:           @Html.Raw(JsString(L["EB_NightPrice"].Value)),
+            phone:                @Html.Raw(JsString(L["EB_Phone"].Value)),
+            primary:              @Html.Raw(JsString(L["EB_Primary"].Value)),
+            remove:               @Html.Raw(JsString(L["EB_Remove"].Value))
+        };
+
+        function ebFmt(tpl, ...args) {
+            return String(tpl).replace(/\{(\d+)\}/g, (m, i) => (args[i] !== undefined ? args[i] : m));
+        }
+
+        const roomTypeOptions = `@Html.Raw(string.Join("", roomTypes.Select(x => $"<option value='{x.Value}'>{x.Text}</option>")))`;
+        const transportationTotal = @Model.TransportationTotal.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const paidAmount = @Model.PaidAmount.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        function q(selector) {
+            return document.querySelector(selector);
+        }
+
+        function qa(selector) {
+            return Array.from(document.querySelectorAll(selector));
+        }
+
+        function num(value) {
+            return parseFloat(value || "0") || 0;
+        }
+
+        function phoneValid(value) {
+            return /^01[0-2,5][0-9]{8}$/.test((value || "").trim());
+        }
+
+        function getInputDate(input) {
+            if (!input || !input.value) return null;
+
+            const p = input.value.split("-");
+            if (p.length !== 3) return null;
+
+            return new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+        }
+
+        function setInputDate(input, date) {
+            if (!input || !date) return;
+
+            input.value =
+                `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        }
+
+        function clearClientErrors() {
+            const list = q("#ClientValidationList");
+            const panel = q("#ClientValidationPanel");
+
+            if (list) list.innerHTML = "";
+            if (panel) panel.classList.remove("show");
+
+            qa(".input-error").forEach(x => x.classList.remove("input-error"));
+            qa(".field-error[data-js='true']").forEach(x => x.innerText = "");
+        }
+
+        function addClientError(input, message) {
+            if (input) input.classList.add("input-error");
+
+            const list = q("#ClientValidationList");
+            const panel = q("#ClientValidationPanel");
+
+            if (list) {
+                const li = document.createElement("li");
+                li.innerText = message;
+                list.appendChild(li);
+            }
+
+            if (panel) panel.classList.add("show");
+
+            const holder = input?.parentElement?.querySelector(".field-error");
+            if (holder) {
+                holder.dataset.js = "true";
+                holder.innerText = message;
+            }
+        }
+
+        function calculateCheckoutFromNights() {
+            const checkInInput = q("#CheckInDate");
+            const nightsInput = q("#NightsCount");
+            const checkOutInput = q("#CheckOutDate");
+
+            if (!checkInInput || !nightsInput || !checkOutInput) return;
+
+            const checkIn = getInputDate(checkInInput);
+            if (!checkIn) return;
+
+            let nights = parseInt(nightsInput.value || "1");
+            if (isNaN(nights) || nights < 1) nights = 1;
+
+            nightsInput.value = nights;
+
+            const checkOut = new Date(checkIn);
+            checkOut.setDate(checkIn.getDate() + nights);
+            setInputDate(checkOutInput, checkOut);
+
+            const dateError = q("#dateError");
+            if (dateError) dateError.innerText = "";
+
+            syncTripDatesWithHotelDates();
+            calculateTotals();
+        }
+
+        function calculateNightsFromDates() {
+            const checkInInput = q("#CheckInDate");
+            const checkOutInput = q("#CheckOutDate");
+            const nightsInput = q("#NightsCount");
+
+            if (!checkInInput || !checkOutInput || !nightsInput) return;
+
+            const checkIn = getInputDate(checkInInput);
+            const checkOut = getInputDate(checkOutInput);
+
+            if (!checkIn || !checkOut) return;
+
+            const diff = Math.round((checkOut - checkIn) / 86400000);
+
+            if (diff < 1) {
+                const fixed = new Date(checkIn);
+                fixed.setDate(checkIn.getDate() + 1);
+
+                setInputDate(checkOutInput, fixed);
+                nightsInput.value = 1;
+
+                const dateError = q("#dateError");
+                if (dateError) dateError.innerText = EB_I18N.checkoutAfterCheckin;
+
+                syncTripDatesWithHotelDates();
+                calculateTotals();
+                return;
+            }
+
+            nightsInput.value = diff;
+
+            const dateError = q("#dateError");
+            if (dateError) dateError.innerText = "";
+
+            syncTripDatesWithHotelDates();
+            calculateTotals();
+        }
+
+        function syncTripDatesWithHotelDates() {
+            if (!q("input[name='HasHotel']") || q("input[name='HasHotel']").value !== "True" && q("input[name='HasHotel']").value !== "true") return;
+            if (!q("input[name='HasTransportation']") || q("input[name='HasTransportation']").value !== "True" && q("input[name='HasTransportation']").value !== "true") return;
+
+            const tripType = q("#TripType")?.value || "Departure";
+            const checkIn = q("#CheckInDate")?.value || "";
+            const checkOut = q("#CheckOutDate")?.value || "";
+
+            if ((tripType === "Departure" || tripType === "RoundTrip") && q("#DepartureDate")) {
+                q("#DepartureDate").value = checkIn;
+            }
+
+            if ((tripType === "Return" || tripType === "RoundTrip") && q("#ReturnDate")) {
+                q("#ReturnDate").value = checkOut;
+            }
+        }
+
+        function toggleTripDates() {
+            const tripType = q("#TripType")?.value || "Departure";
+
+            const showGo = tripType === "Departure" || tripType === "RoundTrip";
+            const showReturn = tripType === "Return" || tripType === "RoundTrip";
+
+            q("#DepartureDateField")?.classList.toggle("hidden", !showGo);
+            q("#ReturnDateField")?.classList.toggle("hidden", !showReturn);
+
+            const depInput = q("#DepartureDate");
+            const retInput = q("#ReturnDate");
+
+            if (depInput) depInput.disabled = !showGo;
+            if (retInput) retInput.disabled = !showReturn;
+        }
+
+        function calculateTotals() {
+            const nights = Math.max(1, parseInt(q("#NightsCount")?.value || "1"));
+            const discount = num(q("#Discount")?.value);
+
+            let roomsCount = 0;
+            let oneNightRoomsTotal = 0;
+
+            qa("#roomsRows .room-row").forEach(row => {
+                const count = num(row.querySelector(".room-count")?.value);
+                const price = num(row.querySelector(".room-price")?.value);
+
+                roomsCount += count;
+                oneNightRoomsTotal += count * price;
+            });
+
+            const hotelTotal = oneNightRoomsTotal * nights;
+            const grandTotal = Math.max(0, hotelTotal + transportationTotal - discount);
+            const remaining = Math.max(0, grandTotal - paidAmount);
+
+            if (q("input[name='NumberOfRooms']")) q("input[name='NumberOfRooms']").value = roomsCount;
+            if (q("#HotelTotal")) q("#HotelTotal").value = hotelTotal.toFixed(2);
+            if (q("#GrandTotal")) q("#GrandTotal").value = grandTotal.toFixed(2);
+            if (q("#RemainingAmount")) q("#RemainingAmount").value = remaining.toFixed(2);
+
+            if (q("#HotelTotalText")) q("#HotelTotalText").value = hotelTotal.toFixed(2);
+            if (q("#GrandTotalText")) q("#GrandTotalText").value = grandTotal.toFixed(2);
+
+            if (q("#childrenTotal")) {
+                q("#childrenTotal").value = num(q("#child6")?.value) + num(q("#child12")?.value);
+            }
+        }
+
+        function reindexRooms() {
+            qa("#roomsRows .room-row").forEach((row, i) => {
+                const id = row.querySelector("input[name$='.BookingRoomId']");
+                const type = row.querySelector(".room-type");
+                const count = row.querySelector(".room-count");
+                const price = row.querySelector(".room-price");
+
+                if (id) id.name = `Rooms[${i}].BookingRoomId`;
+                if (type) type.name = `Rooms[${i}].RoomType`;
+                if (count) count.name = `Rooms[${i}].Count`;
+                if (price) price.name = `Rooms[${i}].NightPrice`;
+            });
+        }
+
+        function removeRoom(btn) {
+            const row = btn.closest(".room-row");
+            const rows = qa("#roomsRows .room-row");
+
+            if (rows.length <= 1) {
+                row.style.outline = "2px solid #f04438";
+                setTimeout(() => row.style.outline = "", 1200);
+                return;
+            }
+
+            row.remove();
+            reindexRooms();
+            calculateTotals();
+        }
+
+        function addRoom() {
+            const rows = qa("#roomsRows .room-row");
+            const lastRow = rows.at(-1);
+
+            if (lastRow) {
+                const countInput = lastRow.querySelector(".room-count");
+                const priceInput = lastRow.querySelector(".room-price");
+
+                if (num(countInput?.value) <= 0) {
+                    addClientError(countInput, EB_I18N.roomCountPositive);
+                    return;
+                }
+
+                if (num(priceInput?.value) < 0) {
+                    addClientError(priceInput, EB_I18N.roomPriceNegative);
+                    return;
+                }
+            }
+
+            const i = rows.length;
+
+            q("#roomsRows").insertAdjacentHTML("beforeend", `
+                <div class="room-row">
+                    <input type="hidden" name="Rooms[${i}].BookingRoomId" value="" />
+
+                    <div>
+                        <label>${EB_I18N.roomType}</label>
+                        <select name="Rooms[${i}].RoomType" class="room-type">${roomTypeOptions}</select>
+                    </div>
+
+                    <div>
+                        <label>${EB_I18N.count}</label>
+                        <input name="Rooms[${i}].Count"
+                               class="room-count"
+                               type="number"
+                               min="1"
+                               value="1" />
+                        <div class="field-error"></div>
+                    </div>
+
+                    <div>
+                        <label>${EB_I18N.nightPrice}</label>
+                        <input name="Rooms[${i}].NightPrice"
+                               class="room-price"
+                               type="number"
+                               min="0"
+                               step="0.01"
+                               value="0" />
+                        <div class="field-error"></div>
+                    </div>
+
+                    <button type="button" class="btn-small btn-remove" onclick="removeRoom(this)">${EB_I18N.remove}</button>
+                </div>`);
+
+            q("#roomsRows .room-row:last-child .room-price")?.focus();
+            calculateTotals();
+        }
+
+        function syncPrimePhones() {
+            const rows = qa("#phonesRows .phone-row");
+
+            if (rows.length && !rows.some(row => row.querySelector("input[type=radio]")?.checked)) {
+                rows[0].querySelector("input[type=radio]").checked = true;
+            }
+
+            rows.forEach(row => {
+                const hidden = row.querySelector(".phone-prime");
+                const radio = row.querySelector("input[type=radio]");
+                if (hidden) hidden.value = radio?.checked ? "true" : "false";
+            });
+        }
+
+        function reindexPhones() {
+            qa("#phonesRows .phone-row").forEach((row, i) => {
+                const phone = row.querySelector(".phone-input");
+                const prime = row.querySelector(".phone-prime");
+
+                if (phone) phone.name = `PhoneNumbers[${i}].PhoneNumber`;
+                if (prime) prime.name = `PhoneNumbers[${i}].Prime`;
+            });
+        }
+
+        function removePhone(btn) {
+            const row = btn.closest(".phone-row");
+            const rows = qa("#phonesRows .phone-row");
+
+            if (rows.length <= 1) {
+                row.style.outline = "2px solid #f04438";
+                setTimeout(() => row.style.outline = "", 1200);
+                return;
+            }
+
+            row.remove();
+            reindexPhones();
+            syncPrimePhones();
+        }
+
+        function addPhone() {
+            const rows = qa("#phonesRows .phone-row");
+            const lastRow = rows.at(-1);
+
+            if (lastRow) {
+                const phoneInput = lastRow.querySelector(".phone-input");
+                const value = phoneInput?.value || "";
+
+                if (!value.trim()) {
+                    addClientError(phoneInput, EB_I18N.phoneRequiredAdd);
+                    return;
+                }
+
+                if (!phoneValid(value)) {
+                    addClientError(phoneInput, EB_I18N.phoneIncorrectEx);
+                    return;
+                }
+            }
+
+            const i = rows.length;
+
+            q("#phonesRows").insertAdjacentHTML("beforeend", `
+                <div class="phone-row">
+                    <div>
+                        <label>${EB_I18N.phone}</label>
+                        <input name="PhoneNumbers[${i}].PhoneNumber"
+                               class="phone-input"
+                               placeholder="01012345678" />
+                        <div class="field-error"></div>
+                    </div>
+
+                    <label class="primary-phone-label">
+                        <input type="radio"
+                               name="primePhone"
+                               onchange="syncPrimePhones()" />
+                        ${EB_I18N.primary}
+                    </label>
+
+                    <input type="hidden"
+                           name="PhoneNumbers[${i}].Prime"
+                           class="phone-prime"
+                           value="false" />
+
+                    <button type="button" class="btn-small btn-remove" onclick="removePhone(this)">${EB_I18N.remove}</button>
+                </div>`);
+
+            q("#phonesRows .phone-row:last-child .phone-input")?.focus();
+            syncPrimePhones();
+        }
+
+        function validateForm() {
+            clearClientErrors();
+
+            const errors = [];
+
+            const hotelName = q("#HotelName");
+            const checkIn = q("#CheckInDate");
+            const checkOut = q("#CheckOutDate");
+            const nights = q("#NightsCount");
+            const discount = q("#Discount");
+
+            if (hotelName && !hotelName.value.trim()) {
+                errors.push([hotelName, EB_I18N.hotelNameRequired]);
+            }
+
+            if (checkIn && !checkIn.value) {
+                errors.push([checkIn, EB_I18N.checkInRequired]);
+            }
+
+            if (checkOut && !checkOut.value) {
+                errors.push([checkOut, EB_I18N.checkOutRequired]);
+            }
+
+            if (nights && parseInt(nights.value || "0") < 1) {
+                errors.push([nights, EB_I18N.nightsAtLeastOne]);
+            }
+
+            if (discount && num(discount.value) < 0) {
+                errors.push([discount, EB_I18N.discountNegative]);
+            }
+
+            qa("#roomsRows .room-row").forEach((row, i) => {
+                const count = row.querySelector(".room-count");
+                const price = row.querySelector(".room-price");
+
+                if (count && num(count.value) <= 0) {
+                    errors.push([count, ebFmt(EB_I18N.roomRowCount, i + 1)]);
+                }
+
+                if (price && num(price.value) < 0) {
+                    errors.push([price, ebFmt(EB_I18N.roomRowPrice, i + 1)]);
+                }
+            });
+
+            const child6 = q("#child6");
+            const child12 = q("#child12");
+
+            if (child6 && num(child6.value) < 0) {
+                errors.push([child6, EB_I18N.child6Negative]);
+            }
+
+            if (child12 && num(child12.value) < 0) {
+                errors.push([child12, EB_I18N.child12Negative]);
+            }
+
+
+            if (checkIn && checkOut && checkIn.value && checkOut.value) {
+                const start = getInputDate(checkIn);
+                const end = getInputDate(checkOut);
+                if (start && end && end <= start) {
+                    errors.push([checkOut, EB_I18N.checkoutAfter]);
+                }
+            }
+
+            if (q("#TripType")) {
+                const tripType = q("#TripType").value;
+
+                if ((tripType === "Departure" || tripType === "RoundTrip") && !q("#DepartureDate")?.value) {
+                    errors.push([q("#DepartureDate"), EB_I18N.goDateRequired]);
+                }
+
+                if ((tripType === "Return" || tripType === "RoundTrip") && !q("#ReturnDate")?.value) {
+                    errors.push([q("#ReturnDate"), EB_I18N.returnDateRequired]);
+                }
+            }
+
+            const phoneRows = qa("#phonesRows .phone-row");
+
+            phoneRows.forEach((row, i) => {
+                const phone = row.querySelector(".phone-input");
+
+                if (!phone.value.trim()) {
+                    errors.push([phone, ebFmt(EB_I18N.phoneRowRequired, i + 1)]);
+                } else if (!phoneValid(phone.value)) {
+                    errors.push([phone, ebFmt(EB_I18N.phoneRowIncorrect, i + 1)]);
+                }
+            });
+
+            if (!phoneRows.some(row => row.querySelector("input[type=radio]")?.checked)) {
+                errors.push([q(".phone-input"), EB_I18N.onePrimaryRequired]);
+            }
+
+            errors.forEach(x => addClientError(x[0], x[1]));
+
+            if (errors.length > 0) {
+                q("#ClientValidationPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return false;
+            }
+
+            return true;
+        }
+
+        document.addEventListener("input", function (event) {
+            if (event.target.id === "NightsCount") {
+                calculateCheckoutFromNights();
+            }
+
+            if (event.target.id === "Discount" ||
+                event.target.classList.contains("room-count") ||
+                event.target.classList.contains("room-price") ||
+                event.target.id === "child6" ||
+                event.target.id === "child12") {
+                calculateTotals();
+            }
+
+            if (event.target.classList.contains("phone-input")) {
+                const message = event.target.value.trim() && !phoneValid(event.target.value)
+                    ? EB_I18N.phoneIncorrect
+                    : "";
+
+                const holder = event.target.parentElement.querySelector(".field-error");
+                event.target.classList.toggle("input-error", !!message);
+
+                if (holder) holder.innerText = message;
+            }
+        });
+
+        document.addEventListener("change", function (event) {
+            if (event.target.id === "CheckInDate") {
+                calculateCheckoutFromNights();
+            }
+
+            if (event.target.id === "CheckOutDate") {
+                calculateNightsFromDates();
+            }
+
+            if (event.target.id === "TripType") {
+                toggleTripDates();
+            }
+
+            calculateTotals();
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = q("#editLimitedForm");
+
+            form?.addEventListener("submit", function (event) {
+                calculateTotals();
+                syncPrimePhones();
+
+                if (!validateForm()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+
+            toggleTripDates();
+            syncPrimePhones();
+            calculateTotals();
+        });
+    </script>
+}

@@ -1,0 +1,917 @@
+﻿@model BusinessLayer.DTOs.Bus.BusDetailsDTO
+
+@{
+    ViewData["Title"] = L["BD_Title"];
+
+    string fullName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName = fullName.Trim().Replace("  ", " ");
+    var userName = string.Join("", cleanName.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).Take(2).Select(x => x[0])).ToUpper();
+
+    if (string.IsNullOrWhiteSpace(userName)) userName = "U";
+
+    var initialLayoutJson = System.Text.Json.JsonSerializer.Serialize(Model.LayoutJson ?? "[]");
+    var plateDisplay = string.IsNullOrWhiteSpace(Model.PlateNumber) ? L["BD_NoPlate"].Value : Model.PlateNumber;
+}
+
+<style>
+    :root {
+        --bd-hero-bg: linear-gradient(135deg, #ff7a18, #ffad42);
+        --bd-hero-glow: rgba(255,122,24,.18);
+        --bd-hero-text: #fff;
+        --bd-hero-sub: rgba(255,255,255,.95);
+        --bd-card-bg: #fff;
+        --bd-card-border: #f0d8c2;
+        --bd-card-shadow: rgba(255,122,24,.10);
+        --bd-info-bg: #fffaf5;
+        --bd-info-border: #f3dfcc;
+        --bd-info-label: #667085;
+        --bd-info-value: #172033;
+        --bd-design-bg: #fffaf5;
+        --bd-grid-bg: #fffaf5;
+        --bd-grid-border: #f3dfcc;
+        --bd-cell-bg: #fff;
+        --bd-cell-border: #f0c9a5;
+        --bd-cell-empty-dot: #ffd5b4;
+        --bd-meta-txt: #667085;
+        --bd-btn-del-bg: #172033;
+        --bd-btn-del-txt: #fff;
+    }
+
+    html[data-theme="dark"] {
+        --bd-hero-bg: linear-gradient(135deg, #c45c0a, #d97c2a);
+        --bd-hero-glow: rgba(196,92,10,.22);
+        --bd-hero-text: #f5f0eb;
+        --bd-hero-sub: rgba(245,240,235,.85);
+        --bd-card-bg: #1a2236;
+        --bd-card-border: #283148;
+        --bd-card-shadow: rgba(0,0,0,.35);
+        --bd-info-bg: #212c3f;
+        --bd-info-border: #283148;
+        --bd-info-label: #7a8ba0;
+        --bd-info-value: #dce3ed;
+        --bd-design-bg: #0f172a;
+        --bd-grid-bg: #1a2236;
+        --bd-grid-border: #283148;
+        --bd-cell-bg: #212c3f;
+        --bd-cell-border: #3a4d66;
+        --bd-cell-empty-dot: #3a4d66;
+        --bd-meta-txt: #7a8ba0;
+        --bd-btn-del-bg: #1e2535;
+        --bd-btn-del-txt: #dce3ed;
+    }
+
+    .bd-page {
+        display: grid;
+        gap: 24px;
+    }
+
+    .bd-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--bd-hero-text);
+        background: var(--bd-hero-bg);
+        box-shadow: 0 24px 70px var(--bd-hero-glow);
+    }
+
+        .bd-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.18), transparent 26%);
+            pointer-events: none;
+        }
+
+        .bd-hero::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            right: -95px;
+            bottom: -115px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+        }
+
+    .bd-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .bd-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: var(--bd-hero-text);
+    }
+
+    .bd-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(42px,6vw,66px);
+        line-height: 1;
+        letter-spacing: -1.5px;
+        color: var(--bd-hero-text);
+    }
+
+    .bd-hero p {
+        margin: 16px 0 0;
+        color: var(--bd-hero-sub);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .bd-avatar-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+        .bd-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .bd-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: bd-spin 4s linear infinite;
+        }
+
+    @@keyframes bd-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .bd-avatar {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #ff6a00;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .bd-avatar-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .bd-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    .bd-btn {
+        min-height: 48px;
+        padding: 0 20px;
+        border-radius: 16px;
+        border: none;
+        font-weight: 1000;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .bd-btn:hover {
+            transform: translateY(-2px);
+            opacity: .95;
+        }
+
+    .bd-btn-white {
+        background: #fff;
+        color: #ff7a18;
+    }
+
+    .bd-btn-glass {
+        background: rgba(255,255,255,.18);
+        color: var(--bd-hero-text);
+        border: 1px solid rgba(255,255,255,.35);
+    }
+
+    .bd-btn-status {
+        background: #fff;
+        color: #172033;
+    }
+
+        .bd-btn-status.inactive {
+            background: #f04438;
+            color: #fff;
+        }
+
+    .bd-btn-delete {
+        background: var(--bd-btn-del-bg);
+        color: var(--bd-btn-del-txt);
+    }
+
+    .bd-card {
+        background: var(--bd-card-bg);
+        border: 1px solid var(--bd-card-border);
+        border-radius: 30px;
+        padding: 26px;
+        box-shadow: 0 18px 42px var(--bd-card-shadow);
+    }
+
+    .bd-info-grid {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 14px;
+    }
+
+    .bd-wide {
+        grid-column: span 2;
+    }
+
+    .bd-info {
+        border-radius: 18px;
+        border: 1px solid var(--bd-info-border);
+        background: var(--bd-info-bg);
+        padding: 14px;
+    }
+
+        .bd-info span {
+            display: block;
+            color: var(--bd-info-label);
+            font-size: 12px;
+            font-weight: 1000;
+            margin-bottom: 6px;
+        }
+
+        .bd-info strong {
+            color: var(--bd-info-value);
+            font-size: 18px;
+            font-weight: 1000;
+            display: block;
+        }
+
+    .bd-pill {
+        width: fit-content;
+        padding: 8px 15px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 1000;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .bd-pill.bd-active {
+            background: rgba(18, 183, 106, .24) !important;
+            color: #22e58a !important;
+        }
+
+        .bd-pill.bd-inactive {
+            background: rgba(248, 113, 113, .20) !important;
+            color: #ff5c5c !important;
+        }
+
+    .bd-design-panel {
+        overflow: auto;
+        padding: 26px;
+        border-radius: 28px;
+        border: 1px solid var(--bd-card-border);
+        background: var(--bd-design-bg);
+        min-height: 650px;
+    }
+
+    html[data-theme="dark"] .bd-design-panel {
+        background: radial-gradient(circle at 20% 10%, rgba(196,92,10,.05), transparent 28%), #0f172a;
+    }
+
+    /* مهم: تثبيت اتجاه رسمة الباص بالكامل */
+    .bd-bus-stage,
+    .bd-body-wrap,
+    .bd-bus-body,
+    .bd-meta,
+    .bd-grid,
+    .bd-cell {
+        direction: ltr !important;
+    }
+
+    .bd-bus-stage {
+        width: max-content;
+        margin: auto;
+        display: grid;
+        justify-items: center;
+        position: relative;
+        padding: 0 70px;
+        --bd-bus-width: 520px;
+        --bd-cols: 5;
+        --bd-cell-size: 70px;
+        --bd-cell-gap: 8px;
+    }
+
+    .bd-bus-nose {
+        width: var(--bd-bus-width);
+        height: 92px;
+        position: relative;
+        border-radius: 60px 60px 20px 20px;
+        background: linear-gradient(180deg,#ffb266 0%,#ff7a18 100%);
+        border: 4px solid #ffcfaa;
+        border-bottom: 0;
+        box-shadow: inset 0 10px 0 rgba(255,255,255,.18), 0 18px 36px rgba(255,122,24,.15);
+        z-index: 3;
+    }
+
+    .bd-windshield {
+        position: absolute;
+        left: 50%;
+        top: 15px;
+        transform: translateX(-50%);
+        width: 62%;
+        height: 42px;
+        border-radius: 32px 32px 14px 14px;
+        background: linear-gradient(135deg,#172033,#344054);
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,.12);
+    }
+
+        .bd-windshield::before {
+            content: "";
+            position: absolute;
+            width: 35%;
+            height: 4px;
+            background: rgba(255,255,255,.45);
+            top: 11px;
+            left: 14%;
+            border-radius: 20px;
+            transform: rotate(-8deg);
+        }
+
+    .bd-headlight {
+        position: absolute;
+        bottom: 15px;
+        width: 34px;
+        height: 18px;
+        border-radius: 999px;
+        background: #fff7d6;
+        box-shadow: 0 0 18px rgba(255,247,214,.8);
+    }
+
+        .bd-headlight.left {
+            left: 32px;
+        }
+
+        .bd-headlight.right {
+            right: 32px;
+        }
+
+    .bd-body-wrap {
+        position: relative;
+        width: var(--bd-bus-width);
+    }
+
+    .bd-bus-body {
+        width: var(--bd-bus-width);
+        padding: 22px;
+        background: #fff;
+        border-left: 4px solid #ffcfaa;
+        border-right: 4px solid #ffcfaa;
+        border-bottom: 4px solid #ffcfaa;
+        border-radius: 0 0 42px 42px;
+        box-shadow: inset 0 0 0 8px #fff7ef, 0 22px 44px rgba(255,122,24,.12);
+        position: relative;
+        z-index: 2;
+    }
+
+    html[data-theme="dark"] .bd-bus-body {
+        background: #1a2236;
+        box-shadow: inset 0 0 0 8px #1e2840, 0 22px 44px rgba(0,0,0,.35);
+    }
+
+    .bd-side-rail {
+        position: absolute;
+        top: 26px;
+        bottom: 46px;
+        width: 13px;
+        border-radius: 999px;
+        background: #d0d5dd;
+        z-index: 5;
+    }
+
+    html[data-theme="dark"] .bd-side-rail {
+        background: #3a4d66;
+    }
+
+    .bd-side-rail.left {
+        left: 10px;
+    }
+
+    .bd-side-rail.right {
+        right: 10px;
+    }
+
+    .bd-wheel {
+        position: absolute;
+        width: 34px;
+        height: 86px;
+        border-radius: 18px;
+        background: linear-gradient(180deg,#111827,#344054);
+        border: 5px solid #475467;
+        box-shadow: inset 0 0 0 7px #1d2939, inset 0 0 0 14px #667085, 0 10px 22px rgba(23,32,51,.22);
+        z-index: 1;
+    }
+
+        .bd-wheel.left.top {
+            left: -22px;
+            top: 72px;
+        }
+
+        .bd-wheel.left.bottom {
+            left: -22px;
+            bottom: 72px;
+        }
+
+        .bd-wheel.right.top {
+            right: -22px;
+            top: 72px;
+        }
+
+        .bd-wheel.right.bottom {
+            right: -22px;
+            bottom: 72px;
+        }
+
+    .bd-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 0 28px;
+        color: var(--bd-meta-txt);
+        font-size: 12px;
+        font-weight: 1000;
+        text-transform: uppercase;
+    }
+
+    .bd-grid {
+        display: grid;
+        gap: var(--bd-cell-gap);
+        grid-template-columns: repeat(var(--bd-cols), var(--bd-cell-size));
+        width: max-content;
+        margin: auto;
+        padding: 14px;
+        border-radius: 28px;
+        background: var(--bd-grid-bg);
+        border: 1px solid var(--bd-grid-border);
+        position: relative;
+        z-index: 4;
+    }
+
+    .bd-cell {
+        width: var(--bd-cell-size);
+        height: calc(var(--bd-cell-size) * .82);
+        border-radius: calc(var(--bd-cell-size) * .22);
+        border: 1px dashed var(--bd-cell-border);
+        background: var(--bd-cell-bg);
+        display: grid;
+        place-items: center;
+        font-weight: 1000;
+        position: relative;
+        font-size: clamp(10px, calc(var(--bd-cell-size) * .22), 14px);
+        user-select: none;
+    }
+
+        .bd-cell.empty::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--bd-cell-empty-dot);
+        }
+
+        .bd-cell.seat {
+            background: linear-gradient(180deg,#ff9340,#ff6a00);
+            color: #fff;
+            border: none;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+        }
+
+        .bd-cell.vip {
+            background: linear-gradient(180deg,#ffd166,#ff9f1c);
+            color: #172033;
+            border: none;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+        }
+
+        .bd-cell.driver {
+            background: #172033;
+            color: #fff;
+            border: none;
+        }
+
+        .bd-cell.assistant {
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+        }
+
+        .bd-cell.road {
+            background: repeating-linear-gradient(135deg,#f2f4f7,#f2f4f7 8px,#e4e7ec 8px,#e4e7ec 16px);
+            color: #667085;
+            border: 2px solid #d0d5dd;
+        }
+
+        .bd-cell.wc {
+            background: #e8f3ff;
+            color: #1570ef;
+            border: 2px solid #84caff;
+        }
+
+        .bd-cell.door-only {
+            background: transparent;
+            border: 1px dashed var(--bd-cell-border);
+            color: transparent;
+        }
+
+    html[data-theme="dark"] .bd-cell.driver {
+        background: #0f172a;
+    }
+
+    html[data-theme="dark"] .bd-cell.road {
+        background: repeating-linear-gradient(135deg,#1a2236,#1a2236 8px,#212c3f 8px,#212c3f 16px);
+        color: #7a8ba0;
+        border-color: #3a4d66;
+    }
+
+    html[data-theme="dark"] .bd-cell.wc {
+        background: rgba(21,112,239,.15);
+        color: #60abf8;
+        border-color: rgba(96,171,248,.4);
+    }
+
+    .bd-cell.disabled-object {
+        opacity: .45;
+        filter: grayscale(.25);
+        box-shadow: inset 0 0 0 3px rgba(240,68,56,.22);
+    }
+
+        .bd-cell.disabled-object::before {
+            content: "OFF";
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            padding: 2px 5px;
+            border-radius: 999px;
+            background: rgba(240,68,56,.14);
+            color: #f04438;
+            font-size: 10px;
+            font-weight: 1000;
+            z-index: 30;
+        }
+
+    .bd-cell.has-door::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 44px;
+        border-radius: 999px;
+        background: #ffb347;
+        border: 2px solid #ff7a18;
+        top: 50%;
+        transform: translateY(-50%);
+        box-shadow: 0 0 0 4px #fff3e6;
+        z-index: 20;
+    }
+
+    html[data-theme="dark"] .bd-cell.has-door::after {
+        box-shadow: 0 0 0 4px #1a2236;
+    }
+
+    .bd-cell.door-left::after {
+        left: -22px !important;
+        right: auto !important;
+    }
+
+    .bd-cell.door-right::after {
+        right: -22px !important;
+        left: auto !important;
+    }
+
+    .bd-cell .door-mark {
+        position: absolute;
+        width: 4px;
+        height: 24px;
+        border-radius: 999px;
+        background: #fff7d6;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 21;
+        pointer-events: none;
+    }
+
+    .bd-cell.door-left .door-mark {
+        left: -16px !important;
+        right: auto !important;
+    }
+
+    .bd-cell.door-right .door-mark {
+        right: -16px !important;
+        left: auto !important;
+    }
+
+    @@media (max-width: 900px) {
+        .bd-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .bd-wide {
+            grid-column: auto;
+        }
+
+        .bd-actions {
+            flex-direction: column;
+        }
+
+        .bd-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="bd-page">
+
+    <section class="bd-hero">
+        <div class="bd-hero-inner">
+            <div>
+                <span class="bd-badge">@L["BD_Badge"]</span>
+                <h1>@Model.Name</h1>
+                <p>@plateDisplay</p>
+            </div>
+
+            <div class="bd-avatar-wrap">
+                <div class="bd-avatar">@userName</div>
+                <span class="bd-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="bd-actions">
+            <a class="bd-btn bd-btn-white" asp-action="Buses">@L["BD_BackToBuses"]</a>
+
+            <a class="bd-btn bd-btn-glass" asp-action="EditBus" asp-route-id="@Model.BusId">
+                @L["BD_EditBus"]
+            </a>
+
+            <form asp-action="ChangeBusStatus" method="post" style="display:inline-flex;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="busId" value="@Model.BusId" />
+                <button class="bd-btn bd-btn-status @(Model.IsActive ? "inactive" : "")" type="submit">
+                    @(Model.IsActive ? L["BD_BtnSetInactive"].Value : L["BD_BtnSetActive"].Value)
+                </button>
+            </form>
+
+            <form asp-action="DeleteBus" method="post" style="display:inline-flex;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="busId" value="@Model.BusId" />
+                <button class="bd-btn bd-btn-delete"
+                        type="submit">
+                    @L["BD_BtnDelete"]
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="bd-card">
+        <div class="bd-info-grid">
+
+            <div class="bd-info">
+                <span>@L["BD_InfoName"]</span>
+                <strong>@Model.Name</strong>
+            </div>
+
+            <div class="bd-info">
+                <span>@L["BD_InfoPlate"]</span>
+                <strong>@(string.IsNullOrWhiteSpace(Model.PlateNumber) ? "-" : Model.PlateNumber)</strong>
+            </div>
+
+            <div class="bd-info">
+                <span>@L["BD_InfoSeats"]</span>
+                <strong>@Model.SeatsCount</strong>
+            </div>
+
+            <div class="bd-info">
+                <span>@L["BD_InfoStatus"]</span>
+                <strong>
+                    <span class="bd-pill @(Model.IsActive ? "bd-active" : "bd-inactive")">
+                        @(Model.IsActive ? L["BD_PillActive"].Value : L["BD_PillInactive"].Value)
+                    </span>
+                </strong>
+            </div>
+
+            <div class="bd-info">
+                <span>@L["BD_InfoRows"]</span>
+                <strong>@Model.LayoutRows</strong>
+            </div>
+
+            <div class="bd-info">
+                <span>@L["BD_InfoCols"]</span>
+                <strong>@Model.LayoutColumns</strong>
+            </div>
+
+            <div class="bd-info bd-wide">
+                <span>@L["BD_InfoNotes"]</span>
+                <strong>@(string.IsNullOrWhiteSpace(Model.Notes) ? "-" : Model.Notes)</strong>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="bd-card">
+        <div class="bd-design-panel">
+            <div id="BdBusStage" class="bd-bus-stage">
+                <div class="bd-bus-nose">
+                    <div class="bd-windshield"></div>
+                    <div class="bd-headlight left"></div>
+                    <div class="bd-headlight right"></div>
+                </div>
+
+                <div class="bd-body-wrap">
+                    <div class="bd-wheel left top"></div>
+                    <div class="bd-wheel left bottom"></div>
+                    <div class="bd-wheel right top"></div>
+                    <div class="bd-wheel right bottom"></div>
+
+                    <div class="bd-bus-body">
+                        <div class="bd-side-rail left"></div>
+                        <div class="bd-side-rail right"></div>
+
+                        <div class="bd-meta">
+                            <span>@L["BD_FrontEntry"]</span>
+                            <span id="BdGridSizeText">@Model.LayoutRows x @Model.LayoutColumns</span>
+                        </div>
+
+                        <div id="BdBusGrid" class="bd-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const BdSeatType = { Normal:0, VIP:1, Driver:2, Assistant:3, Aisle:4, Door:5, Bathroom:6, Empty:7 };
+
+    const bdRows = Math.max(1, parseInt("@Model.LayoutRows"));
+    const bdCols = Math.max(1, parseInt("@Model.LayoutColumns"));
+    const bdStage = document.getElementById("BdBusStage");
+    const bdGrid = document.getElementById("BdBusGrid");
+
+    const bdInitialLayoutJsonString = @Html.Raw(initialLayoutJson);
+
+    function bdSafeParseLayout(json) {
+        try {
+            let d = JSON.parse(json || "[]");
+
+            if (typeof d === "string") d = JSON.parse(d || "[]");
+
+            if (!Array.isArray(d)) return [];
+
+            return d.map(x => ({
+                type: parseInt(x.type ?? x.Type ?? BdSeatType.Empty),
+                row: parseInt(x.row ?? x.Row ?? 0),
+                column: parseInt(x.column ?? x.Column ?? 0),
+                label: String(x.label ?? x.Label ?? ""),
+                hasDoor: (x.hasDoor ?? x.HasDoor ?? false) === true,
+                isActive: (x.isActive ?? x.IsActive ?? true) === true
+            })).filter(x => x.row > 0 && x.column > 0);
+        } catch {
+            return [];
+        }
+    }
+
+    const bdLayout = bdSafeParseLayout(bdInitialLayoutJsonString);
+
+    function bdGetSizing(cols, rows) {
+        let s = 70;
+        let g = 8;
+
+        if (cols >= 6) s = 64;
+        if (cols >= 8) s = 56;
+        if (cols >= 10) s = 50;
+        if (rows >= 18) s = Math.min(s, 54);
+        if (rows >= 24) s = Math.min(s, 48);
+        if (cols >= 9 || rows >= 22) g = 6;
+
+        return {
+            cellSize: s,
+            gap: g,
+            busWidth: (cols * s) + ((cols - 1) * g) + 98
+        };
+    }
+
+    function bdGetTypeClass(t) {
+        return ["seat","vip","driver","assistant","road","door-only","wc","empty"][parseInt(t)] ?? "empty";
+    }
+
+    function bdGetTypeText(item) {
+        switch (parseInt(item.type)) {
+            case 0: return item.label || "S";
+            case 1: return item.label || "VIP";
+            case 2: return "DRV";
+            case 3: return "AST";
+            case 6: return "WC";
+            default: return "";
+        }
+    }
+
+    function bdDraw() {
+        const sz = bdGetSizing(bdCols, bdRows);
+
+        bdStage.style.setProperty("--bd-cols", bdCols);
+        bdStage.style.setProperty("--bd-cell-size", `${sz.cellSize}px`);
+        bdStage.style.setProperty("--bd-cell-gap", `${sz.gap}px`);
+        bdStage.style.setProperty("--bd-bus-width", `${sz.busWidth}px`);
+
+        bdGrid.innerHTML = "";
+
+        for (let r = 1; r <= bdRows; r++) {
+            for (let c = 1; c <= bdCols; c++) {
+
+                const item = bdLayout.find(x => x.row === r && x.column === c) || {
+                    type: BdSeatType.Empty,
+                    row: r,
+                    column: c,
+                    label: "",
+                    hasDoor: false,
+                    isActive: true
+                };
+
+                const cell = document.createElement("div");
+
+                cell.className = "bd-cell " + bdGetTypeClass(item.type);
+                cell.dataset.row = r;
+                cell.dataset.column = c;
+
+                if (parseInt(item.type) !== BdSeatType.Empty && item.isActive === false) {
+                    cell.classList.add("disabled-object");
+                }
+
+                if (item.hasDoor) {
+                    cell.classList.add("has-door");
+
+                    if (item.column === 1) {
+                        cell.classList.add("door-left");
+                    } else if (item.column === bdCols) {
+                        cell.classList.add("door-right");
+                    }
+                }
+
+                cell.innerHTML = bdGetTypeText(item);
+
+                if (item.hasDoor) {
+                    const mark = document.createElement("span");
+                    mark.className = "door-mark";
+                    cell.appendChild(mark);
+                }
+
+                bdGrid.appendChild(cell);
+            }
+        }
+    }
+
+    bdDraw();
+</script>

@@ -1,0 +1,749 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Localization
+
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var role            = User.FindFirstValue(ClaimTypes.Role) ?? "Viewer";
+    var userName        = User.Identity?.Name ?? "User";
+
+    var currentCulture = Context.Features
+        .Get<IRequestCultureFeature>()?
+        .RequestCulture.UICulture.Name ?? "en";
+        
+    var isRtl        = currentCulture.StartsWith("ar");
+    var currentTheme = Context.Request.Cookies["theme"] ?? "light";
+}
+
+<!DOCTYPE html>
+<html lang="@currentCulture" dir="@(isRtl ? "rtl" : "ltr")" data-theme="@currentTheme">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - AM Travel</title>
+
+    <link rel="stylesheet" href="~/css/amtravel.css" asp-append-version="true" />
+
+    <style>
+        /* ── CSS Variables: Light & Dark ────────────────────────────────────── */
+        :root {
+            --sidebar-width:    310px;
+            --orange:           #ff7a18;
+            --orange-dark:      #e65f00;
+            /* main background */
+            --main-bg:          #f5f7fb;
+            /* topbar (mobile) */
+            --topbar-bg:        rgba(255,255,255,.92);
+            --topbar-border:    rgba(0,0,0,.08);
+            --topbar-title:     #111827;
+            /* alert */
+            --alert-success-bg: #dcfce7;
+            --alert-success-c:  #166534;
+            --alert-error-bg:   #fee2e2;
+            --alert-error-c:    #991b1b;
+            /* loader */
+            --loader-bg:        rgba(255,255,255,.65);
+        }
+
+        html[data-theme="dark"] {
+            --main-bg:          #0f172a;
+            --topbar-bg:        rgba(15,23,42,.92);
+            --topbar-border:    rgba(255,255,255,.07);
+            --topbar-title:     #dce3ed;
+            --alert-success-bg: rgba(52,211,153,.15);
+            --alert-success-c:  #34d399;
+            --alert-error-bg:   rgba(248,113,113,.15);
+            --alert-error-c:    #f87171;
+            --loader-bg:        rgba(15,23,42,.72);
+        }
+
+        /* ── Reset / Base ────────────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--main-bg);
+            overflow-x: hidden;
+            transition: background .3s;
+        }
+
+        /* ── Shell ───────────────────────────────────────────────────────────── */
+        .shell { min-height: 100vh; display: flex; }
+
+        /* ── Main content ────────────────────────────────────────────────────── */
+        .main { flex: 1; min-width: 0; padding: 24px; }
+
+        /* ── Sidebar ─────────────────────────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            padding: 18px;
+            /* always orange gradient — sidebar never goes dark */
+            background: linear-gradient(180deg, #ff7a18, #e65f00);
+            color: #fff;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,.25) transparent;
+        }
+
+            .sidebar::-webkit-scrollbar       { width: 4px; }
+            .sidebar::-webkit-scrollbar-track { background: transparent; }
+            .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 99px; }
+
+        /* ── Mobile topbar ───────────────────────────────────────────────────── */
+        .mobile-topbar {
+            display: none;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            padding: 12px 14px;
+            background: var(--topbar-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--topbar-border);
+            align-items: center;
+            justify-content: space-between;
+            transition: background .3s, border-color .3s;
+        }
+
+        .menu-btn {
+            border: 0;
+            border-radius: 14px;
+            padding: 10px 13px;
+            font-size: 22px;
+            cursor: pointer;
+            background: var(--orange);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(255,122,24,.28);
+        }
+
+        .mobile-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 1000;
+            color: var(--topbar-title);
+            transition: color .3s;
+        }
+
+            .mobile-title img {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                object-fit: contain;
+                background: #fff;
+            }
+
+        /* ── Sidebar overlay ─────────────────────────────────────────────────── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.42);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: .2s ease;
+        }
+
+            .sidebar-overlay.show { opacity: 1; pointer-events: auto; }
+
+        /* ── Brand ───────────────────────────────────────────────────────────── */
+        .brand {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 28px;
+            background: rgba(255,255,255,.16);
+            border: 1px solid rgba(255,255,255,.24);
+            margin-bottom: 18px;
+            text-decoration: none;
+            min-height: 96px;
+            transition: background .2s;
+        }
+
+            .brand:hover { background: rgba(255,255,255,.22); }
+
+        .brand-logo-wrap {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            min-width: 72px;
+            display: grid;
+            place-items: center;
+        }
+
+            .brand-logo-wrap .snake-svg {
+                inset: -10px;
+                width: 92px;
+                height: 92px;
+                animation-duration: 4.2s;
+            }
+
+                .brand-logo-wrap .snake-svg path {
+                    stroke-width: 4;
+                    stroke-dasharray: 95 260;
+                    animation-duration: 2.8s;
+                }
+
+        .brand-logo {
+            position: relative;
+            z-index: 3;
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: #fff;
+            display: grid;
+            place-items: center;
+            padding: 7px;
+            box-shadow: 0 12px 28px rgba(0,0,0,.12);
+            overflow: hidden;
+        }
+
+            .brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+        .brand-title { color: #fff; font-size: 26px; font-weight: 1000; line-height: 1; white-space: nowrap; }
+        .brand-mini  { color: rgba(255,255,255,.92); font-size: 13px; font-weight: 800; line-height: 1.4; margin-top: 4px; }
+
+        /* ── Side nav ────────────────────────────────────────────────────────── */
+        .side-nav { display: grid; gap: 4px; }
+
+            .side-nav a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 11px 14px;
+                border-radius: 16px;
+                transition: .2s ease;
+                text-decoration: none;
+                color: #fff;
+                font-weight: 800;
+            }
+
+                .side-nav a:hover {
+                    background: rgba(255,255,255,.16);
+                    transform: translateX(@(isRtl ? "-3px" : "3px"));
+                }
+
+        .nav-icon {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(255,255,255,.16);
+            font-size: 16px;
+        }
+
+        .nav-section {
+            margin: 14px 0 4px;
+            padding: 0 12px;
+            color: rgba(255,255,255,.72);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        /* ── Side footer ─────────────────────────────────────────────────────── */
+        .side-footer { margin-top: auto; padding-top: 18px; }
+
+        .user-box {
+            padding: 12px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.16);
+            margin-bottom: 12px;
+        }
+
+            .user-box strong, .user-box small { display: block; color: #fff; }
+            .user-box strong { font-size: 15px; font-weight: 900; }
+            .user-box small  { font-size: 12px; opacity: .85; margin-top: 3px; }
+
+        /* ── Preferences box ─────────────────────────────────────────────────── */
+        .preferences-box {
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 18px;
+            background: rgba(255,255,255,.16);
+            display: grid;
+            gap: 12px;
+        }
+
+        .preferences-form { display: grid; gap: 7px; }
+
+        .preferences-label {
+            color: rgba(255,255,255,.95);
+            font-size: 12px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .preferences-select {
+            width: 100%;
+            border: 1px solid rgba(255,255,255,.28);
+            border-radius: 14px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,.14);
+            color: #fff;
+            font-weight: 800;
+            outline: none;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+            .preferences-select:hover    { background: rgba(255,255,255,.20); }
+            .preferences-select:focus    { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.5); }
+            .preferences-select option   { color: #111827; background: #fff; }
+
+        /* ── Buttons ─────────────────────────────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border: 0;
+            border-radius: 14px;
+            padding: 11px 14px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 800;
+            transition: .2s ease;
+        }
+
+        .btn-light {
+            background: #fff;
+            color: var(--orange-dark);
+        }
+
+            .btn-light:hover { background: #fff3e6; }
+
+        .w-100 { width: 100%; }
+
+        /* ── Alerts ──────────────────────────────────────────────────────────── */
+        .alert {
+            margin-bottom: 16px;
+            padding: 13px 16px;
+            border-radius: 14px;
+            font-weight: 800;
+            transition: background .3s, color .3s;
+        }
+
+            .alert.success { background: var(--alert-success-bg); color: var(--alert-success-c); }
+            .alert.error   { background: var(--alert-error-bg);   color: var(--alert-error-c); }
+
+        /* ── Page loader ─────────────────────────────────────────────────────── */
+        .page-loader-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--loader-bg);
+            backdrop-filter: blur(8px);
+            transition: opacity .25s ease, visibility .25s ease;
+        }
+
+        .hide-loader { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .loader-logo-stage {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            display: grid;
+            place-items: center;
+        }
+
+        .loader-logo-card {
+            position: relative;
+            z-index: 3;
+            width: 104px;
+            height: 104px;
+            border-radius: 34px;
+            background: #fff;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            box-shadow: 0 22px 45px rgba(0,0,0,.14);
+            animation: logoPulse 1.7s ease-in-out infinite;
+        }
+
+            .loader-logo-card img { width: 78%; height: 78%; object-fit: contain; }
+
+        .snake-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            overflow: visible;
+            animation: snakeRotate 3s linear infinite;
+        }
+
+            .snake-svg path {
+                fill: none;
+                stroke: #fff;
+                stroke-width: 5;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-dasharray: 210 430;
+                stroke-dashoffset: 0;
+                filter: drop-shadow(0 8px 14px rgba(255,122,24,.25));
+                animation: snakeDash 2.1s ease-in-out infinite;
+            }
+
+            .snake-svg .soft-path {
+                stroke: rgba(255,255,255,.28);
+                stroke-width: 3;
+                stroke-dasharray: none;
+                animation: none;
+                filter: none;
+            }
+
+        @@keyframes snakeRotate { to { transform: rotate(360deg); } }
+        @@keyframes snakeDash {
+            0%   { stroke-dasharray: 150 500; stroke-dashoffset: 0; }
+            50%  { stroke-dasharray: 260 390; stroke-dashoffset: -180; }
+            100% { stroke-dasharray: 150 500; stroke-dashoffset: -430; }
+        }
+        @@keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.045); }
+        }
+
+        /* ── Responsive ──────────────────────────────────────────────────────── */
+        @@media (max-width: 900px) {
+            .shell        { display: block; }
+            .mobile-topbar{ display: flex; }
+            .sidebar-overlay { display: block; }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                @(isRtl ? "right" : "left"): 0;
+                width: 285px;
+                min-width: 285px;
+                max-width: 88vw;
+                height: 100dvh;
+                transform: translateX(@(isRtl ? "105%" : "-105%"));
+                transition: transform .25s ease;
+                box-shadow: @(isRtl ? "-18px" : "18px") 0 45px rgba(0,0,0,.25);
+            }
+
+                .sidebar.open { transform: translateX(0); }
+
+            .main { padding: 16px; }
+
+            .brand         { min-height: auto; padding: 12px; border-radius: 22px; }
+            .brand-title   { font-size: 21px; }
+            .brand-mini    { font-size: 12px; }
+            .brand-logo-wrap { width: 58px; height: 58px; min-width: 58px; }
+            .brand-logo    { width: 50px; height: 50px; }
+            .side-nav a    { padding: 11px 12px; }
+        }
+    </style>
+</head>
+
+<body>
+    @* ── Page loader ── *@
+    <div id="page-loader" class="page-loader-overlay hide-loader">
+        <div class="loader-logo-stage">
+            <svg class="snake-svg" viewBox="0 0 180 180">
+                <path class="soft-path" d="M91 13 C132 12 166 42 164 83 C162 124 133 163 88 164 C43 165 13 132 17 88 C21 44 48 15 91 13Z" />
+                <path d="M91 13 C132 12 166 42 164 83 C162 124 133 163 88 164 C43 165 13 132 17 88 C21 44 48 15 91 13Z" />
+            </svg>
+            <div class="loader-logo-card">
+                <img src="~/img/Logo.jpg" asp-append-version="true" alt="AM Travel Logo" />
+            </div>
+        </div>
+    </div>
+
+    @* ── Mobile topbar ── *@
+    <div class="mobile-topbar">
+        <button type="button" class="menu-btn" id="openSidebar">☰</button>
+        <div class="mobile-title">
+            <img src="~/img/Logo.jpg" asp-append-version="true" alt="AM Travel Logo" />
+            <span>AM Travel</span>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="shell">
+
+        @* ── Sidebar ── *@
+        <aside class="sidebar" id="sidebar">
+
+            @* Brand *@
+            <a class="brand" asp-controller="Home" asp-action="Index">
+                <div class="brand-logo-wrap">
+                    <svg class="snake-svg" viewBox="0 0 92 92">
+                        <path class="soft-path" d="M47 5 C69 5 88 21 87 43 C86 67 69 88 45 87 C21 86 4 69 6 45 C8 21 23 6 47 5Z" />
+                        <path d="M47 5 C69 5 88 21 87 43 C86 67 69 88 45 87 C21 86 4 69 6 45 C8 21 23 6 47 5Z" />
+                    </svg>
+                    <div class="brand-logo">
+                        <img src="~/img/Logo.jpg" asp-append-version="true" alt="AM Travel Logo" />
+                    </div>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title">AM Travel</div>
+                    <div class="brand-mini">@L["Layout_BrandSubtitle"]</div>
+                </div>
+            </a>
+
+            @* Navigation *@
+            <nav class="side-nav">
+                @if (!isAuthenticated)
+                {
+                    <a asp-controller="Home" asp-action="Index">
+                        <span class="nav-icon">🏠</span>
+                        <b>@L["Layout_NavHome"]</b>
+                    </a>
+                    <a asp-controller="Auth" asp-action="Login">
+                        <span class="nav-icon">🔐</span>
+                        <b>@L["Layout_NavLogin"]</b>
+                    </a>
+                }
+                else
+                {
+                    <div class="nav-section">@L["Layout_SectionWorkspace"]</div>
+
+                    <a asp-controller="Dashboard" asp-action="Index">
+                        <span class="nav-icon">📊</span>
+                        <b>@L["Layout_NavDashboard"]</b>
+                    </a>
+
+                    <a asp-controller="Bookings" asp-action="DailyWork">
+                        <span class="nav-icon">🗂️</span>
+                        <b>@L["Layout_NavDailyTrips"]</b>
+                    </a>
+
+                    <a asp-controller="Bookings" asp-action="Index">
+                        <span class="nav-icon">🧾</span>
+                        <b>@L["Layout_NavBookings"]</b>
+                    </a>
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Helper"))
+                    {
+                        <a asp-controller="Bookings" asp-action="Create">
+                            <span class="nav-icon">➕</span>
+                            <b>@L["Layout_NavNewBooking"]</b>
+                        </a>
+                    }
+
+                    <a asp-controller="Works" asp-action="Index">
+                        <span class="nav-icon">📋</span>
+                        <b>@L["Layout_NavWorks"]</b>
+                    </a>
+
+                    <a asp-controller="Works" asp-action="Today">
+                        <span class="nav-icon">📌</span>
+                        <b>@L["Layout_NavTodayWorks"]</b>
+                    </a>
+
+                    @if (User.IsInRole("Admin") || User.IsInRole("Helper") || User.IsInRole("Viewer"))
+                    {
+                        <div class="nav-section">@L["Layout_SectionTransport"]</div>
+
+                        <a asp-controller="Transportation" asp-action="Companies">
+                            <span class="nav-icon">🏢</span>
+                            <b>@L["Layout_NavCompanies"]</b>
+                        </a>
+
+                        <a asp-controller="Transportation" asp-action="Buses">
+                            <span class="nav-icon">🚌</span>
+                            <b>@L["Layout_NavBuses"]</b>
+                        </a>
+
+                        <a asp-controller="Transportation" asp-action="Trips">
+                            <span class="nav-icon">🗓️</span>
+                            <b>@L["Layout_NavTrips"]</b>
+                        </a>
+
+                         <a asp-controller="Transportation" asp-action="Index">
+                            <span class="nav-icon">🎫</span>
+                            <b>@L["Layout_NavCompanyBuses"]</b>
+                        </a>
+                        <a asp-controller="Transportation" asp-action="SeatBookingBound">
+                            <span class="nav-icon">💺</span>
+                            <b>@L["Layout_NavCompanyTrips"]</b>
+                        </a>
+                    }
+
+                    <div class="nav-section">@L["Layout_SectionAccount"]</div>
+
+                    <a asp-controller="Account" asp-action="Index">
+                        <span class="nav-icon">👤</span>
+                        <b>@L["Layout_NavMyAccount"]</b>
+                    </a>
+
+                    <a asp-controller="Account" asp-action="Edit">
+                        <span class="nav-icon">✏️</span>
+                        <b>@L["Layout_NavEditFields"]</b>
+                    </a>
+
+                    <a asp-controller="Account" asp-action="ChangePassword">
+                        <span class="nav-icon">🔑</span>
+                        <b>@L["Layout_NavChangePassword"]</b>
+                    </a>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="nav-section">@L["Layout_SectionAdmin"]</div>
+
+                        <a asp-controller="Works" asp-action="Report">
+                            <span class="nav-icon">📈</span>
+                            <b>@L["Layout_NavReportWorks"]</b>
+                        </a>
+
+                        <a asp-controller="Admin" asp-action="Users">
+                            <span class="nav-icon">🛡️</span>
+                            <b>@L["Layout_NavUsers"]</b>
+                        </a>
+                    }
+                }
+            </nav>
+
+            @* Footer *@
+            <div class="side-footer">
+                @if (isAuthenticated)
+                {
+                    <div class="user-box">
+                        <strong>@userName</strong>
+                        <small>@role</small>
+                    </div>
+                }
+
+                @* Preferences *@
+                <div class="preferences-box">
+                    @* Language *@
+                    <form asp-controller="Preferences"
+                          asp-action="SetLanguage"
+                          method="post"
+                          class="preferences-form">
+                        @Html.AntiForgeryToken()
+                        <label class="preferences-label">🌐 @L["Layout_PrefLanguage"]</label>
+                        <select name="culture"
+                                class="preferences-select"
+                                onchange="this.form.submit()">
+                            <option value="en" selected="@(currentCulture == "en")">English</option>
+                            <option value="ar" selected="@(currentCulture == "ar")">العربية</option>
+                            <option value="fr" selected="@(currentCulture == "fr")">Français</option>
+                        </select>
+                    </form>
+
+                    @* Theme *@
+                    <form asp-controller="Preferences"
+                          asp-action="SetTheme"
+                          method="post"
+                          class="preferences-form">
+                        @Html.AntiForgeryToken()
+                        <label class="preferences-label">🎨 @L["Layout_PrefTheme"]</label>
+                        <select name="theme"
+                                class="preferences-select"
+                                onchange="this.form.submit()">
+                            <option value="light" selected="@(currentTheme == "light")">☀️ @L["Layout_ThemeLight"]</option>
+                            <option value="dark"  selected="@(currentTheme == "dark")">🌙 @L["Layout_ThemeDark"]</option>
+                        </select>
+                    </form>
+                </div>
+
+                @* Logout / Login *@
+                @if (isAuthenticated)
+                {
+                    <form asp-controller="Auth" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-light w-100" type="submit">@L["Layout_Logout"]</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-light w-100" asp-controller="Auth" asp-action="Login">
+                        @L["Layout_LoginBtn"]
+                    </a>
+                }
+            </div>
+        </aside>
+
+        @* ── Main ── *@
+        <main class="main">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert success">@TempData["Success"]</div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert error">@TempData["Error"]</div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <script>
+        /* ── Page loader ── */
+        const pageLoader = document.getElementById("page-loader");
+
+        function showPageLoader() { if (pageLoader) pageLoader.classList.remove("hide-loader"); }
+        function hidePageLoader() { if (pageLoader) pageLoader.classList.add("hide-loader"); }
+
+        window.addEventListener("load",     hidePageLoader);
+        window.addEventListener("pageshow", hidePageLoader);
+
+        /* ── Mobile sidebar ── */
+        const sidebar        = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+        const openSidebar    = document.getElementById("openSidebar");
+        const isRtl          = document.documentElement.dir === "rtl";
+
+        function showSidebar() {
+            sidebar.classList.add("open");
+            sidebarOverlay.classList.add("show");
+            document.body.style.overflow = "hidden";
+        }
+
+        function hideSidebar() {
+            sidebar.classList.remove("open");
+            sidebarOverlay.classList.remove("show");
+            document.body.style.overflow = "";
+        }
+
+        openSidebar?.addEventListener("click", showSidebar);
+        sidebarOverlay?.addEventListener("click", hideSidebar);
+        document.addEventListener("keydown", e => { if (e.key === "Escape") hideSidebar(); });
+
+        /* ── Navigation loader ── */
+        document.addEventListener("click", function (e) {
+            const link = e.target.closest("a");
+            if (!link) return;
+
+            if (window.innerWidth <= 900 && sidebar.contains(link)) hideSidebar();
+
+            const href = link.getAttribute("href");
+            if (!href || href.startsWith("#") || href.startsWith("javascript:") ||
+                link.target === "_blank" || link.hasAttribute("download")) return;
+
+            showPageLoader();
+        });
+
+        document.addEventListener("submit", function (e) {
+            if (e.target?.classList?.contains("preferences-form")) return;
+            showPageLoader();
+        });
+
+        setTimeout(hidePageLoader, 9000);
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

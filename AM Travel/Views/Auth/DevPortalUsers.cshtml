@@ -1,0 +1,336 @@
+﻿@model List<BusinessLayer.DTOs.Account.AccountsDTO>
+@{
+    ViewData["Title"] = "Developer — Users";
+    Layout = null;
+
+    var devError   = TempData["DevError"]?.ToString();
+    var devSuccess = TempData["DevSuccess"]?.ToString();
+}
+
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Developer — Users</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{
+            min-height:100vh;
+            background:radial-gradient(circle at 15% 10%,#172033,#0d1421);
+            font-family:'Segoe UI',system-ui,sans-serif;
+            padding:20px;color:#fff;
+        }
+
+        /* ── Header ── */
+        .dev-header{
+            display:flex;justify-content:space-between;align-items:center;
+            flex-wrap:wrap;gap:14px;
+            background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:22px;padding:18px 24px;
+            margin-bottom:22px;
+            backdrop-filter:blur(12px);
+        }
+        .dev-header-left{ display:flex;align-items:center;gap:12px; }
+        .dev-badge{
+            padding:7px 13px;border-radius:999px;
+            background:rgba(255,122,24,.15);border:1px solid rgba(255,122,24,.3);
+            color:#ffad42;font-weight:900;font-size:13px;
+        }
+        .dev-title{ font-size:22px;font-weight:1000;color:#fff; }
+        .dev-count{ color:rgba(255,255,255,.4);font-size:14px;font-weight:700; }
+
+        /* ── Alerts ── */
+        .alert{
+            padding:13px 18px;border-radius:14px;font-size:14px;font-weight:900;
+            margin-bottom:18px;
+        }
+        .alert-err{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
+        .alert-ok {background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7;}
+
+        /* ── Search ── */
+        .search-wrap{
+            background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+            border-radius:18px;padding:16px 20px;margin-bottom:18px;
+        }
+        .search-wrap input{
+            width:100%;background:rgba(255,255,255,.07);
+            border:1px solid rgba(255,255,255,.1);border-radius:12px;
+            padding:12px 16px;color:#fff;font-size:14px;outline:none;transition:.2s;
+        }
+        .search-wrap input:focus{border-color:#ff7a18;box-shadow:0 0 0 4px rgba(255,122,24,.15);}
+        .search-wrap input::placeholder{color:rgba(255,255,255,.3);}
+
+        /* ── Cards grid ── */
+        .users-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+            gap:14px;
+        }
+        .user-card{
+            background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:22px;padding:20px;
+            backdrop-filter:blur(8px);
+            transition:.18s;
+        }
+        .user-card:hover{
+            border-color:rgba(255,122,24,.35);
+            background:rgba(255,255,255,.06);
+        }
+
+        /* card header */
+        .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px;}
+        .card-name{font-size:16px;font-weight:1000;color:#fff;margin-bottom:3px;}
+        .card-username{font-size:12px;color:rgba(255,255,255,.4);font-weight:700;}
+        .pills{display:flex;gap:6px;flex-wrap:wrap;}
+        .pill{
+            padding:4px 10px;border-radius:999px;font-size:11px;font-weight:900;
+        }
+        .pill-role   {background:rgba(255,122,24,.15);color:#ffad42;}
+        .pill-active {background:rgba(16,185,129,.15);color:#6ee7b7;}
+        .pill-inactive{background:rgba(239,68,68,.15);color:#fca5a5;}
+        .pill-blocked{background:rgba(245,158,11,.15);color:#fcd34d;}
+        .pill-ok{background:rgba(16,185,129,.12);color:#6ee7b7;}
+
+        /* card meta */
+        .card-meta{
+            display:grid;grid-template-columns:1fr 1fr;gap:8px;
+            margin-bottom:16px;
+        }
+        .meta-item small{display:block;color:rgba(255,255,255,.35);font-size:11px;font-weight:900;margin-bottom:2px;}
+        .meta-item span{color:rgba(255,255,255,.7);font-size:13px;font-weight:700;}
+
+        /* actions */
+        .card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+        .btn{
+            padding:10px 14px;border-radius:12px;border:none;
+            font-size:12px;font-weight:900;cursor:pointer;transition:.15s;
+        }
+        .btn:hover{transform:translateY(-1px);}
+        .btn-login   {background:linear-gradient(135deg,#ff7a18,#ffad42);color:#fff;flex:1;}
+        .btn-activate{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.2);}
+        .btn-block   {background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.2);}
+        .btn-pass    {background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1);}
+        .btn-logout  {background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.2);}
+
+        /* modal */
+        .modal-overlay{
+            position:fixed;inset:0;z-index:9999;
+            display:none;align-items:center;justify-content:center;
+            background:rgba(0,0,0,.7);backdrop-filter:blur(10px);padding:20px;
+        }
+        .modal-overlay.show{display:flex;}
+        .modal{
+            width:min(440px,100%);
+            background:#172033;border:1px solid rgba(255,255,255,.12);
+            border-radius:28px;padding:28px;
+            box-shadow:0 32px 80px rgba(0,0,0,.6);
+        }
+        .modal h3{color:#fff;font-size:22px;font-weight:1000;margin-bottom:6px;}
+        .modal p{color:rgba(255,255,255,.4);font-size:13px;font-weight:700;margin-bottom:20px;}
+        .modal label{display:block;color:rgba(255,255,255,.5);font-size:13px;font-weight:900;margin-bottom:7px;}
+        .modal input{
+            width:100%;background:rgba(255,255,255,.07);
+            border:1px solid rgba(255,255,255,.1);border-radius:12px;
+            padding:13px 16px;color:#fff;font-size:15px;outline:none;
+            margin-bottom:16px;transition:.2s;
+        }
+        .modal input:focus{border-color:#ff7a18;}
+        .modal-actions{display:flex;gap:10px;}
+        .modal-actions .btn{flex:1;padding:13px;}
+        .btn-cancel{background:rgba(255,255,255,.07);color:rgba(255,255,255,.5);}
+        .btn-confirm{background:linear-gradient(135deg,#ff7a18,#ffad42);color:#fff;}
+        .no-results{
+            grid-column:1/-1;text-align:center;
+            color:rgba(255,255,255,.3);font-weight:900;padding:40px;display:none;
+        }
+
+        @@media(max-width:540px){.users-grid{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="dev-header">
+        <div class="dev-header-left">
+            <span class="dev-badge">🔐 Developer</span>
+            <div>
+                <div class="dev-title">Users Management</div>
+                <div class="dev-count">@Model.Count users</div>
+            </div>
+        </div>
+        <form asp-action="DevLogout" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-logout">🚪 خروج</button>
+        </form>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(devError))
+    {
+        <div class="alert alert-err">⚠️ @devError</div>
+    }
+    @if (!string.IsNullOrWhiteSpace(devSuccess))
+    {
+        <div class="alert alert-ok">✅ @devSuccess</div>
+    }
+
+    <!-- Search -->
+    <div class="search-wrap">
+        <input id="searchInput" type="text" placeholder="🔍 ابحث بالاسم أو رقم الهاتف أو الدور..." autocomplete="off" />
+    </div>
+
+    <!-- Users Grid -->
+    <div class="users-grid" id="usersGrid">
+
+        @foreach (var u in Model)
+        {
+            var searchData = $"{u.FullName} {u.UserName} {u.PhoneNumber} {u.NationalId} {u.Role}".ToLowerInvariant();
+            <div class="user-card" data-search="@searchData">
+
+                <div class="card-top">
+                    <div>
+                        <div class="card-name">@u.FullName</div>
+                        <div class="card-username">@u.UserName</div>
+                    </div>
+                    <div class="pills">
+                        <span class="pill pill-role">@u.Role</span>
+                        <span class="pill @(u.Activate ? "pill-active" : "pill-inactive")">
+                            @(u.Activate ? "✓ نشط" : "✗ معطل")
+                        </span>
+                        @if (u.IsBlocked)
+                        {
+                            <span class="pill pill-blocked">🔒 محظور</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="card-meta">
+                    <div class="meta-item">
+                        <small>الهاتف</small>
+                        <span>@u.PhoneNumber</span>
+                    </div>
+                    <div class="meta-item">
+                        <small>الرقم القومي</small>
+                        <span>@u.NationalId</span>
+                    </div>
+                    <div class="meta-item">
+                        <small>تاريخ الانضمام</small>
+                        <span>@u.JoinDate.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="meta-item">
+                        <small>آخر دخول</small>
+                        <span>@(u.LastLogin?.ToString("dd/MM/yyyy HH:mm") ?? "لم يدخل بعد")</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+
+                    <!-- دخول بهذا الحساب -->
+                    <form asp-action="DevLoginAsUser" method="post" style="flex:1;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="userId" value="@u.Id" />
+                        <button type="submit" class="btn btn-login" style="width:100%;">
+                            🔑 دخول
+                        </button>
+                    </form>
+
+                    <!-- تغيير Activate -->
+                    <form asp-action="ChangeActivateStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="userId" value="@u.Id" />
+                        <button type="submit" class="btn btn-activate" title="@(u.Activate ? "تعطيل" : "تفعيل")">
+                            @(u.Activate ? "🔕" : "🔔")
+                        </button>
+                    </form>
+
+                    <!-- Block/Unblock -->
+                    <form asp-action="ChangeBlockStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="userId" value="@u.Id" />
+                        <button type="submit" class="btn btn-block" title="@(u.IsBlocked ? "رفع الحظر" : "حظر")">
+                            @(u.IsBlocked ? "🔓" : "🔒")
+                        </button>
+                    </form>
+
+                    <!-- تغيير Password -->
+                    <button type="button" class="btn btn-pass open-pass-modal"
+                            data-uid="@u.Id"
+                            data-name="@u.FullName"
+                            title="تغيير كلمة المرور">
+                        🔑
+                    </button>
+
+                </div>
+            </div>
+        }
+
+        <div class="no-results" id="noResults">لا توجد نتائج.</div>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="modal-overlay" id="passModal">
+        <div class="modal">
+            <h3>🔑 تغيير كلمة المرور</h3>
+            <p id="passModalName">اسم المستخدم</p>
+            <form asp-action="DevChangePassword" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="passUserId" name="userId" />
+                <label>كلمة المرور الجديدة (6 أحرف على الأقل)</label>
+                <input type="password" id="passInput" name="newPassword"
+                       placeholder="أدخل كلمة المرور الجديدة"
+                       required minlength="6" autofocus />
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" id="closePassModal">إلغاء</button>
+                    <button type="submit" class="btn btn-confirm">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ── Search ─────────────────────────────────────────────────
+        const searchInput = document.getElementById('searchInput');
+        const cards       = Array.from(document.querySelectorAll('.user-card'));
+        const noResults   = document.getElementById('noResults');
+
+        searchInput.addEventListener('input', function(){
+            const q = this.value.trim().toLowerCase();
+            let count = 0;
+            cards.forEach(c => {
+                const match = !q || (c.dataset.search||'').includes(q);
+                c.style.display = match ? '' : 'none';
+                if(match) count++;
+            });
+            noResults.style.display = count === 0 ? 'block' : 'none';
+        });
+
+        // ── Password Modal ─────────────────────────────────────────
+        const passModal   = document.getElementById('passModal');
+        const passUserId  = document.getElementById('passUserId');
+        const passInput   = document.getElementById('passInput');
+        const passName    = document.getElementById('passModalName');
+        const closePass   = document.getElementById('closePassModal');
+
+        document.querySelectorAll('.open-pass-modal').forEach(btn => {
+            btn.addEventListener('click', function(){
+                passUserId.value      = this.dataset.uid;
+                passName.textContent  = this.dataset.name;
+                passInput.value       = '';
+                passModal.classList.add('show');
+                setTimeout(() => passInput.focus(), 150);
+            });
+        });
+
+        closePass.addEventListener('click', () => passModal.classList.remove('show'));
+        passModal.addEventListener('click', e => {
+            if(e.target === passModal) passModal.classList.remove('show');
+        });
+        document.addEventListener('keydown', e => {
+            if(e.key === 'Escape') passModal.classList.remove('show');
+        });
+    </script>
+
+</body>
+</html>

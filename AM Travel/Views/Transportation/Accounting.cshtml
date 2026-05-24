@@ -1,0 +1,1296 @@
+@using AM_Travel.Resources
+@using Microsoft.Extensions.Localization
+@model BusinessLayer.DTOs.Trip.GetTripDTO
+@using BusinessLayer.DTOs.Trip
+@using DataLayer.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject IStringLocalizer<SharedResource> L
+
+@{
+    ViewData["Title"] = L["CTAcct_Title"];
+
+    Model.Search ??= new TripSearchDTO();
+    var search = Model.Search;
+
+    var selectedCompanyId = search.CompanyId.HasValue && search.CompanyId.Value != Guid.Empty
+        ? search.CompanyId.Value.ToString()
+        : "";
+
+    var companySelectList = new SelectList(
+        Model.Companies ?? new List<SelectListItem>(),
+        "Value",
+        "Text",
+        selectedCompanyId);
+
+    var searchDateFrom = search.DateFrom?.ToString("yyyy-MM-dd") ?? "";
+    var searchDateTo = search.DateTo?.ToString("yyyy-MM-dd") ?? "";
+    var searchLocation = search.Location ?? "";
+    var searchTripType = search.TripType?.ToString() ?? "";
+    var searchPaymentFilter = search.PaymentFilter.ToString();
+
+    var trips = Model.AccountingTrips ?? new List<AvailableTripListDTO>();
+
+    var tripGroups = trips
+        .GroupBy(x => x.CompanyTripGroupId.HasValue
+            ? "round-" + x.CompanyTripGroupId.Value
+            : "single-" + x.TripId)
+        .Select(g => new
+        {
+            GroupKey = g.Key,
+            IsRound = g.Any(x => x.CompanyTripGroupId.HasValue) && g.Count() > 1,
+            Items = g.OrderBy(x => x.Direction).ToList(),
+            First = g.OrderBy(x => x.Direction).First(),
+            Price = g.Sum(x => x.CompanyTripPrice),
+            Paid = g.Sum(x => x.CompanyTripPaidAmount),
+            Remaining = g.Sum(x => x.CompanyTripRemainingAmount),
+            TotalSeatsCount = g.Sum(x => x.TotalSeats),
+            ReservedSeatsCount = g.Sum(x => x.ReservedSeats),
+            AvailableSeatsCount = g.Sum(x => x.AvailableSeats)
+        })
+        .ToList();
+
+    var totalPrice = trips.Sum(x => x.CompanyTripPrice);
+    var totalPaid = trips.Sum(x => x.CompanyTripPaidAmount);
+    var totalRemaining = trips.Sum(x => x.CompanyTripRemainingAmount);
+
+    string fullName = ViewBag.Name as string ?? "User";
+    var cleanName = fullName.Trim().Replace("  ", " ");
+    var initials = string.Join("", cleanName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0])).ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+        initials = "U";
+
+    string TransDir(string? raw) => raw?.Trim() switch
+    {
+        "Departure" or "Go" => L["CTAcct_GoLabel"].Value,
+        "Return" => L["CTAcct_ReturnLabel"].Value,
+        "RoundTrip" => L["CTAcct_RoundLabel"].Value,
+        _ => raw ?? "-"
+    };
+}
+
+<style>
+    :root {
+        --acc-hero-bg: linear-gradient(135deg,#ff7a18,#ffad42);
+        --acc-hero-glow: rgba(255,122,24,.18);
+        --acc-hero-text: #fff;
+        --acc-hero-sub: rgba(255,255,255,.92);
+        --acc-glass: rgba(255,255,255,.16);
+        --acc-bg: #f5f7fb;
+        --acc-card: #fff;
+        --acc-card-border: #f0d8c2;
+        --acc-card-shadow: rgba(255,122,24,.08);
+        --acc-text: #172033;
+        --acc-muted: #667085;
+        --acc-line: #f0d8c2;
+        --acc-soft: #fffaf5;
+        --acc-input-bg: #fffaf5;
+        --acc-input-border: #f3dfcc;
+        --acc-input-text: #172033;
+        --acc-orange: #ff7a18;
+        --acc-danger: #dc2626;
+        --acc-success: #16a34a;
+        --acc-blue: #2563eb;
+        --acc-shadow: rgba(255,122,24,.08);
+        --acc-round-bg: rgba(255,122,24,.06);
+        --acc-round-border: rgba(255,122,24,.5);
+        --acc-sum-blue-bg: #dbeafe;
+        --acc-sum-blue-txt: #2563eb;
+        --acc-sum-green-bg: #dcfce7;
+        --acc-sum-green-txt: #16a34a;
+        --acc-sum-ora-bg: #ffedd5;
+        --acc-sum-ora-txt: #f97316;
+    }
+
+    html[data-theme="dark"] {
+        --acc-hero-bg: linear-gradient(135deg,#c45c0a,#d97c2a);
+        --acc-hero-glow: rgba(196,92,10,.22);
+        --acc-hero-text: #f5f0eb;
+        --acc-hero-sub: rgba(245,240,235,.85);
+        --acc-glass: rgba(255,255,255,.12);
+        --acc-bg: #0f172a;
+        --acc-card: #1a2236;
+        --acc-card-border: #283148;
+        --acc-card-shadow: rgba(0,0,0,.35);
+        --acc-text: #dce3ed;
+        --acc-muted: #7a8ba0;
+        --acc-line: #283148;
+        --acc-soft: #212c3f;
+        --acc-input-bg: #212c3f;
+        --acc-input-border: #3a4d66;
+        --acc-input-text: #dce3ed;
+        --acc-danger: #f87171;
+        --acc-success: #34d399;
+        --acc-blue: #60a5fa;
+        --acc-shadow: rgba(0,0,0,.35);
+        --acc-round-bg: rgba(196,92,10,.10);
+        --acc-round-border: rgba(196,92,10,.5);
+        --acc-sum-blue-bg: rgba(37,99,235,.18);
+        --acc-sum-blue-txt: #60a5fa;
+        --acc-sum-green-bg: rgba(22,163,74,.18);
+        --acc-sum-green-txt: #34d399;
+        --acc-sum-ora-bg: rgba(249,115,22,.18);
+        --acc-sum-ora-txt: #fb923c;
+    }
+
+    .acc-page {
+        display: grid;
+        gap: 22px;
+        color: var(--acc-text);
+    }
+
+    /* Hero */
+    .acc-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--acc-hero-text);
+        background: var(--acc-hero-bg);
+        box-shadow: 0 24px 70px var(--acc-hero-glow);
+    }
+
+        .acc-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%,rgba(255,255,255,.18),transparent 26%);
+            pointer-events: none;
+        }
+
+        .acc-hero::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            right: -95px;
+            bottom: -115px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+            pointer-events: none;
+        }
+
+    .acc-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .acc-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: var(--acc-hero-text);
+    }
+
+    .acc-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(40px,5.5vw,62px);
+        line-height: 1;
+        letter-spacing: -1.5px;
+        color: var(--acc-hero-text);
+    }
+
+    .acc-hero p {
+        margin: 16px 0 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--acc-hero-sub);
+    }
+
+    .acc-av-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+        .acc-av-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .acc-av-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: acc-spin 4s linear infinite;
+        }
+
+    @@keyframes acc-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .acc-av {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        background: #fff;
+        color: #ff6a00;
+        display: grid;
+        place-items: center;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .acc-av-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .acc-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    .acc-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 16px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        border: none;
+        white-space: nowrap;
+        transition: .2s ease;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+        .acc-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .acc-btn-white {
+        background: #fff;
+        color: #ff7a18;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .acc-btn-glass {
+        background: var(--acc-glass);
+        border: 1px solid rgba(255,255,255,.26);
+        color: var(--acc-hero-text);
+    }
+
+    /* Panel / Card */
+    .acc-card {
+        background: var(--acc-card);
+        border: 1px solid var(--acc-card-border);
+        border-radius: 28px;
+        padding: 24px;
+        box-shadow: 0 18px 42px var(--acc-card-shadow);
+        transition: background .3s,border-color .3s;
+    }
+
+    .acc-card-title {
+        margin: 0 0 18px;
+        font-size: 20px;
+        font-weight: 1000;
+        color: var(--acc-text);
+        transition: color .3s;
+    }
+
+    /* Filter form */
+    .acc-filter-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr auto;
+        gap: 14px;
+        align-items: end;
+    }
+
+    .acc-group {
+        display: grid;
+        gap: 7px;
+    }
+
+        .acc-group label {
+            display: block;
+            color: var(--acc-muted);
+            font-size: 13px;
+            font-weight: 900;
+            transition: color .3s;
+        }
+
+    .acc-input,
+    .acc-select {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid var(--acc-input-border);
+        border-radius: 14px;
+        background: var(--acc-input-bg);
+        color: var(--acc-input-text);
+        padding: 0 13px;
+        outline: none;
+        font-weight: 800;
+        box-sizing: border-box;
+        transition: border-color .2s,background .3s,color .3s;
+    }
+
+        .acc-input:focus,
+        .acc-select:focus {
+            border-color: rgba(255,122,24,.55);
+            box-shadow: 0 0 0 4px rgba(255,122,24,.09);
+        }
+
+        .acc-select option {
+            background: #fff;
+            color: #172033;
+        }
+
+    .acc-form-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .acc-btn-primary {
+        background: var(--acc-blue);
+        color: #fff;
+    }
+
+    .acc-btn-success {
+        background: var(--acc-success);
+        color: #fff;
+    }
+
+    .acc-btn-danger {
+        background: #ef4444;
+        color: #fff;
+    }
+
+    /* Alert */
+    .acc-alert {
+        border-radius: 16px;
+        padding: 13px 15px;
+        font-weight: 900;
+        display: none;
+        transition: background .3s;
+    }
+
+        .acc-alert.show {
+            display: block;
+        }
+
+    .acc-alert-success {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .acc-alert-danger {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Summary cards */
+    .acc-summary {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        gap: 16px;
+    }
+
+    .acc-sum-card {
+        background: var(--acc-card);
+        border: 1px solid var(--acc-card-border);
+        border-radius: 22px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 14px 34px var(--acc-card-shadow);
+        transition: background .3s,border-color .3s;
+    }
+
+    .acc-sum-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        font-size: 28px;
+        font-weight: 1000;
+        flex-shrink: 0;
+    }
+
+        .acc-sum-icon.blue {
+            background: var(--acc-sum-blue-bg);
+            color: var(--acc-sum-blue-txt);
+        }
+
+        .acc-sum-icon.green {
+            background: var(--acc-sum-green-bg);
+            color: var(--acc-sum-green-txt);
+        }
+
+        .acc-sum-icon.orange {
+            background: var(--acc-sum-ora-bg);
+            color: var(--acc-sum-ora-txt);
+        }
+
+    .acc-sum-card small {
+        display: block;
+        color: var(--acc-muted);
+        font-weight: 900;
+        margin-bottom: 7px;
+        font-size: 13px;
+        transition: color .3s;
+    }
+
+    .acc-sum-card strong {
+        display: block;
+        color: var(--acc-text);
+        font-size: 24px;
+        font-weight: 1000;
+        transition: color .3s;
+    }
+
+    .money-success {
+        color: var(--acc-success) !important;
+    }
+
+    .money-danger {
+        color: var(--acc-danger) !important;
+    }
+
+    /* Table */
+    .acc-table-card {
+        background: var(--acc-card);
+        border: 1px solid var(--acc-card-border);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 18px 42px var(--acc-card-shadow);
+    }
+
+    .acc-table-scroll {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 8px;
+    }
+
+        .acc-table-scroll::-webkit-scrollbar {
+            height: 14px;
+        }
+
+        .acc-table-scroll::-webkit-scrollbar-track {
+            background: var(--acc-soft);
+            border-radius: 999px;
+        }
+
+        .acc-table-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg,#ff7a18,#ffad42);
+            border-radius: 999px;
+            border: 3px solid var(--acc-soft);
+        }
+
+    .acc-table {
+        width: 100%;
+        min-width: 1900px;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+
+        .acc-table thead th {
+            text-align: center;
+            background: transparent;
+            color: var(--acc-muted);
+            font-size: 11px;
+            font-weight: 900;
+            padding: 0 16px 6px;
+            border-bottom: none;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .acc-table td {
+            color: var(--acc-text);
+            font-weight: 800;
+            padding: 16px;
+            background: var(--acc-soft);
+            border-top: 1px solid var(--acc-line);
+            border-bottom: 1px solid var(--acc-line);
+            vertical-align: top;
+        }
+
+    /* LTR corners */
+    .acc-page:not([dir="rtl"]) .acc-table td:first-child {
+        border-left: 1px solid var(--acc-line);
+        border-radius: 18px 0 0 18px;
+    }
+
+    .acc-page:not([dir="rtl"]) .acc-table td:last-child {
+        border-right: 1px solid var(--acc-line);
+        border-radius: 0 18px 18px 0;
+    }
+
+    /* RTL corners */
+    .acc-page[dir="rtl"] .acc-table td:first-child {
+        border-right: 1px solid var(--acc-line);
+        border-left: 0;
+        border-radius: 0 18px 18px 0;
+    }
+
+    .acc-page[dir="rtl"] .acc-table td:last-child {
+        border-left: 1px solid var(--acc-line);
+        border-right: 0;
+        border-radius: 18px 0 0 18px;
+    }
+
+    .acc-table tbody tr:hover td {
+        background: var(--acc-card);
+    }
+
+    /* Round trip row */
+    .round-group-row td {
+        background: var(--acc-round-bg) !important;
+        border-color: rgba(255,122,24,.2) !important;
+    }
+
+    .acc-page:not([dir="rtl"]) .round-group-row td:first-child {
+        border-left: 3px solid var(--acc-orange) !important;
+        border-radius: 18px 0 0 18px;
+    }
+
+    .acc-page[dir="rtl"] .round-group-row td:first-child {
+        border-right: 3px solid var(--acc-orange) !important;
+        border-left: 0 !important;
+        border-radius: 0 18px 18px 0;
+    }
+
+    .round-group-row:hover td {
+        background: rgba(255,122,24,.10) !important;
+    }
+
+    .round-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255,122,24,.14);
+        color: var(--acc-orange);
+        font-weight: 1000;
+        font-size: 12px;
+    }
+
+    .bus-cell,
+    .location-cell,
+    .count-cell,
+    .money-cell {
+        min-width: 150px;
+        white-space: normal !important;
+        line-height: 1.6;
+        vertical-align: top;
+    }
+
+    .bus-cell {
+        min-width: 200px;
+    }
+
+    .money-cell {
+        min-width: 170px;
+    }
+
+    .location-cell {
+        min-width: 180px;
+    }
+
+    .trip-block {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+    }
+
+        .trip-block:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .trip-block + .trip-block {
+            border-top: 1px dashed var(--acc-line);
+            padding-top: 12px;
+        }
+
+    .trip-type-label {
+        display: inline-flex;
+        margin-bottom: 4px;
+        font-size: 12px;
+        font-weight: 1000;
+        color: var(--acc-orange);
+    }
+
+    .bus-name {
+        font-weight: 1000;
+        color: var(--acc-text);
+    }
+
+    .plate-number {
+        display: block;
+        margin-top: 3px;
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--acc-muted);
+    }
+
+    .count-total,
+    .money-total {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px dashed var(--acc-line);
+        font-weight: 1000;
+        color: var(--acc-orange);
+    }
+
+    .round-total-box {
+        display: grid;
+        gap: 7px;
+        min-width: 240px;
+        margin-bottom: 12px;
+        padding: 12px;
+        border: 1px dashed var(--acc-line);
+        border-radius: 14px;
+        background: var(--acc-round-bg);
+    }
+
+        .round-total-box label {
+            font-size: 12px;
+            font-weight: 1000;
+            color: var(--acc-orange);
+        }
+
+    .round-total-note {
+        font-size: 11px;
+        color: var(--acc-muted);
+        font-weight: 800;
+    }
+
+    .inline-form {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        min-width: 220px;
+    }
+
+    .stacked-form {
+        margin-bottom: 8px;
+    }
+
+        .stacked-form:last-child {
+            margin-bottom: 0;
+        }
+
+    .mini-label {
+        min-width: 72px;
+        font-size: 12px;
+        font-weight: 1000;
+        color: var(--acc-muted);
+    }
+
+    .money-input {
+        min-height: 38px;
+        width: 110px;
+        padding: 0 10px;
+        border-radius: 10px;
+        border: 1px solid var(--acc-input-border);
+        background: var(--acc-input-bg);
+        color: var(--acc-input-text);
+        font-weight: 800;
+    }
+
+        .money-input:focus {
+            border-color: rgba(255,122,24,.55);
+            box-shadow: 0 0 0 3px rgba(255,122,24,.09);
+        }
+
+    .round-total-input {
+        min-height: 38px;
+        width: 100%;
+        padding: 0 10px;
+        border-radius: 10px;
+        border: 1px solid var(--acc-input-border);
+        background: var(--acc-input-bg);
+        color: var(--acc-input-text);
+        font-weight: 800;
+        box-sizing: border-box;
+    }
+
+        .round-total-input:focus {
+            border-color: rgba(255,122,24,.55);
+            box-shadow: 0 0 0 3px rgba(255,122,24,.09);
+        }
+
+    .mini-btn {
+        min-height: 38px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        border: none;
+        cursor: pointer;
+        font-weight: 900;
+    }
+
+    .acc-table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 14px 16px;
+        color: var(--acc-muted);
+        font-weight: 800;
+        border-top: 1px solid var(--acc-line);
+        flex-wrap: wrap;
+    }
+
+    .acc-empty {
+        padding: 34px;
+        text-align: center;
+        color: var(--acc-muted);
+        font-weight: 1000;
+        background: var(--acc-soft);
+        border-radius: 18px;
+        border: 1px dashed var(--acc-line);
+        margin: 16px;
+    }
+
+    @@media(max-width:1200px) {
+        .acc-filter-grid {
+            grid-template-columns: 1fr 1fr 1fr auto;
+        }
+
+        .acc-summary {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media(max-width:800px) {
+        .acc-filter-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .acc-form-actions {
+            grid-column: span 2;
+        }
+    }
+
+    @@media(max-width:700px) {
+        .acc-filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .acc-form-actions {
+            grid-column: 1;
+        }
+
+        .acc-actions,
+        .acc-form-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .acc-btn {
+            width: 100%;
+        }
+
+        .acc-av-wrap {
+            width: 112px;
+            height: 112px;
+            border-radius: 32px;
+        }
+
+            .acc-av-wrap::before,
+            .acc-av-wrap::after {
+                border-radius: 38px;
+            }
+
+        .acc-av {
+            width: 88px;
+            height: 88px;
+            font-size: 34px;
+            border-radius: 27px;
+        }
+    }
+</style>
+
+<div class="acc-page" dir="@(System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "rtl" : "ltr")">
+
+    <section class="acc-hero">
+        <div class="acc-hero-inner">
+            <div>
+                <span class="acc-badge">@L["CTAcct_Badge"]</span>
+                <h1>@L["CTAcct_Heading"]</h1>
+                <p>@L["CTAcct_WelcomeBack"] @fullName. @L["CTAcct_Subtitle"]</p>
+            </div>
+
+            <div class="acc-av-wrap">
+                <div class="acc-av">@initials</div>
+                <span class="acc-av-status"></span>
+            </div>
+        </div>
+
+        <div class="acc-actions">
+            <a class="acc-btn acc-btn-white" asp-controller="Bookings" asp-action="DailyWork">@L["CTAcct_BtnDailyWork"]</a>
+            <a class="acc-btn acc-btn-glass" asp-controller="Dashboard" asp-action="Index">@L["CTAcct_BtnDashboard"]</a>
+            <a class="acc-btn acc-btn-glass" asp-controller="Transportation" asp-action="Index">@L["CTAcct_BtnBooking"]</a>
+        </div>
+    </section>
+
+    <div class="acc-alert acc-alert-success @(TempData["Success"] != null ? "show" : "")">@TempData["Success"]</div>
+    <div class="acc-alert acc-alert-danger @(TempData["Error"] != null ? "show" : "")">@TempData["Error"]</div>
+
+    <section class="acc-card">
+        <h2 class="acc-card-title">@L["CTAcct_FilterTitle"]</h2>
+
+        <form asp-action="Accounting" method="get">
+            <div class="acc-filter-grid">
+
+                <div class="acc-group">
+                    <label>@L["CTAcct_Company"]</label>
+                    <select asp-for="Search.CompanyId" asp-items="companySelectList" class="acc-select">
+                        <option value="">@L["CTAcct_AllCompanies"]</option>
+                    </select>
+                </div>
+
+                <div class="acc-group">
+                    <label>@L["CTAcct_DateFrom"]</label>
+                    <input class="acc-input" type="date" name="DateFrom" value="@searchDateFrom" />
+                </div>
+
+                <div class="acc-group">
+                    <label>@L["CTAcct_DateTo"]</label>
+                    <input class="acc-input" type="date" name="DateTo" value="@searchDateTo" />
+                </div>
+
+                <input type="hidden" name="PaymentFilter" value="@searchPaymentFilter" />
+                <input type="hidden" name="TripType" value="@searchTripType" />
+
+                <div class="acc-form-actions">
+                    <button class="acc-btn acc-btn-primary" type="submit">@L["CTAcct_BtnSearch"]</button>
+
+                    <a class="acc-btn acc-btn-success"
+                           target="_blank"
+                           asp-action="ExportAccountingExcel"
+                           asp-route-CompanyId="@search.CompanyId"
+                           asp-route-DateFrom="@searchDateFrom"
+                           asp-route-DateTo="@searchDateTo"
+                           asp-route-Location="@search.Location"
+                           asp-route-TripType="@search.TripType"
+                           asp-route-PaymentFilter="@search.PaymentFilter">
+                        @L["CTAcct_BtnExcel"]
+                    </a>
+
+                    <a class="acc-btn acc-btn-danger"
+                           target="_blank"
+                           asp-action="ExportAccountingPdf"
+                           asp-route-CompanyId="@search.CompanyId"
+                           asp-route-DateFrom="@searchDateFrom"
+                           asp-route-DateTo="@searchDateTo"
+                           asp-route-Location="@search.Location"
+                           asp-route-TripType="@search.TripType"
+                           asp-route-PaymentFilter="@search.PaymentFilter">
+                        @L["CTAcct_BtnPDF"]
+                    </a>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section class="acc-summary">
+        <div class="acc-sum-card">
+            <div class="acc-sum-icon blue">$</div>
+            <div>
+                <small>@L["CTAcct_TotalPrice"]</small>
+                <strong>@totalPrice.ToString("N2")</strong>
+            </div>
+        </div>
+
+        <div class="acc-sum-card">
+            <div class="acc-sum-icon green">✓</div>
+            <div>
+                <small>@L["CTAcct_TotalPaid"]</small>
+                <strong class="money-success">@totalPaid.ToString("N2")</strong>
+            </div>
+        </div>
+
+        <div class="acc-sum-card">
+            <div class="acc-sum-icon orange">✕</div>
+            <div>
+                <small>@L["CTAcct_TotalRemaining"]</small>
+                <strong class="@(totalRemaining > 0 ? "money-danger" : "money-success")">@totalRemaining.ToString("N2")</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="acc-table-card">
+        @if (!trips.Any())
+        {
+            <div class="acc-empty">@L["CTAcct_NoData"]</div>
+        }
+        else
+        {
+            <div class="acc-table-scroll">
+                <table class="acc-table">
+                    <thead>
+                        <tr>
+                            <th>@L["CTAcct_ColDate"]</th>
+                            <th>@L["CTAcct_ColCompany"]</th>
+                            <th>@L["CTAcct_ColPhone"]</th>
+                            <th>@L["CTAcct_ColType"]</th>
+                            <th>@L["CTAcct_ColBus"]</th>
+                            <th>@L["CTAcct_ColLocation"]</th>
+                            <th>@L["CTAcct_ColTotal"]</th>
+                            <th>@L["CTAcct_ColReserved"]</th>
+                            <th>@L["CTAcct_ColAvailable"]</th>
+                            <th>@L["CTAcct_ColPrice"]</th>
+                            <th>@L["CTAcct_ColPaid"]</th>
+                            <th>@L["CTAcct_ColRemaining"]</th>
+                            <th>@L["CTAcct_ColUpdatePrice"]</th>
+                            <th>@L["CTAcct_ColAddPayment"]</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var group in tripGroups)
+                        {
+                            if (group.IsRound)
+                            {
+                                var first = group.First;
+
+                                <tr class="round-group-row" data-round-group="@group.GroupKey">
+                                    <td>@first.TripDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@first.CompanyName</td>
+                                    <td style="direction:ltr;unicode-bidi:isolate;">@first.CompanyPhoneNumber</td>
+                                    <td><span class="round-pill">@L["CTAcct_RoundLabel"]</span></td>
+
+                                    <td class="bus-cell">
+                                        @foreach (var trip in group.Items)
+                                        {
+                                            <div class="trip-block">
+                                                <span class="trip-type-label">@TransDir(trip.DirectionText ?? trip.Direction.ToString())</span>
+                                                <div class="bus-name">@(string.IsNullOrWhiteSpace(trip.BusName) ? "--" : trip.BusName)</div>
+                                                <span class="plate-number">@L["CTAcct_LblPlate"] @(string.IsNullOrWhiteSpace(trip.PlateNumber) ? "--" : trip.PlateNumber)</span>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td class="location-cell">
+                                        @foreach (var trip in group.Items)
+                                        {
+                                            <div class="trip-block">
+                                                <span class="trip-type-label">@TransDir(trip.DirectionText ?? trip.Direction.ToString())</span>
+                                                <div style="direction:ltr;unicode-bidi:isolate;"> @trip.ToLocation → @trip.FromLocation </div>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <td class="count-cell">
+                                        @foreach (var trip in group.Items)
+                                        {
+                                            <div class="trip-block">
+                                                <span class="trip-type-label">@TransDir(trip.DirectionText ?? trip.Direction.ToString())</span>
+                                                <div>@trip.TotalSeats</div>
+                                            </div>
+                                        }
+                                        <div class="count-total">@L["CTAcct_LblTotal"] @group.TotalSeatsCount</div>
+                                    </td>
+
+                                    <td class="count-cell">
+                                        @foreach (var trip in group.Items)
+                                        {
+                                            <div class="trip-block">
+                                                <span class="trip-type-label">@TransDir(trip.DirectionText ?? trip.Direction.ToString())</span>
+                                                <div>@trip.ReservedSeats</div>
+                                            </div>
+                                        }
+                                        <div class="count-total">@L["CTAcct_LblTotal"] @group.ReservedSeatsCount</div>
+                                    </td>
+
+                                    <td class="count-cell">
+                                        @foreach (var trip in group.Items)
+                                        {
+                                            <div class="trip-block">
+                                                <span class="trip-type-label">@TransDir(trip.DirectionText ?? trip.Direction.ToString())</span>
+                                                <div>@trip.AvailableSeats</div>
+                                            </div>
+                                        }
+                                        <div class="count-total">@L["CTAcct_LblTotal"] @group.AvailableSeatsCount</div>
+                                    </td>
+
+                                    <td class="money-cell">
+                                        @foreach (var trip in group.Items)
+                                        {
+                                            <div class="trip-block">
+                                                <span class="trip-type-label">@TransDir(trip.DirectionText ?? trip.Direction.ToString())</span>
+                                                <div class="round-price-view">@trip.CompanyTripPrice.ToString("N2")</div>
+                                            </div>
+                                        }
+                                        <div class="money-total">@L["CTAcct_LblTotal"] <span class="round-price-total-view">@group.Price.ToString("N2")</span></div>
+                                    </td>
+
+                                    <td class="money-cell">
+                                        @foreach (var trip in group.Items)
+                                        {
+                                            <div class="trip-block">
+                                                <span class="trip-type-label">@TransDir(trip.DirectionText ?? trip.Direction.ToString())</span>
+                                                <div class="round-paid-view money-success">@trip.CompanyTripPaidAmount.ToString("N2")</div>
+                                            </div>
+                                        }
+                                        <div class="money-total">@L["CTAcct_LblTotal"] <span class="round-paid-total-view money-success">@group.Paid.ToString("N2")</span></div>
+                                    </td>
+
+                                    <td class="@(group.Remaining > 0 ? "money-danger" : "money-success")">@group.Remaining.ToString("N2")</td>
+
+                                    <td>
+                                        <div class="round-total-box">
+                                            <label>@L["CTAcct_LblRoundTotalPrice"]</label>
+                                            <input class="round-total-input round-total-price-input" type="number" step="0.01" min="0" value="@group.Price.ToString("0.00")" />
+                                            <span class="round-total-note">@L["CTAcct_LblRoundNote"]</span>
+                                        </div>
+
+                                        @foreach (var item in group.Items)
+                                        {
+                                            <form asp-action="UpdateCompanyTripPrice" method="post" class="inline-form stacked-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="companyId" value="@item.CompanyId" />
+                                                <input type="hidden" name="tripId" value="@item.TripId" />
+                                                <input type="hidden" name="CompanyId" value="@search.CompanyId" />
+                                                <input type="hidden" name="DateFrom" value="@searchDateFrom" />
+                                                <input type="hidden" name="DateTo" value="@searchDateTo" />
+                                                <input type="hidden" name="Location" value="@search.Location" />
+                                                <input type="hidden" name="TripType" value="@search.TripType" />
+                                                <input type="hidden" name="PaymentFilter" value="@search.PaymentFilter" />
+
+                                                <span class="mini-label">@TransDir(item.DirectionText ?? item.Direction.ToString())</span>
+                                                <input class="money-input round-price-input" type="number" step="0.01" min="0" name="price" value="@item.CompanyTripPrice.ToString("0.00")" />
+                                                <button class="acc-btn acc-btn-primary mini-btn" type="submit">@L["CTAcct_BtnSave"]</button>
+                                            </form>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <div class="round-total-box">
+                                            <label>@L["CTAcct_LblRoundTotalPaid"]</label>
+                                            <input class="round-total-input round-total-paid-input" type="number" step="0.01" min="0" value="@group.Paid.ToString("0.00")" />
+                                            <span class="round-total-note">@L["CTAcct_LblRoundNote"]</span>
+                                        </div>
+
+                                        @foreach (var item in group.Items)
+                                        {
+                                            <form asp-action="AddCompanyTripPayment" method="post" class="inline-form stacked-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="companyId" value="@item.CompanyId" />
+                                                <input type="hidden" name="tripId" value="@item.TripId" />
+                                                <input type="hidden" name="CompanyId" value="@search.CompanyId" />
+                                                <input type="hidden" name="DateFrom" value="@searchDateFrom" />
+                                                <input type="hidden" name="DateTo" value="@searchDateTo" />
+                                                <input type="hidden" name="Location" value="@search.Location" />
+                                                <input type="hidden" name="TripType" value="@search.TripType" />
+                                                <input type="hidden" name="PaymentFilter" value="@search.PaymentFilter" />
+
+                                                <span class="mini-label">@TransDir(item.DirectionText ?? item.Direction.ToString())</span>
+                                                <input class="money-input round-paid-input" type="number" step="0.01" min="0.01" name="amount" placeholder="0.00" />
+                                                <button class="acc-btn acc-btn-success mini-btn" type="submit">@L["CTAcct_BtnPay"]</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                var item = group.First;
+
+                                <tr>
+                                    <td>@item.TripDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.CompanyName</td>
+                                    <td style="direction:ltr;unicode-bidi:isolate;">@item.CompanyPhoneNumber</td>
+                                    <td>@TransDir(item.DirectionText ?? item.Direction.ToString())</td>
+
+                                    <td class="bus-cell">
+                                        <div class="bus-name">@(string.IsNullOrWhiteSpace(item.BusName) ? "--" : item.BusName)</div>
+                                        <span class="plate-number">@L["CTAcct_LblPlate"] @(string.IsNullOrWhiteSpace(item.PlateNumber) ? "--" : item.PlateNumber)</span>
+                                    </td>
+
+                                    <td class="location-cell" style="direction:ltr;unicode-bidi:isolate;">@item.FromLocation → @item.ToLocation</td>
+                                    <td>@item.TotalSeats</td>
+                                    <td>@item.ReservedSeats</td>
+                                    <td>@item.AvailableSeats</td>
+                                    <td>@item.CompanyTripPrice.ToString("N2")</td>
+                                    <td class="money-success">@item.CompanyTripPaidAmount.ToString("N2")</td>
+                                    <td class="@(item.CompanyTripRemainingAmount > 0 ? "money-danger" : "money-success")">@item.CompanyTripRemainingAmount.ToString("N2")</td>
+
+                                    <td>
+                                        <form asp-action="UpdateCompanyTripPrice" method="post" class="inline-form">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="companyId" value="@item.CompanyId" />
+                                            <input type="hidden" name="tripId" value="@item.TripId" />
+                                            <input type="hidden" name="CompanyId" value="@search.CompanyId" />
+                                            <input type="hidden" name="DateFrom" value="@searchDateFrom" />
+                                            <input type="hidden" name="DateTo" value="@searchDateTo" />
+                                            <input type="hidden" name="Location" value="@search.Location" />
+                                            <input type="hidden" name="TripType" value="@search.TripType" />
+                                            <input type="hidden" name="PaymentFilter" value="@search.PaymentFilter" />
+
+                                            <input class="money-input" type="number" step="0.01" min="0" name="price" value="@item.CompanyTripPrice.ToString("0.00")" />
+                                            <button class="acc-btn acc-btn-primary mini-btn" type="submit">@L["CTAcct_BtnSave"]</button>
+                                        </form>
+                                    </td>
+
+                                    <td>
+                                        <form asp-action="AddCompanyTripPayment" method="post" class="inline-form">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="companyId" value="@item.CompanyId" />
+                                            <input type="hidden" name="tripId" value="@item.TripId" />
+                                            <input type="hidden" name="CompanyId" value="@search.CompanyId" />
+                                            <input type="hidden" name="DateFrom" value="@searchDateFrom" />
+                                            <input type="hidden" name="DateTo" value="@searchDateTo" />
+                                            <input type="hidden" name="Location" value="@search.Location" />
+                                            <input type="hidden" name="TripType" value="@search.TripType" />
+                                            <input type="hidden" name="PaymentFilter" value="@search.PaymentFilter" />
+
+                                            <input class="money-input" type="number" step="0.01" min="0.01" name="amount" placeholder="0.00" />
+                                            <button class="acc-btn acc-btn-success mini-btn" type="submit">@L["CTAcct_BtnPay"]</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="acc-table-footer">
+                <span>@L["CTAcct_Showing"] 1 @L["CTAcct_Of"] @tripGroups.Count @L["CTAcct_Groups"] (@trips.Count @L["CTAcct_Trips"])</span>
+            </div>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        function toNumber(v) {
+            const n = parseFloat(v);
+            return isNaN(n) ? 0 : n;
+        }
+
+        function money(v) {
+            return Number(v || 0).toFixed(2);
+        }
+
+        function splitValue(total, count) {
+            if (count <= 0) return [];
+
+            const roundedTotal = Math.round(toNumber(total) * 100);
+            const base = Math.floor(roundedTotal / count);
+            const remainder = roundedTotal - (base * count);
+            const vals = [];
+
+            for (let i = 0; i < count; i++) {
+                vals.push(((base + (i === count - 1 ? remainder : 0)) / 100).toFixed(2));
+            }
+
+            return vals;
+        }
+
+        function updateRoundPriceTotal(row) {
+            const inputs = Array.from(row.querySelectorAll(".round-price-input"));
+            const total = inputs.reduce((s, x) => s + toNumber(x.value), 0);
+
+            const ti = row.querySelector(".round-total-price-input");
+            if (ti && document.activeElement !== ti) {
+                ti.value = money(total);
+            }
+
+            const tv = row.querySelector(".round-price-total-view");
+            if (tv) {
+                tv.textContent = money(total);
+            }
+
+            const iv = Array.from(row.querySelectorAll(".round-price-view"));
+
+            inputs.forEach((inp, i) => {
+                if (iv[i]) {
+                    iv[i].textContent = money(inp.value);
+                }
+            });
+        }
+
+        function updateRoundPaidTotal(row) {
+            const inputs = Array.from(row.querySelectorAll(".round-paid-input"));
+            const total = inputs.reduce((s, x) => s + toNumber(x.value), 0);
+
+            const ti = row.querySelector(".round-total-paid-input");
+            if (ti && document.activeElement !== ti) {
+                ti.value = money(total);
+            }
+
+            const tv = row.querySelector(".round-paid-total-view");
+            if (tv) {
+                tv.textContent = money(total);
+            }
+        }
+
+        document.querySelectorAll("[data-round-group]").forEach(row => {
+            const tpi = row.querySelector(".round-total-price-input");
+            const pInputs = Array.from(row.querySelectorAll(".round-price-input"));
+
+            if (tpi) {
+                tpi.addEventListener("input", () => {
+                    const vals = splitValue(tpi.value, pInputs.length);
+                    pInputs.forEach((inp, i) => inp.value = vals[i] || "0.00");
+                    updateRoundPriceTotal(row);
+                });
+            }
+
+            pInputs.forEach(inp => inp.addEventListener("input", () => updateRoundPriceTotal(row)));
+
+            const tpai = row.querySelector(".round-total-paid-input");
+            const paInputs = Array.from(row.querySelectorAll(".round-paid-input"));
+
+            if (tpai) {
+                tpai.addEventListener("input", () => {
+                    const vals = splitValue(tpai.value, paInputs.length);
+                    paInputs.forEach((inp, i) => inp.value = vals[i] || "0.00");
+                    updateRoundPaidTotal(row);
+                });
+            }
+
+            paInputs.forEach(inp => inp.addEventListener("input", () => updateRoundPaidTotal(row)));
+        });
+    </script>
+}

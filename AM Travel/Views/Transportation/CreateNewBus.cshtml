@@ -1,0 +1,1365 @@
+﻿@model BusinessLayer.DTOs.Bus.CreateBusDTO
+
+@{
+    ViewData["Title"] = L["CBus_Title"];
+
+    string fullName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName = fullName.Trim().Replace("  ", " ");
+    var userName = string.Join("", cleanName.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).Take(2).Select(x => x[0])).ToUpper();
+
+    if (string.IsNullOrWhiteSpace(userName)) userName = "U";
+}
+
+<style>
+    :root {
+        --cb-hero-bg: linear-gradient(135deg, #ff7a18, #ffad42);
+        --cb-hero-glow: rgba(255,122,24,.18);
+        --cb-hero-text: #fff;
+        --cb-hero-sub: rgba(255,255,255,.95);
+        --cb-card-bg: #fff;
+        --cb-card-border: #f0d8c2;
+        --cb-card-shadow: rgba(255,122,24,.10);
+        --cb-label: #667085;
+        --cb-input-bg: #fff;
+        --cb-input-border: #f3dfcc;
+        --cb-input-text: #172033;
+        --cb-tool-bg: #fffaf5;
+        --cb-tool-border: #f3dfcc;
+        --cb-tool-txt: #172033;
+        --cb-hint-bg: #fffaf5;
+        --cb-hint-border: #f3dfcc;
+        --cb-hint-txt: #667085;
+        --cb-design-bg: #fffaf5;
+        --cb-grid-bg: #fffaf5;
+        --cb-grid-border: #f3dfcc;
+        --cb-cell-bg: #fff;
+        --cb-cell-border: #f0c9a5;
+        --cb-cell-empty-dot: #ffd5b4;
+        --cb-meta-txt: #667085;
+        --cb-light-btn-bg: #fffaf5;
+        --cb-light-btn-bdr: #f3dfcc;
+        --cb-light-btn-txt: #ff7a18;
+        --cb-status-menu-bg: #fff;
+        --cb-status-menu-bdr: #f3dfcc;
+    }
+
+    html[data-theme="dark"] {
+        --cb-hero-bg: linear-gradient(135deg, #c45c0a, #d97c2a);
+        --cb-hero-glow: rgba(196,92,10,.22);
+        --cb-hero-text: #f5f0eb;
+        --cb-hero-sub: rgba(245,240,235,.85);
+        --cb-card-bg: #1a2236;
+        --cb-card-border: #283148;
+        --cb-card-shadow: rgba(0,0,0,.35);
+        --cb-label: #7a8ba0;
+        --cb-input-bg: #212c3f;
+        --cb-input-border: #3a4d66;
+        --cb-input-text: #c4cedb;
+        --cb-tool-bg: #212c3f;
+        --cb-tool-border: #3a4d66;
+        --cb-tool-txt: #c4cedb;
+        --cb-hint-bg: #1a2236;
+        --cb-hint-border: #283148;
+        --cb-hint-txt: #7a8ba0;
+        --cb-design-bg: #0f172a;
+        --cb-grid-bg: #1a2236;
+        --cb-grid-border: #283148;
+        --cb-cell-bg: #212c3f;
+        --cb-cell-border: #3a4d66;
+        --cb-cell-empty-dot: #3a4d66;
+        --cb-meta-txt: #7a8ba0;
+        --cb-light-btn-bg: #212c3f;
+        --cb-light-btn-bdr: #3a4d66;
+        --cb-light-btn-txt: #f6ba72;
+        --cb-status-menu-bg: #1a2236;
+        --cb-status-menu-bdr: #283148;
+    }
+
+    .cb-page {
+        display: grid;
+        gap: 20px;
+    }
+
+    .cb-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--cb-hero-text);
+        background: var(--cb-hero-bg);
+        box-shadow: 0 24px 70px var(--cb-hero-glow);
+    }
+
+        .cb-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.18), transparent 26%);
+            pointer-events: none;
+        }
+
+        .cb-hero::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            right: -95px;
+            bottom: -115px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+        }
+
+    .cb-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .cb-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: var(--cb-hero-text);
+    }
+
+    .cb-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(42px,6vw,66px);
+        line-height: 1;
+        letter-spacing: -1.5px;
+        color: var(--cb-hero-text);
+    }
+
+    .cb-hero p {
+        margin: 16px 0 0;
+        color: var(--cb-hero-sub);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .cb-avatar-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+        .cb-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .cb-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: cb-spin 4s linear infinite;
+        }
+
+    @@keyframes cb-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .cb-avatar {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #ff6a00;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .cb-avatar-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .cb-hero-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    .cb-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 16px;
+        border: none;
+        font-weight: 1000;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .cb-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .cb-btn-white {
+        background: #fff;
+        color: #ff7a18;
+    }
+
+    .cb-btn-glass {
+        background: rgba(255,255,255,.16);
+        color: var(--cb-hero-text);
+        border: 1px solid rgba(255,255,255,.26);
+    }
+
+    .cb-btn-orange {
+        background: linear-gradient(135deg,#ff7a18,#ffad42);
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(255,122,24,.22);
+    }
+
+    .cb-btn-light {
+        background: var(--cb-light-btn-bg);
+        color: var(--cb-light-btn-txt);
+        border: 1px solid var(--cb-light-btn-bdr);
+        transition: background .3s, border-color .3s, color .3s;
+    }
+
+    .cb-card {
+        background: var(--cb-card-bg);
+        border: 1px solid var(--cb-card-border);
+        border-radius: 30px;
+        padding: 24px;
+        box-shadow: 0 18px 42px var(--cb-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .cb-settings-grid {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 14px;
+    }
+
+    .cb-group {
+        display: grid;
+        gap: 7px;
+    }
+
+        .cb-group label {
+            color: var(--cb-label);
+            font-size: 13px;
+            font-weight: 900;
+            transition: color .3s;
+        }
+
+    .cb-wide {
+        grid-column: span 2;
+    }
+
+    .cb-input,
+    .cb-textarea {
+        min-height: 46px;
+        border-radius: 16px;
+        border: 1px solid var(--cb-input-border);
+        padding: 0 14px;
+        font-weight: 900;
+        outline: none;
+        background: var(--cb-input-bg);
+        color: var(--cb-input-text);
+        font-size: 14px;
+        transition: border-color .2s, background .3s, color .3s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .cb-textarea {
+        padding: 14px;
+        resize: vertical;
+    }
+
+        .cb-input:focus,
+        .cb-textarea:focus {
+            border-color: rgba(255,122,24,.55);
+            background: var(--cb-card-bg);
+            box-shadow: 0 0 0 4px rgba(255,122,24,.09);
+        }
+
+        .cb-input::placeholder,
+        .cb-textarea::placeholder {
+            color: var(--cb-label);
+            opacity: .7;
+        }
+
+    .cb-designer-layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .cb-toolbox {
+        display: grid;
+        gap: 12px;
+        align-content: start;
+        position: sticky;
+        top: 20px;
+    }
+
+    .cb-tool {
+        min-height: 54px;
+        border-radius: 18px;
+        border: 1px solid var(--cb-tool-border);
+        background: var(--cb-tool-bg);
+        color: var(--cb-tool-txt);
+        font-weight: 1000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: background .3s, border-color .3s, color .3s;
+        font-size: 14px;
+    }
+
+        .cb-tool.active {
+            border-color: #ff7a18;
+            box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+            color: #ff7a18;
+            background: var(--cb-card-bg);
+        }
+
+    html[data-theme="dark"] .cb-tool.active {
+        color: #f6ba72;
+        border-color: #f6ba72;
+        box-shadow: 0 0 0 4px rgba(246,186,114,.12);
+    }
+
+    .cb-quick-actions {
+        display: grid;
+        gap: 10px;
+    }
+
+    .cb-hint,
+    .cb-size-note {
+        border-radius: 18px;
+        background: var(--cb-hint-bg);
+        border: 1px solid var(--cb-hint-border);
+        padding: 12px;
+        color: var(--cb-hint-txt);
+        font-weight: 900;
+        font-size: 13px;
+        line-height: 1.6;
+        transition: background .3s, border-color .3s, color .3s;
+    }
+
+    .cb-design-panel {
+        overflow: auto;
+        padding: 24px;
+        border-radius: 28px;
+        border: 1px solid var(--cb-card-border);
+        background: var(--cb-design-bg);
+        min-height: 600px;
+        transition: background .3s, border-color .3s;
+    }
+
+    html[data-theme="dark"] .cb-design-panel {
+        background: radial-gradient(circle at 20% 10%, rgba(196,92,10,.05), transparent 28%), #0f172a;
+    }
+
+    /* مهم جدًا: تثبيت اتجاه تصميم الباص حتى لا ينعكس مع العربي */
+    .cb-bus-stage,
+    .cb-bus-body-wrap,
+    .cb-bus-body,
+    .cb-bus-meta,
+    .cb-grid,
+    .cb-cell {
+        direction: ltr;
+    }
+
+    .cb-bus-stage {
+        width: max-content;
+        margin: auto;
+        display: grid;
+        justify-items: center;
+        position: relative;
+        padding: 0 70px;
+        --cb-bus-width: 520px;
+        --cb-cols: 5;
+        --cb-cell-size: 70px;
+        --cb-cell-gap: 8px;
+    }
+
+    .cb-bus-nose {
+        width: var(--cb-bus-width);
+        height: 92px;
+        position: relative;
+        border-radius: 60px 60px 20px 20px;
+        background: linear-gradient(180deg,#ffb266 0%,#ff7a18 100%);
+        border: 4px solid #ffcfaa;
+        border-bottom: 0;
+        box-shadow: inset 0 10px 0 rgba(255,255,255,.18), 0 18px 36px rgba(255,122,24,.15);
+        z-index: 3;
+    }
+
+    .cb-windshield {
+        position: absolute;
+        left: 50%;
+        top: 15px;
+        transform: translateX(-50%);
+        width: 62%;
+        height: 42px;
+        border-radius: 32px 32px 14px 14px;
+        background: linear-gradient(135deg,#172033,#344054);
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,.18);
+    }
+
+        .cb-windshield::before {
+            content: "";
+            position: absolute;
+            width: 35%;
+            height: 4px;
+            background: rgba(255,255,255,.45);
+            top: 11px;
+            left: 14%;
+            border-radius: 20px;
+            transform: rotate(-8deg);
+        }
+
+    .cb-headlight {
+        position: absolute;
+        bottom: 15px;
+        width: 34px;
+        height: 18px;
+        border-radius: 999px;
+        background: #fff7d6;
+        box-shadow: 0 0 18px rgba(255,247,214,.8);
+    }
+
+        .cb-headlight.left {
+            left: 32px;
+        }
+
+        .cb-headlight.right {
+            right: 32px;
+        }
+
+    .cb-bus-body-wrap {
+        position: relative;
+        width: var(--cb-bus-width);
+    }
+
+    .cb-bus-body {
+        width: var(--cb-bus-width);
+        padding: 22px;
+        background: #fff;
+        border-left: 4px solid #ffcfaa;
+        border-right: 4px solid #ffcfaa;
+        border-bottom: 4px solid #ffcfaa;
+        border-radius: 0 0 42px 42px;
+        box-shadow: inset 0 0 0 8px #fff7ef, 0 22px 44px rgba(255,122,24,.12);
+        position: relative;
+        z-index: 2;
+    }
+
+    html[data-theme="dark"] .cb-bus-body {
+        background: #1a2236;
+        box-shadow: inset 0 0 0 8px #1e2840, 0 22px 44px rgba(0,0,0,.35);
+    }
+
+    .cb-side-rail {
+        position: absolute;
+        top: 26px;
+        bottom: 46px;
+        width: 13px;
+        border-radius: 999px;
+        background: #d0d5dd;
+        z-index: 5;
+    }
+
+    html[data-theme="dark"] .cb-side-rail {
+        background: #3a4d66;
+    }
+
+    .cb-side-rail.left {
+        left: 10px;
+    }
+
+    .cb-side-rail.right {
+        right: 10px;
+    }
+
+    .cb-wheel {
+        position: absolute;
+        width: 34px;
+        height: 86px;
+        border-radius: 18px;
+        background: linear-gradient(180deg,#111827,#344054);
+        border: 5px solid #475467;
+        box-shadow: inset 0 0 0 7px #1d2939, inset 0 0 0 14px #667085, 0 10px 22px rgba(23,32,51,.22);
+        z-index: 1;
+    }
+
+        .cb-wheel.left.top {
+            left: -22px;
+            top: 72px;
+        }
+
+        .cb-wheel.left.bottom {
+            left: -22px;
+            bottom: 72px;
+        }
+
+        .cb-wheel.right.top {
+            right: -22px;
+            top: 72px;
+        }
+
+        .cb-wheel.right.bottom {
+            right: -22px;
+            bottom: 72px;
+        }
+
+    .cb-bus-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 0 28px;
+        color: var(--cb-meta-txt);
+        font-size: 12px;
+        font-weight: 1000;
+        text-transform: uppercase;
+        transition: color .3s;
+    }
+
+    .cb-grid {
+        display: grid;
+        gap: var(--cb-cell-gap);
+        grid-template-columns: repeat(var(--cb-cols), var(--cb-cell-size));
+        width: max-content;
+        margin: auto;
+        padding: 14px;
+        border-radius: 28px;
+        background: var(--cb-grid-bg);
+        border: 1px solid var(--cb-grid-border);
+        position: relative;
+        z-index: 4;
+        transition: background .3s, border-color .3s;
+    }
+
+    .cb-cell {
+        width: var(--cb-cell-size);
+        height: calc(var(--cb-cell-size) * .82);
+        border-radius: calc(var(--cb-cell-size) * .22);
+        border: 1px dashed var(--cb-cell-border);
+        background: var(--cb-cell-bg);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        user-select: none;
+        font-weight: 1000;
+        position: relative;
+        transition: .12s ease;
+        font-size: clamp(10px, calc(var(--cb-cell-size) * .22), 14px);
+    }
+
+        .cb-cell:hover {
+            box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+            transform: translateY(-1px);
+        }
+
+        .cb-cell.edge {
+            outline: 2px solid rgba(255,122,24,.10);
+            outline-offset: -4px;
+        }
+
+        .cb-cell.empty::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cb-cell-empty-dot);
+        }
+
+        .cb-cell.seat {
+            background: linear-gradient(180deg,#ff9340,#ff6a00);
+            color: #fff;
+            border: none;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+        }
+
+        .cb-cell.vip {
+            background: linear-gradient(180deg,#ffd166,#ff9f1c);
+            color: #172033;
+            border: none;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+        }
+
+        .cb-cell.driver {
+            background: #172033;
+            color: #fff;
+            border: none;
+        }
+
+        .cb-cell.assistant {
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+        }
+
+        .cb-cell.road {
+            background: repeating-linear-gradient(135deg,#f2f4f7,#f2f4f7 8px,#e4e7ec 8px,#e4e7ec 16px);
+            color: #667085;
+            border: 2px solid #d0d5dd;
+        }
+
+        .cb-cell.wc {
+            background: #e8f3ff;
+            color: #1570ef;
+            border: 2px solid #84caff;
+        }
+
+        .cb-cell.door-only {
+            background: transparent;
+            border: 1px dashed var(--cb-cell-border);
+            color: transparent;
+        }
+
+    html[data-theme="dark"] .cb-cell.driver {
+        background: #0f172a;
+    }
+
+    html[data-theme="dark"] .cb-cell.road {
+        background: repeating-linear-gradient(135deg,#1a2236,#1a2236 8px,#212c3f 8px,#212c3f 16px);
+        color: #7a8ba0;
+        border-color: #3a4d66;
+    }
+
+    html[data-theme="dark"] .cb-cell.wc {
+        background: rgba(21,112,239,.15);
+        color: #60abf8;
+        border-color: rgba(96,171,248,.4);
+    }
+
+    .cb-cell.disabled-seat {
+        opacity: .45;
+        filter: grayscale(.25);
+        box-shadow: inset 0 0 0 3px rgba(240,68,56,.22);
+    }
+
+        .cb-cell.disabled-seat::after {
+            content: "OFF";
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            padding: 2px 5px;
+            border-radius: 999px;
+            background: rgba(240,68,56,.14);
+            color: #f04438;
+            font-size: 10px;
+            font-weight: 1000;
+        }
+
+    .cb-cell.has-door::before {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 44px;
+        border-radius: 999px;
+        background: #ffb347;
+        border: 2px solid #ff7a18;
+        top: 50%;
+        transform: translateY(-50%);
+        box-shadow: 0 0 0 4px #fff3e6;
+        z-index: 20;
+    }
+
+    html[data-theme="dark"] .cb-cell.has-door::before {
+        box-shadow: 0 0 0 4px #1a2236;
+    }
+
+    .cb-cell.door-left::before {
+        left: -22px;
+        right: auto;
+    }
+
+    .cb-cell.door-right::before {
+        right: -22px;
+        left: auto;
+    }
+
+    .cb-cell .door-mark {
+        position: absolute;
+        width: 4px;
+        height: 24px;
+        border-radius: 999px;
+        background: #fff7d6;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 21;
+        pointer-events: none;
+    }
+
+    .cb-cell.door-left .door-mark {
+        left: -16px;
+        right: auto;
+    }
+
+    .cb-cell.door-right .door-mark {
+        right: -16px;
+        left: auto;
+    }
+
+    .cb-status-menu {
+        position: fixed;
+        z-index: 99999;
+        display: none;
+        min-width: 180px;
+        border-radius: 18px;
+        border: 1px solid var(--cb-status-menu-bdr);
+        background: var(--cb-status-menu-bg);
+        box-shadow: 0 20px 60px rgba(23,32,51,.18);
+        padding: 10px;
+        transition: background .3s, border-color .3s;
+    }
+
+    html[data-theme="dark"] .cb-status-menu {
+        box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    }
+
+    .cb-status-menu.show {
+        display: grid;
+        gap: 8px;
+    }
+
+    .cb-status-menu button {
+        min-height: 40px;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+        font-weight: 1000;
+    }
+
+    .cb-status-menu .active-btn {
+        background: rgba(18,183,106,.12);
+        color: #12b76a;
+    }
+
+    .cb-status-menu .inactive-btn {
+        background: rgba(240,68,56,.10);
+        color: #f04438;
+    }
+
+    html[data-theme="dark"] .cb-status-menu .active-btn {
+        background: rgba(18,183,106,.18);
+        color: #34d399;
+    }
+
+    html[data-theme="dark"] .cb-status-menu .inactive-btn {
+        background: rgba(248,113,113,.15);
+        color: #f87171;
+    }
+
+    .text-danger,
+    .field-validation-error {
+        color: #f04438;
+        font-weight: 800;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 1100px) {
+        .cb-settings-grid,
+        .cb-designer-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .cb-wide {
+            grid-column: auto;
+        }
+
+        .cb-hero-actions {
+            flex-direction: column;
+        }
+
+            .cb-hero-actions .cb-btn {
+                width: 100%;
+            }
+    }
+</style>
+
+<div class="cb-page">
+
+    <section class="cb-hero">
+        <div class="cb-hero-inner">
+            <div>
+                <span class="cb-badge">@L["CBus_Badge"]</span>
+                <h1>@L["CBus_Heading"]</h1>
+                <p>@L["CBus_Subtitle"]</p>
+            </div>
+
+            <div class="cb-avatar-wrap">
+                <div class="cb-avatar">@userName</div>
+                <span class="cb-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="cb-hero-actions">
+            <a class="cb-btn cb-btn-white" asp-action="Buses">@L["CBus_BackToBuses"]</a>
+            <a class="cb-btn cb-btn-glass" asp-action="Trips">@L["CBus_Trips"]</a>
+        </div>
+    </section>
+
+    <form id="CreateBusForm" asp-action="CreateNewBus" method="post" onsubmit="return cbBeforeSubmit();">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="LayoutJson" id="LayoutJson" />
+
+        <section class="cb-card">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="cb-settings-grid">
+                <div class="cb-group">
+                    <label asp-for="Name">@L["CBus_FieldName"]</label>
+                    <input asp-for="Name" class="cb-input" placeholder="@L["CBus_FieldNamePH"]" required maxlength="100" />
+                    <span asp-validation-for="Name" class="field-validation-error"></span>
+                </div>
+
+                <div class="cb-group">
+                    <label asp-for="PlateNumber">@L["CBus_FieldPlate"]</label>
+                    <input asp-for="PlateNumber" class="cb-input" placeholder="@L["CBus_FieldPlatePH"]" maxlength="30" />
+                    <span asp-validation-for="PlateNumber" class="field-validation-error"></span>
+                </div>
+
+                <div class="cb-group">
+                    <label asp-for="FromLocation">@L["CBus_FieldFrom"]</label>
+                    <input asp-for="FromLocation" class="cb-input" placeholder="@L["CBus_FieldFromPH"]" required maxlength="100" />
+                    <span asp-validation-for="FromLocation" class="text-danger"></span>
+                </div>
+
+                <div class="cb-group">
+                    <label asp-for="ToLocation">@L["CBus_FieldTo"]</label>
+                    <input asp-for="ToLocation" class="cb-input" placeholder="@L["CBus_FieldToPH"]" required maxlength="100" />
+                    <span asp-validation-for="ToLocation" class="text-danger"></span>
+                </div>
+
+                <div class="cb-group">
+                    <label>@L["CBus_FieldSeats"]</label>
+                    <input id="TotalSeats" class="cb-input" readonly />
+                </div>
+
+                <div class="cb-group">
+                    <label asp-for="LayoutRows">@L["CBus_FieldRows"]</label>
+                    <input asp-for="LayoutRows" id="LayoutRows" class="cb-input" type="number" min="4" max="30" required />
+                    <span asp-validation-for="LayoutRows" class="field-validation-error"></span>
+                </div>
+
+                <div class="cb-group">
+                    <label asp-for="LayoutColumns">@L["CBus_FieldCols"]</label>
+                    <input asp-for="LayoutColumns" id="LayoutColumns" class="cb-input" type="number" min="3" max="10" required />
+                    <span asp-validation-for="LayoutColumns" class="field-validation-error"></span>
+                </div>
+
+                <div class="cb-group cb-wide">
+                    <label asp-for="Notes">@L["CBus_FieldNotes"]</label>
+                    <textarea asp-for="Notes" class="cb-textarea" rows="3" placeholder="@L["CBus_FieldNotesPH"]" maxlength="500"></textarea>
+                    <span asp-validation-for="Notes" class="field-validation-error"></span>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+                <button class="cb-btn cb-btn-orange" type="submit">@L["CBus_Submit"]</button>
+                <a class="cb-btn cb-btn-light" asp-action="Buses">@L["CBus_Cancel"]</a>
+            </div>
+        </section>
+
+        <section class="cb-card" style="margin-top:20px;">
+            <div class="cb-designer-layout">
+
+                <div class="cb-toolbox">
+                    <button type="button" class="cb-tool active" data-tool="0">💺 @L["CBus_ToolNormal"]</button>
+                    <button type="button" class="cb-tool" data-tool="1">⭐ @L["CBus_ToolVIP"]</button>
+                    <button type="button" class="cb-tool" data-tool="2">🚌 @L["CBus_ToolDriver"]</button>
+                    <button type="button" class="cb-tool" data-tool="3">👤 @L["CBus_ToolAssistant"]</button>
+                    <button type="button" class="cb-tool" data-tool="4">⬜ @L["CBus_ToolAisle"]</button>
+                    <button type="button" class="cb-tool" data-tool="5">🚪 @L["CBus_ToolDoor"]</button>
+                    <button type="button" class="cb-tool" data-tool="6">🚻 @L["CBus_ToolBathroom"]</button>
+                    <button type="button" class="cb-tool" data-tool="7">✖ @L["CBus_ToolEmpty"]</button>
+
+                    <div class="cb-quick-actions">
+                        <button type="button" class="cb-btn cb-btn-light" onclick="cbAutoAisle()">@L["CBus_BtnAutoAisle"]</button>
+                        <button type="button" class="cb-btn cb-btn-light" onclick="cbMirrorLeftToRight()">@L["CBus_BtnMirror"]</button>
+                        <button type="button" class="cb-btn cb-btn-light" onclick="cbRepaintAll()">@L["CBus_BtnRenumber"]</button>
+                        <button type="button" class="cb-btn cb-btn-light" onclick="cbBuildGrid(cbLayout)">@L["CBus_BtnRebuild"]</button>
+                        <button type="button" class="cb-btn cb-btn-light" onclick="cbClearGrid()">@L["CBus_BtnClear"]</button>
+                    </div>
+
+                    <div class="cb-hint">@L["CBus_HintText"]</div>
+                    <div class="cb-size-note">@L["CBus_SizeNote"]</div>
+                </div>
+
+                <div class="cb-design-panel">
+                    <div id="CbBusStage" class="cb-bus-stage">
+                        <div class="cb-bus-nose">
+                            <div class="cb-windshield"></div>
+                            <div class="cb-headlight left"></div>
+                            <div class="cb-headlight right"></div>
+                        </div>
+
+                        <div class="cb-bus-body-wrap">
+                            <div class="cb-wheel left top"></div>
+                            <div class="cb-wheel left bottom"></div>
+                            <div class="cb-wheel right top"></div>
+                            <div class="cb-wheel right bottom"></div>
+
+                            <div class="cb-bus-body">
+                                <div class="cb-side-rail left"></div>
+                                <div class="cb-side-rail right"></div>
+
+                                <div class="cb-bus-meta">
+                                    <span>@L["CBus_FrontEntry"]</span>
+                                    <span id="CbGridSizeText">12 x 5</span>
+                                </div>
+
+                                <div id="CbBusGrid" class="cb-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </form>
+</div>
+
+<div id="CbStatusMenu" class="cb-status-menu">
+    <button type="button" class="active-btn" onclick="cbSetSelectedActive(true)">@L["CBus_MenuSetActive"]</button>
+    <button type="button" class="inactive-btn" onclick="cbSetSelectedActive(false)">@L["CBus_MenuSetInactive"]</button>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const CB_ALERT_DOOR_EDGE = "@L["CBus_AlertDoorEdge"]";
+        const CB_ALERT_DOOR_TYPE = "@L["CBus_AlertDoorType"]";
+        const CB_ALERT_NO_SEATS  = "@L["CBus_AlertNoSeats"]";
+
+        const SeatType = { Normal:0, VIP:1, Driver:2, Assistant:3, Aisle:4, Door:5, Bathroom:6, Empty:7 };
+
+        const cbRowsInput    = document.getElementById("LayoutRows");
+        const cbColsInput    = document.getElementById("LayoutColumns");
+        const cbGrid         = document.getElementById("CbBusGrid");
+        const cbLayoutJson   = document.getElementById("LayoutJson");
+        const cbTotalSeats   = document.getElementById("TotalSeats");
+        const cbStage        = document.getElementById("CbBusStage");
+        const cbGridSizeText = document.getElementById("CbGridSizeText");
+        const cbStatusMenu   = document.getElementById("CbStatusMenu");
+        const cbForm         = document.getElementById("CreateBusForm");
+
+        let cbCurrentTool = SeatType.Normal;
+        let cbIsDrawing = false;
+        let cbLayout = [];
+        let cbSelectedCell = null;
+
+        document.querySelectorAll(".cb-tool").forEach(btn => {
+            btn.addEventListener("click", function () {
+                document.querySelectorAll(".cb-tool").forEach(x => x.classList.remove("active"));
+                this.classList.add("active");
+                cbCurrentTool = parseInt(this.dataset.tool);
+                cbHideStatusMenu();
+            });
+        });
+
+        document.addEventListener("mouseup", () => cbIsDrawing = false);
+        document.addEventListener("click", e => {
+            if (!e.target.closest("#CbStatusMenu")) cbHideStatusMenu();
+        });
+
+        function cbIsPassengerSeat(t) {
+            return t === SeatType.Normal || t === SeatType.VIP;
+        }
+
+        function cbGetTypeClass(t) {
+            return ["seat","vip","driver","assistant","road","door-only","wc","empty"][parseInt(t)] ?? "empty";
+        }
+
+        function cbGetTypeText(item) {
+            switch (parseInt(item.type)) {
+                case 0: return item.label || "S";
+                case 1: return item.label || "VIP";
+                case 2: return "DRV";
+                case 3: return "AST";
+                case 6: return "WC";
+                default: return "";
+            }
+        }
+
+        function cbGetSizing(cols, rows) {
+            let s = 70, g = 8;
+
+            if (cols >= 6) s = 64;
+            if (cols >= 8) s = 56;
+            if (cols >= 10) s = 50;
+            if (rows >= 18) s = Math.min(s, 54);
+            if (rows >= 24) s = Math.min(s, 48);
+            if (cols >= 9 || rows >= 22) g = 6;
+
+            return {
+                cellSize: s,
+                gap: g,
+                busWidth: (cols * s) + ((cols - 1) * g) + 98
+            };
+        }
+
+        function cbApplySizing(cols, rows) {
+            const sz = cbGetSizing(cols, rows);
+
+            cbStage.style.setProperty("--cb-cols", cols);
+            cbStage.style.setProperty("--cb-cell-size", `${sz.cellSize}px`);
+            cbStage.style.setProperty("--cb-cell-gap", `${sz.gap}px`);
+            cbStage.style.setProperty("--cb-bus-width", `${sz.busWidth}px`);
+
+            cbGridSizeText.textContent = `${rows} x ${cols}`;
+        }
+
+        function cbBuildGrid(sourceLayout = []) {
+            const rows = Math.max(4, parseInt(cbRowsInput.value || 5));
+            const cols = Math.max(3, parseInt(cbColsInput.value || 4));
+
+            cbRowsInput.value = rows;
+            cbColsInput.value = cols;
+
+            cbApplySizing(cols, rows);
+
+            const old = Array.isArray(sourceLayout) ? sourceLayout : [];
+
+            cbLayout = [];
+            cbGrid.innerHTML = "";
+
+            for (let r = 1; r <= rows; r++) {
+                for (let c = 1; c <= cols; c++) {
+                    const oldItem = old.find(x => x.row === r && x.column === c);
+                    const isEdge = c === 1 || c === cols;
+
+                    const item = {
+                        type: oldItem?.type ?? SeatType.Empty,
+                        row: r,
+                        column: c,
+                        label: oldItem?.label ?? "",
+                        hasDoor: (oldItem?.hasDoor ?? false) && isEdge,
+                        isActive: oldItem?.isActive ?? true
+                    };
+
+                    if (item.type === SeatType.Door && !isEdge) {
+                        item.type = SeatType.Empty;
+                        item.hasDoor = false;
+                    }
+
+                    cbLayout.push(item);
+
+                    const cell = document.createElement("div");
+
+                    cell.className = "cb-cell";
+                    cell.dataset.row = r;
+                    cell.dataset.column = c;
+
+                    cell.addEventListener("mousedown", function () {
+                        cbHideStatusMenu();
+                        cbIsDrawing = true;
+                        cbPaintCell(this);
+                    });
+
+                    cell.addEventListener("mouseenter", function () {
+                        if (cbIsDrawing && cbCurrentTool !== SeatType.Door) cbPaintCell(this);
+                    });
+
+                    cell.addEventListener("contextmenu", function (e) {
+                        e.preventDefault();
+                        cbOpenStatusMenu(e, this);
+                    });
+
+                    cbGrid.appendChild(cell);
+                }
+            }
+
+            cbRepaintAll();
+        }
+
+        function cbGetItem(r, c) {
+            return cbLayout.find(x => x.row === r && x.column === c);
+        }
+
+        function cbIsEdgeColumn(c) {
+            return c === 1 || c === parseInt(cbColsInput.value || 5);
+        }
+
+        function cbPaintCell(cell) {
+            const row = parseInt(cell.dataset.row);
+            const column = parseInt(cell.dataset.column);
+            const item = cbGetItem(row, column);
+
+            if (!item) return;
+
+            if (cbCurrentTool === SeatType.Door) {
+                if (!cbIsEdgeColumn(column)) {
+                    alert(CB_ALERT_DOOR_EDGE);
+                    return;
+                }
+
+                if (![SeatType.Normal, SeatType.VIP, SeatType.Empty, SeatType.Door].includes(item.type)) {
+                    alert(CB_ALERT_DOOR_TYPE);
+                    return;
+                }
+
+                if (item.type === SeatType.Empty) {
+                    item.type = SeatType.Door;
+                    item.isActive = true;
+                }
+
+                item.hasDoor = !item.hasDoor;
+
+                cbRenderCell(cell, item);
+                cbRepaintAll();
+                return;
+            }
+
+            item.type = cbCurrentTool;
+            item.label = "";
+            item.isActive = true;
+
+            if (![SeatType.Normal, SeatType.VIP].includes(cbCurrentTool)) {
+                item.hasDoor = false;
+            }
+
+            if (cbCurrentTool === SeatType.Empty) {
+                item.hasDoor = false;
+                item.isActive = true;
+            }
+
+            cbRenderCell(cell, item);
+            cbRepaintAll();
+        }
+
+        function cbRenderCell(cell, item) {
+            const cols = parseInt(cbColsInput.value || 5);
+
+            cell.className = "cb-cell";
+
+            if (item.column === 1 || item.column === cols) {
+                cell.classList.add("edge");
+            }
+
+            cell.classList.add(cbGetTypeClass(item.type));
+
+            if (item.type !== SeatType.Empty && item.isActive === false) {
+                cell.classList.add("disabled-seat");
+            }
+
+            if (item.hasDoor) {
+                cell.classList.add("has-door");
+
+                if (item.column === 1) {
+                    cell.classList.add("door-left");
+                } else if (item.column === cols) {
+                    cell.classList.add("door-right");
+                }
+            }
+
+            cell.innerHTML = cbGetTypeText(item);
+
+            if (item.hasDoor) {
+                const m = document.createElement("span");
+                m.className = "door-mark";
+                cell.appendChild(m);
+            }
+        }
+
+        function cbNumberSeats() {
+            let n = 1;
+
+            cbLayout
+                .filter(x => cbIsPassengerSeat(x.type))
+                .sort((a,b) => a.row - b.row || a.column - b.column)
+                .forEach(x => {
+                    x.label = (n++).toString();
+                });
+        }
+
+        function cbUpdateOutput(renumber = true) {
+            if (renumber) cbNumberSeats();
+
+            cbTotalSeats.value = cbLayout.filter(x => cbIsPassengerSeat(x.type)).length;
+
+            cbLayoutJson.value = JSON.stringify(
+                cbLayout
+                    .filter(x => x.type !== SeatType.Empty || x.hasDoor)
+                    .map(x => ({
+                        type: x.type,
+                        row: x.row,
+                        column: x.column,
+                        label: x.label,
+                        hasDoor: x.hasDoor,
+                        isActive: x.isActive
+                    }))
+            );
+        }
+
+        function cbRepaintAll() {
+            cbNumberSeats();
+
+            document.querySelectorAll(".cb-cell").forEach(cell => {
+                const item = cbGetItem(parseInt(cell.dataset.row), parseInt(cell.dataset.column));
+
+                if (item) cbRenderCell(cell, item);
+            });
+
+            cbUpdateOutput(false);
+        }
+
+        function cbOpenStatusMenu(e, cell) {
+            const item = cbGetItem(parseInt(cell.dataset.row), parseInt(cell.dataset.column));
+
+            if (!item || item.type === SeatType.Empty) return;
+
+            cbSelectedCell = cell;
+
+            cbStatusMenu.style.left = `${e.clientX}px`;
+            cbStatusMenu.style.top = `${e.clientY}px`;
+            cbStatusMenu.classList.add("show");
+        }
+
+        function cbHideStatusMenu() {
+            cbStatusMenu.classList.remove("show");
+            cbSelectedCell = null;
+        }
+
+        function cbSetSelectedActive(val) {
+            if (!cbSelectedCell) return;
+
+            const item = cbGetItem(parseInt(cbSelectedCell.dataset.row), parseInt(cbSelectedCell.dataset.column));
+
+            if (!item || item.type === SeatType.Empty) {
+                cbHideStatusMenu();
+                return;
+            }
+
+            item.isActive = val;
+
+            cbRenderCell(cbSelectedCell, item);
+            cbUpdateOutput(true);
+            cbHideStatusMenu();
+        }
+
+        function cbAutoAisle() {
+            const rows = parseInt(cbRowsInput.value || 12);
+            const cols = parseInt(cbColsInput.value || 5);
+            const aisle = Math.ceil(cols / 2);
+
+            for (let r = 1; r <= rows; r++) {
+                const it = cbGetItem(r, aisle);
+
+                if (it && it.type === SeatType.Empty) {
+                    it.type = SeatType.Aisle;
+                    it.isActive = true;
+                }
+            }
+
+            cbRepaintAll();
+        }
+
+        function cbMirrorLeftToRight() {
+            const rows = parseInt(cbRowsInput.value || 12);
+            const cols = parseInt(cbColsInput.value || 5);
+
+            for (let r = 1; r <= rows; r++) {
+                for (let c = 1; c <= Math.floor(cols / 2); c++) {
+                    const left = cbGetItem(r, c);
+                    const right = cbGetItem(r, cols - c + 1);
+
+                    if (!left || !right) continue;
+
+                    right.type = left.type;
+                    right.hasDoor = false;
+                    right.label = "";
+                    right.isActive = left.isActive ?? true;
+                }
+            }
+
+            cbRepaintAll();
+        }
+
+        function cbClearGrid() {
+            cbLayout.forEach(x => {
+                x.type = SeatType.Empty;
+                x.label = "";
+                x.hasDoor = false;
+                x.isActive = true;
+            });
+
+            cbRepaintAll();
+        }
+
+        function cbBeforeSubmit() {
+            cbUpdateOutput(true);
+
+            if (!cbForm.checkValidity()) {
+                cbForm.reportValidity();
+                return false;
+            }
+
+            if (window.jQuery && $.validator && !$(cbForm).valid()) return false;
+
+            if (cbLayout.filter(x => cbIsPassengerSeat(x.type)).length <= 0) {
+                alert(CB_ALERT_NO_SEATS);
+                return false;
+            }
+
+            return true;
+        }
+
+        cbRowsInput.addEventListener("change", () => cbBuildGrid(cbLayout));
+        cbColsInput.addEventListener("change", () => cbBuildGrid(cbLayout));
+
+        let serverLayout = [];
+
+        try {
+            serverLayout = JSON.parse(document.getElementById("LayoutJson").value || "[]");
+        } catch {}
+
+        cbBuildGrid(serverLayout);
+    </script>
+}

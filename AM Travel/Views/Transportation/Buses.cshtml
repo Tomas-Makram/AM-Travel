@@ -1,0 +1,1586 @@
+﻿@using AM_Travel.Resources
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<SharedResource> L
+
+@model List<BusinessLayer.DTOs.Bus.BusDTO>
+
+@{
+    ViewData["Title"] = L["Bus_Title"];
+
+    string currentSearch = Convert.ToString(ViewBag.Search) ?? "";
+    string currentStatus = Convert.ToString(ViewBag.Status) ?? "all";
+    string currentTripType = Convert.ToString(ViewBag.TripType) ?? "all";
+    string currentLocation = Convert.ToString(ViewBag.Location) ?? "";
+    var locations = ViewBag.Locations as List<string> ?? new List<string>();
+
+    string fullName = Convert.ToString(ViewBag.Name) ?? "User";
+    var cleanName = fullName.Trim().Replace("  ", " ");
+
+    var userName = string.Join("", cleanName
+        .Split(' ')
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Take(2)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(userName)) userName = "U";
+}
+
+<style>
+    :root {
+        --bb-hero-bg: linear-gradient(135deg, #ff7a18, #ffad42);
+        --bb-hero-glow: rgba(255,122,24,.18);
+        --bb-hero-text: #fff;
+        --bb-hero-sub: rgba(255,255,255,.95);
+        --bb-card-bg: #fff;
+        --bb-card-border: #f0d8c2;
+        --bb-card-shadow: rgba(255,122,24,.10);
+        --bb-label: #667085;
+        --bb-input-bg: #fffaf5;
+        --bb-input-border: #f3dfcc;
+        --bb-input-text: #172033;
+        --bb-row-bg: #fffaf5;
+        --bb-row-border: #f3dfcc;
+        --bb-row-text: #172033;
+        --bb-row-sub: #667085;
+        --bb-row-hover: #fff5eb;
+        --bb-stat-bg: #fff;
+        --bb-stat-border: #f3dfcc;
+        --bb-stat-label: #667085;
+        --bb-stat-value: #172033;
+        --bb-route-bg: #fff;
+        --bb-route-border: #f3dfcc;
+        --bb-route-text: #172033;
+        --bb-active-bg: rgba(18,183,106,.12);
+        --bb-active-txt: #12b76a;
+        --bb-inactive-bg: #f2f4f7;
+        --bb-inactive-txt: #667085;
+        --bb-btn-show-bg: #ff7a18;
+        --bb-btn-show-txt: #fff;
+        --bb-btn-det-bg: #172033;
+        --bb-btn-det-txt: #fff;
+        --bb-btn-light-bg: #fffaf5;
+        --bb-btn-light-bdr: #f3dfcc;
+        --bb-btn-light-txt: #ff7a18;
+        --bb-empty-txt: #98a2b3;
+        --bb-modal-bg: #fff;
+        --bb-modal-border: #f3dfcc;
+        --bb-modal-head-txt: #172033;
+        --bb-modal-close-bg: #fffaf5;
+        --bb-modal-close-bdr: #f3dfcc;
+        --bb-modal-close-txt: #ff7a18;
+        --bb-modal-route-bg: #fffaf5;
+        --bb-modal-route-bdr: #f3dfcc;
+        --bb-modal-route-lbl: #667085;
+        --bb-modal-route-val: #172033;
+        --bb-design-bg: #fffaf5;
+        --bb-grid-bg: #fffaf5;
+        --bb-grid-border: #f3dfcc;
+        --bb-cell-bg: #fff;
+        --bb-cell-border: #f0c9a5;
+        --bb-cell-empty-dot: #ffd5b4;
+        --bb-meta-txt: #667085;
+        --bb-status-menu-bg: #fff;
+        --bb-status-menu-bdr: #f3dfcc;
+    }
+
+    html[data-theme="dark"] {
+        --bb-hero-bg: linear-gradient(135deg, #c45c0a, #d97c2a);
+        --bb-hero-glow: rgba(196,92,10,.22);
+        --bb-hero-text: #f5f0eb;
+        --bb-hero-sub: rgba(245,240,235,.85);
+        --bb-card-bg: #1a2236;
+        --bb-card-border: #283148;
+        --bb-card-shadow: rgba(0,0,0,.35);
+        --bb-label: #7a8ba0;
+        --bb-input-bg: #212c3f;
+        --bb-input-border: #3a4d66;
+        --bb-input-text: #c4cedb;
+        --bb-row-bg: #212c3f;
+        --bb-row-border: #283148;
+        --bb-row-text: #dce3ed;
+        --bb-row-sub: #7a8ba0;
+        --bb-row-hover: #263042;
+        --bb-stat-bg: #1a2236;
+        --bb-stat-border: #283148;
+        --bb-stat-label: #7a8ba0;
+        --bb-stat-value: #dce3ed;
+        --bb-route-bg: #1a2236;
+        --bb-route-border: #283148;
+        --bb-route-text: #c4cedb;
+        --bb-active-bg: rgba(18,183,106,.16);
+        --bb-active-txt: #34d399;
+        --bb-inactive-bg: rgba(122,139,160,.15);
+        --bb-inactive-txt: #7a8ba0;
+        --bb-btn-show-bg: #c45c0a;
+        --bb-btn-show-txt: #fff;
+        --bb-btn-det-bg: #283148;
+        --bb-btn-det-txt: #dce3ed;
+        --bb-btn-light-bg: #212c3f;
+        --bb-btn-light-bdr: #3a4d66;
+        --bb-btn-light-txt: #f6ba72;
+        --bb-empty-txt: #5a6a7e;
+        --bb-modal-bg: #1a2236;
+        --bb-modal-border: #283148;
+        --bb-modal-head-txt: #dce3ed;
+        --bb-modal-close-bg: #212c3f;
+        --bb-modal-close-bdr: #3a4d66;
+        --bb-modal-close-txt: #f6ba72;
+        --bb-modal-route-bg: #212c3f;
+        --bb-modal-route-bdr: #283148;
+        --bb-modal-route-lbl: #7a8ba0;
+        --bb-modal-route-val: #dce3ed;
+        --bb-design-bg: #0f172a;
+        --bb-grid-bg: #1a2236;
+        --bb-grid-border: #283148;
+        --bb-cell-bg: #212c3f;
+        --bb-cell-border: #3a4d66;
+        --bb-cell-empty-dot: #3a4d66;
+        --bb-meta-txt: #7a8ba0;
+        --bb-status-menu-bg: #1a2236;
+        --bb-status-menu-bdr: #283148;
+    }
+
+    .bb-page {
+        display: grid;
+        gap: 24px;
+    }
+
+    .bb-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--bb-hero-text);
+        background: var(--bb-hero-bg);
+        box-shadow: 0 24px 70px var(--bb-hero-glow);
+    }
+
+        .bb-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.18), transparent 26%);
+            pointer-events: none;
+        }
+
+        .bb-hero::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            right: -95px;
+            bottom: -115px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+        }
+
+    .bb-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .bb-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: var(--bb-hero-text);
+    }
+
+    .bb-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(42px,6vw,66px);
+        line-height: 1;
+        letter-spacing: -1.5px;
+        color: var(--bb-hero-text);
+    }
+
+    .bb-hero p {
+        margin: 16px 0 0;
+        color: var(--bb-hero-sub);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .bb-avatar-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+        .bb-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .bb-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: bb-spin 4s linear infinite;
+        }
+
+    @@keyframes bb-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .bb-avatar {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #ff6a00;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .bb-avatar-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .bb-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    .bb-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 16px;
+        border: none;
+        font-weight: 1000;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .bb-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .bb-btn-white {
+        background: #fff;
+        color: #ff7a18;
+    }
+
+    .bb-btn-glass {
+        background: rgba(255,255,255,.16);
+        color: var(--bb-hero-text);
+        border: 1px solid rgba(255,255,255,.26);
+    }
+
+    .bb-btn-orange {
+        background: linear-gradient(135deg,#ff7a18,#ffad42);
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(255,122,24,.22);
+    }
+
+    .bb-btn-light {
+        background: var(--bb-btn-light-bg);
+        color: var(--bb-btn-light-txt);
+        border: 1px solid var(--bb-btn-light-bdr);
+    }
+
+    .bb-card {
+        background: var(--bb-card-bg);
+        border: 1px solid var(--bb-card-border);
+        border-radius: 30px;
+        padding: 26px;
+        box-shadow: 0 18px 42px var(--bb-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .bb-filter-form {
+        display: grid;
+        grid-template-columns: 1fr 180px 180px 220px auto auto;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .bb-group {
+        display: grid;
+        gap: 7px;
+    }
+
+        .bb-group label {
+            color: var(--bb-label);
+            font-size: 13px;
+            font-weight: 1000;
+            transition: color .3s;
+        }
+
+    .bb-input,
+    .bb-select {
+        min-height: 48px;
+        border-radius: 16px;
+        border: 1px solid var(--bb-input-border);
+        padding: 0 14px;
+        font-weight: 900;
+        outline: none;
+        background: var(--bb-input-bg);
+        color: var(--bb-input-text);
+        font-size: 14px;
+        transition: border-color .2s, background .3s, color .3s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .bb-input:focus,
+        .bb-select:focus {
+            border-color: rgba(255,122,24,.55);
+            background: var(--bb-card-bg);
+            box-shadow: 0 0 0 4px rgba(255,122,24,.09);
+        }
+
+        .bb-select option {
+            background: #fff;
+            color: #172033;
+        }
+
+    .bb-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .bb-row {
+        display: grid;
+        grid-template-columns: minmax(300px,1fr) 150px 130px auto;
+        gap: 18px;
+        align-items: center;
+        border: 1px solid var(--bb-row-border);
+        border-radius: 26px;
+        background: var(--bb-row-bg);
+        padding: 18px;
+        min-height: 104px;
+        transition: background .3s, border-color .3s;
+    }
+
+        .bb-row:hover {
+            background: var(--bb-row-hover);
+        }
+
+    .bb-info {
+        min-width: 0;
+        justify-self: start;
+    }
+
+        .bb-info h3 {
+            margin: 0;
+            color: var(--bb-row-text);
+            font-size: 22px;
+            font-weight: 1000;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bb-info p {
+            margin: 8px 0 0;
+            color: var(--bb-row-sub);
+            font-weight: 900;
+            font-size: 16px;
+        }
+
+    .bb-route-box {
+        margin-top: 10px;
+        display: grid;
+        gap: 7px;
+    }
+
+    .bb-route-line {
+        width: fit-content;
+        max-width: 100%;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: var(--bb-route-bg);
+        border: 1px solid var(--bb-route-border);
+        color: var(--bb-route-text);
+        font-size: 13px;
+        font-weight: 1000;
+        direction: ltr !important;
+        unicode-bidi: isolate !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .bb-route-label {
+        color: #ff7a18;
+    }
+
+    html[data-theme="dark"] .bb-route-label {
+        color: #f6ba72;
+    }
+
+    .bb-route-city,
+    .bb-route-arrow {
+        direction: ltr !important;
+        unicode-bidi: isolate !important;
+        display: inline-block;
+    }
+
+    .bb-route-arrow {
+        opacity: .9;
+    }
+
+    .bb-stat {
+        justify-self: center;
+        min-width: 128px;
+        border-radius: 20px;
+        background: var(--bb-stat-bg);
+        border: 1px solid var(--bb-stat-border);
+        padding: 14px 16px;
+        text-align: center;
+    }
+
+        .bb-stat span {
+            display: block;
+            color: var(--bb-stat-label);
+            font-size: 12px;
+            font-weight: 1000;
+        }
+
+        .bb-stat strong {
+            color: var(--bb-stat-value);
+            font-size: 24px;
+            line-height: 1.1;
+        }
+
+    .bb-pill {
+        width: fit-content;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 1000;
+        justify-self: center;
+    }
+
+    .bb-active {
+        color: var(--bb-active-txt);
+        background: var(--bb-active-bg);
+    }
+
+    .bb-inactive {
+        color: var(--bb-inactive-txt);
+        background: var(--bb-inactive-bg);
+    }
+
+    .bb-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+    .bb-small-btn {
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 14px;
+        border: 1px solid var(--bb-btn-light-bdr);
+        background: var(--bb-btn-light-bg);
+        color: var(--bb-btn-light-txt);
+        font-weight: 1000;
+        font-size: 13px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .bb-show-btn {
+        background: var(--bb-btn-show-bg);
+        color: var(--bb-btn-show-txt);
+        border-color: transparent;
+    }
+
+    .bb-details-btn {
+        background: var(--bb-btn-det-bg);
+        color: var(--bb-btn-det-txt);
+        border-color: transparent;
+    }
+
+    .bb-empty {
+        padding: 30px;
+        text-align: center;
+        color: var(--bb-empty-txt);
+        font-weight: 1000;
+    }
+
+    .bb-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(23,32,51,.55);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+        .bb-modal-backdrop.show {
+            display: flex;
+        }
+
+    html[data-theme="dark"] .bb-modal-backdrop {
+        background: rgba(0,0,0,.72);
+    }
+
+    .bb-modal {
+        width: min(1100px,96vw);
+        max-height: 92vh;
+        overflow: auto;
+        background: var(--bb-modal-bg);
+        border-radius: 34px;
+        border: 1px solid var(--bb-modal-border);
+        box-shadow: 0 30px 90px rgba(0,0,0,.25);
+        padding: 24px;
+    }
+
+    .bb-modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+        .bb-modal-head h2 {
+            margin: 0;
+            color: var(--bb-modal-head-txt);
+        }
+
+    .bb-modal-close {
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        border: 1px solid var(--bb-modal-close-bdr);
+        background: var(--bb-modal-close-bg);
+        color: var(--bb-modal-close-txt);
+        font-size: 22px;
+        font-weight: 1000;
+        cursor: pointer;
+    }
+
+    .bb-modal-routes {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(220px,1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .bb-modal-route-card {
+        border: 1px solid var(--bb-modal-route-bdr);
+        background: var(--bb-modal-route-bg);
+        border-radius: 20px;
+        padding: 14px 16px;
+        color: var(--bb-modal-route-val);
+        font-weight: 1000;
+    }
+
+        .bb-modal-route-card small {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--bb-modal-route-lbl);
+            font-size: 12px;
+            font-weight: 1000;
+            text-transform: uppercase;
+        }
+
+    .bb-modal-route-value {
+        font-size: 17px;
+        direction: ltr !important;
+        unicode-bidi: isolate !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+        .bb-modal-route-value span {
+            direction: ltr !important;
+            unicode-bidi: isolate !important;
+            display: inline-block;
+        }
+
+    .bb-modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    .bb-design-panel {
+        overflow: auto;
+        padding: 26px;
+        border-radius: 28px;
+        border: 1px solid var(--bb-card-border);
+        background: var(--bb-design-bg);
+        min-height: 650px;
+    }
+
+    html[data-theme="dark"] .bb-design-panel {
+        background: radial-gradient(circle at 20% 10%, rgba(196,92,10,.06), transparent 28%), #0f172a;
+    }
+
+    .bb-bus-stage,
+    .bb-body-wrap,
+    .bb-bus-body,
+    .bb-meta,
+    .bb-grid,
+    .bb-cell {
+        direction: ltr !important;
+    }
+
+    .bb-bus-stage {
+        width: max-content;
+        margin: auto;
+        display: grid;
+        justify-items: center;
+        position: relative;
+        padding: 0 70px;
+        --bb-bus-width: 520px;
+        --bb-cols: 5;
+        --bb-cell-size: 70px;
+        --bb-cell-gap: 8px;
+    }
+
+    .bb-bus-nose {
+        width: var(--bb-bus-width);
+        height: 92px;
+        position: relative;
+        border-radius: 60px 60px 20px 20px;
+        background: linear-gradient(180deg,#ffb266 0%,#ff7a18 100%);
+        border: 4px solid #ffcfaa;
+        border-bottom: 0;
+        box-shadow: inset 0 10px 0 rgba(255,255,255,.18), 0 18px 36px rgba(255,122,24,.15);
+        z-index: 3;
+    }
+
+    .bb-windshield {
+        position: absolute;
+        left: 50%;
+        top: 15px;
+        transform: translateX(-50%);
+        width: 62%;
+        height: 42px;
+        border-radius: 32px 32px 14px 14px;
+        background: linear-gradient(135deg,#172033,#344054);
+        box-shadow: inset 0 0 0 3px rgba(255,255,255,.12);
+    }
+
+        .bb-windshield::before {
+            content: "";
+            position: absolute;
+            width: 35%;
+            height: 4px;
+            background: rgba(255,255,255,.45);
+            top: 11px;
+            left: 14%;
+            border-radius: 20px;
+            transform: rotate(-8deg);
+        }
+
+    .bb-headlight {
+        position: absolute;
+        bottom: 15px;
+        width: 34px;
+        height: 18px;
+        border-radius: 999px;
+        background: #fff7d6;
+        box-shadow: 0 0 18px rgba(255,247,214,.8);
+    }
+
+        .bb-headlight.left {
+            left: 32px;
+        }
+
+        .bb-headlight.right {
+            right: 32px;
+        }
+
+    .bb-body-wrap {
+        position: relative;
+        width: var(--bb-bus-width);
+    }
+
+    .bb-bus-body {
+        width: var(--bb-bus-width);
+        padding: 22px;
+        background: #fff;
+        border-left: 4px solid #ffcfaa;
+        border-right: 4px solid #ffcfaa;
+        border-bottom: 4px solid #ffcfaa;
+        border-radius: 0 0 42px 42px;
+        box-shadow: inset 0 0 0 8px #fff7ef, 0 22px 44px rgba(255,122,24,.12);
+        position: relative;
+        z-index: 2;
+    }
+
+    html[data-theme="dark"] .bb-bus-body {
+        background: #1a2236;
+        box-shadow: inset 0 0 0 8px #1e2840, 0 22px 44px rgba(0,0,0,.35);
+    }
+
+    .bb-side-rail {
+        position: absolute;
+        top: 26px;
+        bottom: 46px;
+        width: 13px;
+        border-radius: 999px;
+        background: #d0d5dd;
+        z-index: 5;
+    }
+
+    html[data-theme="dark"] .bb-side-rail {
+        background: #3a4d66;
+    }
+
+    .bb-side-rail.left {
+        left: 10px;
+    }
+
+    .bb-side-rail.right {
+        right: 10px;
+    }
+
+    .bb-wheel {
+        position: absolute;
+        width: 34px;
+        height: 86px;
+        border-radius: 18px;
+        background: linear-gradient(180deg,#111827,#344054);
+        border: 5px solid #475467;
+        box-shadow: inset 0 0 0 7px #1d2939, inset 0 0 0 14px #667085, 0 10px 22px rgba(23,32,51,.22);
+        z-index: 1;
+    }
+
+        .bb-wheel.left.top {
+            left: -22px;
+            top: 72px;
+        }
+
+        .bb-wheel.left.bottom {
+            left: -22px;
+            bottom: 72px;
+        }
+
+        .bb-wheel.right.top {
+            right: -22px;
+            top: 72px;
+        }
+
+        .bb-wheel.right.bottom {
+            right: -22px;
+            bottom: 72px;
+        }
+
+    .bb-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 0 28px;
+        color: var(--bb-meta-txt);
+        font-size: 12px;
+        font-weight: 1000;
+        text-transform: uppercase;
+    }
+
+    .bb-grid {
+        display: grid;
+        gap: var(--bb-cell-gap);
+        grid-template-columns: repeat(var(--bb-cols), var(--bb-cell-size));
+        width: max-content;
+        margin: auto;
+        padding: 14px;
+        border-radius: 28px;
+        background: var(--bb-grid-bg);
+        border: 1px solid var(--bb-grid-border);
+        position: relative;
+        z-index: 4;
+    }
+
+    .bb-cell {
+        width: var(--bb-cell-size);
+        height: calc(var(--bb-cell-size) * .82);
+        border-radius: calc(var(--bb-cell-size) * .22);
+        border: 1px dashed var(--bb-cell-border);
+        background: var(--bb-cell-bg);
+        display: grid;
+        place-items: center;
+        font-weight: 1000;
+        position: relative;
+        font-size: clamp(10px, calc(var(--bb-cell-size) * .22), 14px);
+        cursor: pointer;
+        user-select: none;
+    }
+
+        .bb-cell.empty::after {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--bb-cell-empty-dot);
+        }
+
+        .bb-cell.seat {
+            background: linear-gradient(180deg,#ff9340,#ff6a00);
+            color: #fff;
+            border: none;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+        }
+
+        .bb-cell.vip {
+            background: linear-gradient(180deg,#ffd166,#ff9f1c);
+            color: #172033;
+            border: none;
+            box-shadow: inset 0 -5px 0 rgba(0,0,0,.08);
+        }
+
+        .bb-cell.driver {
+            background: #172033;
+            color: #fff;
+            border: none;
+        }
+
+        .bb-cell.assistant {
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+        }
+
+        .bb-cell.road {
+            background: repeating-linear-gradient(135deg,#f2f4f7,#f2f4f7 8px,#e4e7ec 8px,#e4e7ec 16px);
+            color: #667085;
+            border: 2px solid #d0d5dd;
+        }
+
+        .bb-cell.wc {
+            background: #e8f3ff;
+            color: #1570ef;
+            border: 2px solid #84caff;
+        }
+
+        .bb-cell.door-only {
+            background: transparent;
+            border: 1px dashed var(--bb-cell-border);
+            color: transparent;
+        }
+
+    html[data-theme="dark"] .bb-cell.driver {
+        background: #0f172a;
+    }
+
+    html[data-theme="dark"] .bb-cell.road {
+        background: repeating-linear-gradient(135deg,#1a2236,#1a2236 8px,#212c3f 8px,#212c3f 16px);
+        color: #7a8ba0;
+        border-color: #3a4d66;
+    }
+
+    html[data-theme="dark"] .bb-cell.wc {
+        background: rgba(21,112,239,.15);
+        color: #60abf8;
+        border-color: rgba(96,171,248,.4);
+    }
+
+    .bb-cell.disabled-object {
+        opacity: .45;
+        filter: grayscale(.25);
+        box-shadow: inset 0 0 0 3px rgba(240,68,56,.22);
+    }
+
+        .bb-cell.disabled-object::before {
+            content: "OFF";
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            padding: 2px 5px;
+            border-radius: 999px;
+            background: rgba(240,68,56,.14);
+            color: #f04438;
+            font-size: 10px;
+            font-weight: 1000;
+            z-index: 30;
+        }
+
+    .bb-cell.has-door::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 44px;
+        border-radius: 999px;
+        background: #ffb347;
+        border: 2px solid #ff7a18;
+        top: 50%;
+        transform: translateY(-50%);
+        box-shadow: 0 0 0 4px #fff3e6;
+        z-index: 20;
+    }
+
+    html[data-theme="dark"] .bb-cell.has-door::after {
+        box-shadow: 0 0 0 4px #1a2236;
+    }
+
+    .bb-cell.door-left::after {
+        left: -22px !important;
+        right: auto !important;
+    }
+
+    .bb-cell.door-right::after {
+        right: -22px !important;
+        left: auto !important;
+    }
+
+    .bb-cell .door-mark {
+        position: absolute;
+        width: 4px;
+        height: 24px;
+        border-radius: 999px;
+        background: #fff7d6;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 21;
+        pointer-events: none;
+    }
+
+    .bb-cell.door-left .door-mark {
+        left: -16px !important;
+        right: auto !important;
+    }
+
+    .bb-cell.door-right .door-mark {
+        right: -16px !important;
+        left: auto !important;
+    }
+
+    .bb-status-menu {
+        position: fixed;
+        z-index: 100000;
+        display: none;
+        min-width: 180px;
+        border-radius: 18px;
+        border: 1px solid var(--bb-status-menu-bdr);
+        background: var(--bb-status-menu-bg);
+        box-shadow: 0 20px 60px rgba(23,32,51,.18);
+        padding: 10px;
+    }
+
+        .bb-status-menu.show {
+            display: grid;
+            gap: 8px;
+        }
+
+        .bb-status-menu button {
+            min-height: 40px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-weight: 1000;
+        }
+
+        .bb-status-menu .active-btn {
+            background: rgba(18,183,106,.12);
+            color: #12b76a;
+        }
+
+        .bb-status-menu .inactive-btn {
+            background: rgba(240,68,56,.10);
+            color: #f04438;
+        }
+
+    @@media (max-width: 1200px) {
+        .bb-row {
+            grid-template-columns: 1fr;
+            align-items: start;
+        }
+
+        .bb-stat,
+        .bb-pill {
+            justify-self: start;
+        }
+
+        .bb-row-actions {
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .bb-filter-form {
+            grid-template-columns: 1fr;
+        }
+
+        .bb-modal-routes {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="bb-page">
+
+    <section class="bb-hero">
+        <div class="bb-hero-inner">
+            <div>
+                <span class="bb-badge">@L["Bus_Badge"]</span>
+                <h1>@L["Bus_Heading"]</h1>
+                <p>@L["Bus_Subtitle"]</p>
+            </div>
+
+            <div class="bb-avatar-wrap">
+                <div class="bb-avatar">@userName</div>
+                <span class="bb-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="bb-actions">
+            <a class="bb-btn bb-btn-white" asp-action="CreateNewBus">@L["Bus_CreateNew"]</a>
+            <a class="bb-btn bb-btn-glass" asp-action="Trips">@L["Bus_Trips"]</a>
+            <a class="bb-btn bb-btn-glass" asp-action="Companies">@L["Bus_Companies"]</a>
+        </div>
+    </section>
+
+    <section class="bb-card">
+        <form class="bb-filter-form" asp-action="Buses" method="get">
+
+            <div class="bb-group">
+                <label>@L["Bus_FilterName"]</label>
+                <input class="bb-input" name="search" value="@currentSearch" placeholder="@L["Bus_FilterNamePH"]" />
+            </div>
+
+            <div class="bb-group">
+                <label>@L["Bus_FilterStatus"]</label>
+                <select class="bb-select" name="status">
+                    <option value="all" selected="@(currentStatus == "all")">@L["Bus_FilterAll"]</option>
+                    <option value="active" selected="@(currentStatus == "active")">@L["Bus_FilterActive"]</option>
+                    <option value="inactive" selected="@(currentStatus == "inactive")">@L["Bus_FilterInactive"]</option>
+                </select>
+            </div>
+
+            <div class="bb-group">
+                <label>@L["Bus_FilterTripType"]</label>
+                <select class="bb-select" name="tripType">
+                    <option value="all" selected="@(currentTripType == "all")">@L["Bus_FilterAllTrips"]</option>
+                    <option value="go" selected="@(currentTripType == "go")">@L["Bus_FilterGo"]</option>
+                    <option value="return" selected="@(currentTripType == "return")">@L["Bus_FilterReturn"]</option>
+                </select>
+            </div>
+
+            <div class="bb-group">
+                <label>@L["Bus_FilterLocation"]</label>
+                <select class="bb-select" name="location">
+                    <option value="">@L["Bus_FilterAllLoc"]</option>
+                    @foreach (var loc in locations)
+                    {
+                        <option value="@loc" selected="@(currentLocation.Equals(loc, StringComparison.OrdinalIgnoreCase))">
+                            @loc
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button class="bb-btn bb-btn-orange" type="submit">@L["Bus_FilterApply"]</button>
+            <a class="bb-btn bb-btn-light" asp-action="Buses">@L["Bus_FilterReset"]</a>
+
+        </form>
+    </section>
+
+    <section class="bb-card">
+        <div class="bb-list">
+            @if (Model == null || !Model.Any())
+            {
+                <div class="bb-empty">@L["Bus_NoBuses"]</div>
+            }
+            else
+            {
+                foreach (var bus in Model)
+                {
+                    var rawJson = bus.LayoutJson ?? "[]";
+                    var b64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(rawJson));
+
+                    var busName = bus.Name ?? "Bus Layout";
+                    var plateText = string.IsNullOrWhiteSpace(bus.PlateNumber) ? L["Bus_NoPlate"].Value : bus.PlateNumber;
+
+                    var fromLocation = string.IsNullOrWhiteSpace(bus.FromLocation) ? "From" : bus.FromLocation;
+                    var toLocation = string.IsNullOrWhiteSpace(bus.ToLocation) ? "To" : bus.ToLocation;
+
+                    <div class="bb-row">
+                        <div class="bb-info">
+                            <h3 title="@busName">@busName</h3>
+                            <p>@plateText</p>
+
+                            <div class="bb-route-box">
+                                <div class="bb-route-line">
+                                    <span class="bb-route-label">@L["Bus_RouteGo"]:</span>
+                                    <span class="bb-route-city">@fromLocation</span>
+                                    <span class="bb-route-arrow">→</span>
+                                    <span class="bb-route-city">@toLocation</span>
+                                </div>
+
+                                <div class="bb-route-line">
+                                    <span class="bb-route-label">@L["Bus_RouteReturn"]:</span>
+                                    <span class="bb-route-city">@toLocation</span>
+                                    <span class="bb-route-arrow">→</span>
+                                    <span class="bb-route-city">@fromLocation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bb-stat">
+                            <span>@L["Bus_ColSeats"]</span>
+                            <strong>@bus.SeatsCount</strong>
+                        </div>
+
+                        <span class="bb-pill @(bus.IsActive ? "bb-active" : "bb-inactive")">
+                            @(bus.IsActive ? L["Bus_PillActive"].Value : L["Bus_PillInactive"].Value)
+                        </span>
+
+                        <div class="bb-row-actions">
+                            <button type="button"
+                                    class="bb-small-btn bb-show-btn js-bb-show"
+                                    data-bus-id="@bus.BusId"
+                                    data-name="@busName"
+                                    data-layout-b64="@b64"
+                                    data-rows="@bus.LayoutRows"
+                                    data-cols="@bus.LayoutColumns"
+                                    data-from="@fromLocation"
+                                    data-to="@toLocation">
+                                @L["Bus_BtnShow"]
+                            </button>
+
+                            <a class="bb-small-btn bb-details-btn"
+                                   asp-action="BusDetails"
+                                   asp-route-id="@bus.BusId">
+                                @L["Bus_BtnDetails"]
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+</div>
+
+<div id="BbModalBackdrop" class="bb-modal-backdrop" onclick="bbCloseBusModal(event)">
+    <div class="bb-modal" onclick="event.stopPropagation()">
+
+        <div class="bb-modal-head">
+            <h2 id="BbModalTitle">@L["Bus_ModalTitle"]</h2>
+            <button class="bb-modal-close" type="button" onclick="bbCloseBusModal()">×</button>
+        </div>
+
+        <div class="bb-modal-routes">
+            <div class="bb-modal-route-card">
+                <small>@L["Bus_ModalGoRoute"]</small>
+                <div class="bb-modal-route-value">
+                    <span id="BbModalGoFrom">From</span>
+                    <span>→</span>
+                    <span id="BbModalGoTo">To</span>
+                </div>
+            </div>
+
+            <div class="bb-modal-route-card">
+                <small>@L["Bus_ModalReturnRoute"]</small>
+                <div class="bb-modal-route-value">
+                    <span id="BbModalReturnFrom">To</span>
+                    <span>→</span>
+                    <span id="BbModalReturnTo">From</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bb-design-panel">
+            <div id="BbModalStage" class="bb-bus-stage"></div>
+        </div>
+
+        <div class="bb-modal-actions">
+            <button type="button" class="bb-btn bb-btn-light" onclick="bbCloseBusModal()">@L["Bus_ModalCancel"]</button>
+            <button type="button" class="bb-btn bb-btn-orange" onclick="bbSaveBusLayout()">@L["Bus_ModalSave"]</button>
+        </div>
+    </div>
+</div>
+
+<div id="BbStatusMenu" class="bb-status-menu">
+    <button type="button" class="active-btn" onclick="bbSetSelectedActive(true)">@L["Bus_MenuSetActive"]</button>
+    <button type="button" class="inactive-btn" onclick="bbSetSelectedActive(false)">@L["Bus_MenuSetInactive"]</button>
+</div>
+
+<form style="display:none" id="bb-csrf-form">
+    @Html.AntiForgeryToken()
+</form>
+
+<script>
+    const BbSeatType = { Normal:0, VIP:1, Driver:2, Assistant:3, Aisle:4, Door:5, Bathroom:6, Empty:7 };
+
+    const BB_CONFIRM_ALL = "@L["Bus_ConfirmAllSeats"]";
+    const BB_SAVE_FAILED = "@L["Bus_SaveFailed"]";
+    const BB_FRONT_ENTRY = "@L["Bus_ModalFrontEntry"]";
+
+    let bbCurrentBusId = null;
+    let bbCurrentLayout = [];
+    let bbCurrentRows = 1;
+    let bbCurrentCols = 1;
+    let bbSelectedCell = null;
+
+    function bbDecodeBase64Unicode(base64) {
+        try {
+            const bytes = new Uint8Array([...atob(base64 || "")].map(c => c.charCodeAt(0)));
+            return new TextDecoder("utf-8").decode(bytes);
+        } catch {
+            return "[]";
+        }
+    }
+
+    function bbSafeParseLayout(json) {
+        try {
+            let d = JSON.parse(json || "[]");
+
+            if (typeof d === "string") d = JSON.parse(d || "[]");
+            if (!Array.isArray(d)) return [];
+
+            return d.map(x => ({
+                type: parseInt(x.type ?? x.Type ?? BbSeatType.Empty),
+                row: parseInt(x.row ?? x.Row ?? 0),
+                column: parseInt(x.column ?? x.Column ?? 0),
+                label: String(x.label ?? x.Label ?? ""),
+                hasDoor: (x.hasDoor ?? x.HasDoor ?? false) === true,
+                isActive: (x.isActive ?? x.IsActive ?? true) === true
+            })).filter(x => x.row > 0 && x.column > 0);
+        } catch {
+            return [];
+        }
+    }
+
+    function bbGetTypeClass(t) {
+        return ["seat","vip","driver","assistant","road","door-only","wc","empty"][parseInt(t)] ?? "empty";
+    }
+
+    function bbGetTypeText(item) {
+        switch (parseInt(item.type)) {
+            case 0: return item.label || "S";
+            case 1: return item.label || "VIP";
+            case 2: return "DRV";
+            case 3: return "AST";
+            case 6: return "WC";
+            default: return "";
+        }
+    }
+
+    function bbIsPassenger(t) {
+        return parseInt(t) === 0 || parseInt(t) === 1;
+    }
+
+    function bbGetSizing(cols, rows) {
+        let s = 70;
+        let g = 8;
+
+        if (cols >= 6) s = 64;
+        if (cols >= 8) s = 56;
+        if (cols >= 10) s = 50;
+        if (rows >= 18) s = Math.min(s, 54);
+        if (rows >= 24) s = Math.min(s, 48);
+        if (cols >= 9 || rows >= 22) g = 6;
+
+        return {
+            cellSize: s,
+            gap: g,
+            busWidth: (cols * s) + ((cols - 1) * g) + 98
+        };
+    }
+
+    function bbBusMarkup(frontLabel) {
+        return `
+            <div class="bb-bus-nose">
+                <div class="bb-windshield"></div>
+                <div class="bb-headlight left"></div>
+                <div class="bb-headlight right"></div>
+            </div>
+
+            <div class="bb-body-wrap">
+                <div class="bb-wheel left top"></div>
+                <div class="bb-wheel left bottom"></div>
+                <div class="bb-wheel right top"></div>
+                <div class="bb-wheel right bottom"></div>
+
+                <div class="bb-bus-body">
+                    <div class="bb-side-rail left"></div>
+                    <div class="bb-side-rail right"></div>
+
+                    <div class="bb-meta">
+                        <span>${frontLabel}</span>
+                        <span id="BbModalGridSize"></span>
+                    </div>
+
+                    <div class="bb-grid"></div>
+                </div>
+            </div>`;
+    }
+
+    function bbGetLayoutItem(r, c) {
+        return bbCurrentLayout.find(x => x.row === r && x.column === c);
+    }
+
+    function bbRenderBus(container, layoutJson, rows, cols) {
+        bbCurrentRows = Math.max(1, parseInt(rows || 1));
+        bbCurrentCols = Math.max(1, parseInt(cols || 1));
+        bbCurrentLayout = bbSafeParseLayout(layoutJson);
+
+        const sz = bbGetSizing(bbCurrentCols, bbCurrentRows);
+
+        container.innerHTML = bbBusMarkup(BB_FRONT_ENTRY);
+
+        container.style.setProperty("--bb-cols", bbCurrentCols);
+        container.style.setProperty("--bb-cell-size", `${sz.cellSize}px`);
+        container.style.setProperty("--bb-cell-gap", `${sz.gap}px`);
+        container.style.setProperty("--bb-bus-width", `${sz.busWidth}px`);
+
+        const grid = container.querySelector(".bb-grid");
+        const gsize = container.querySelector("#BbModalGridSize");
+
+        if (gsize) gsize.textContent = `${bbCurrentRows} x ${bbCurrentCols}`;
+
+        grid.innerHTML = "";
+
+        for (let r = 1; r <= bbCurrentRows; r++) {
+            for (let c = 1; c <= bbCurrentCols; c++) {
+                let item = bbGetLayoutItem(r, c);
+
+                if (!item) {
+                    item = {
+                        type: BbSeatType.Empty,
+                        row: r,
+                        column: c,
+                        label: "",
+                        hasDoor: false,
+                        isActive: true
+                    };
+
+                    bbCurrentLayout.push(item);
+                }
+
+                const cell = document.createElement("div");
+
+                cell.className = "bb-cell";
+                cell.dataset.row = r;
+                cell.dataset.column = c;
+
+                bbRenderCell(cell, item);
+
+                cell.addEventListener("click", e => {
+                    e.stopPropagation();
+                    bbOpenStatusMenu(e, cell);
+                });
+
+                grid.appendChild(cell);
+            }
+        }
+    }
+
+    function bbRenderCell(cell, item) {
+        const cols = bbCurrentCols;
+
+        cell.className = "bb-cell " + bbGetTypeClass(item.type);
+
+        if (parseInt(item.type) !== BbSeatType.Empty && item.isActive === false) {
+            cell.classList.add("disabled-object");
+        }
+
+        if (item.hasDoor) {
+            cell.classList.add("has-door");
+
+            if (item.column === 1) {
+                cell.classList.add("door-left");
+            } else if (item.column === cols) {
+                cell.classList.add("door-right");
+            }
+        }
+
+        cell.innerHTML = bbGetTypeText(item);
+
+        if (item.hasDoor) {
+            const m = document.createElement("span");
+            m.className = "door-mark";
+            cell.appendChild(m);
+        }
+    }
+
+    function bbOpenStatusMenu(e, cell) {
+        const item = bbGetLayoutItem(parseInt(cell.dataset.row), parseInt(cell.dataset.column));
+
+        if (!item || parseInt(item.type) === BbSeatType.Empty) return;
+
+        bbSelectedCell = cell;
+
+        const menu = document.getElementById("BbStatusMenu");
+
+        menu.style.left = `${e.clientX}px`;
+        menu.style.top = `${e.clientY}px`;
+        menu.classList.add("show");
+    }
+
+    function bbHideStatusMenu() {
+        document.getElementById("BbStatusMenu").classList.remove("show");
+        bbSelectedCell = null;
+    }
+
+    function bbSetSelectedActive(val) {
+        if (!bbSelectedCell) return;
+
+        const item = bbGetLayoutItem(parseInt(bbSelectedCell.dataset.row), parseInt(bbSelectedCell.dataset.column));
+
+        if (!item || parseInt(item.type) === BbSeatType.Empty) {
+            bbHideStatusMenu();
+            return;
+        }
+
+        item.isActive = val;
+
+        bbRenderCell(bbSelectedCell, item);
+        bbHideStatusMenu();
+    }
+
+    function bbSetRouteText(from, to) {
+        document.getElementById("BbModalGoFrom").textContent = from || "From";
+        document.getElementById("BbModalGoTo").textContent = to || "To";
+
+        document.getElementById("BbModalReturnFrom").textContent = to || "To";
+        document.getElementById("BbModalReturnTo").textContent = from || "From";
+    }
+
+    function bbOpenBusModal(busId, name, layoutJson, rows, cols, from, to) {
+        bbCurrentBusId = busId;
+
+        document.getElementById("BbModalTitle").textContent = name || "Bus Layout";
+
+        bbSetRouteText(from, to);
+
+        bbRenderBus(document.getElementById("BbModalStage"), layoutJson, rows, cols);
+
+        document.getElementById("BbModalBackdrop").classList.add("show");
+        document.body.style.overflow = "hidden";
+    }
+
+    function bbCloseBusModal(event) {
+        const bd = document.getElementById("BbModalBackdrop");
+
+        if (event && event.target !== bd) return;
+
+        bd.classList.remove("show");
+        document.body.style.overflow = "";
+        bbHideStatusMenu();
+        bbCurrentBusId = null;
+    }
+
+    async function bbSaveBusLayout() {
+        if (!bbCurrentBusId) return;
+
+        const activePax = bbCurrentLayout.filter(x => bbIsPassenger(x.type) && x.isActive === true).length;
+
+        if (activePax === 0 && !confirm(BB_CONFIRM_ALL)) return;
+
+        const token = document.querySelector('#bb-csrf-form input[name="__RequestVerificationToken"]')?.value ?? "";
+
+        const fd = new FormData();
+
+        fd.append("__RequestVerificationToken", token);
+        fd.append("busId", bbCurrentBusId);
+        fd.append("layoutJson", JSON.stringify(
+            bbCurrentLayout
+                .filter(x => parseInt(x.type) !== BbSeatType.Empty || x.hasDoor)
+                .map(x => ({
+                    type: parseInt(x.type),
+                    row: x.row,
+                    column: x.column,
+                    label: x.label,
+                    hasDoor: x.hasDoor,
+                    isActive: x.isActive
+                }))
+        ));
+
+        const res = await fetch("@Url.Action("UpdateBusLayoutStatus", "Transportation")", {
+            method: "POST",
+            body: fd
+        });
+
+        if (!res.ok) {
+            alert(BB_SAVE_FAILED);
+            return;
+        }
+
+        window.location.reload();
+    }
+
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest("#BbStatusMenu") && !e.target.closest(".bb-cell")) {
+            bbHideStatusMenu();
+        }
+
+        const btn = e.target.closest(".js-bb-show");
+
+        if (!btn) return;
+
+        bbOpenBusModal(
+            btn.dataset.busId,
+            btn.dataset.name || "Bus Layout",
+            bbDecodeBase64Unicode(btn.dataset.layoutB64 || ""),
+            parseInt(btn.dataset.rows || "1"),
+            parseInt(btn.dataset.cols || "1"),
+            btn.dataset.from || "From",
+            btn.dataset.to || "To"
+        );
+    });
+
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") bbCloseBusModal();
+    });
+</script>

@@ -1,0 +1,749 @@
+@using BusinessLayer.DTOs.Book
+@model BusinessLayer.DTOs.Account.MyAccountDTO
+
+@{
+    ViewData["Title"] = L["Dash_Title"];
+
+    var role = User.IsInRole("Admin") ? "Admin" :
+               User.IsInRole("Helper") ? "Helper" :
+               User.IsInRole("Viewer") ? "Viewer" :
+               Model.AccountType.ToString();
+
+    var bookings      = ViewBag.Bookings as List<BookingListItemDTO> ?? new();
+    var selectedDate  = ViewBag.SelectedDate as string ?? DateTime.Today.ToString("yyyy-MM-dd");
+    var bookingType   = ViewBag.BookingType as string;
+    var allWork       = ViewBag.AllWork as bool? ?? false;
+
+    var initials = Model.FullName
+        .Split(' ')
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Take(2)
+        .Select(x => x[0])
+        .Aggregate("", (a, b) => a + b)
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials)) initials = "AM";
+}
+
+<style>
+    /* ══════════════════════════════════════════════════════════════════════
+       CSS VARIABLES — Light & Dark
+       Dark palette goals:
+         • No muddy browns — use blue-navy surfaces (#1e2535, #252d3f)
+         • Table text must contrast well → off-white #dce3ed
+         • row-money uses a distinct amber left-border + very subtle bg
+         • type-pill stays readable — amber tint on dark
+         • danger red stays bright but not harsh → #f87171
+         • success green → #34d399
+    ══════════════════════════════════════════════════════════════════════ */
+    :root {
+        /* hero */
+        --db-hero-bg:           linear-gradient(135deg, #ff7a18, #ffad42);
+        --db-hero-glow:         rgba(255,122,24,.18);
+        --db-hero-text:         #fff;
+        --db-hero-sub:          rgba(255,255,255,.92);
+        /* cards / surfaces */
+        --db-card-bg:           #fff;
+        --db-card-border:       #f0d8c2;
+        --db-card-shadow:       rgba(255,122,24,.09);
+        /* typography */
+        --db-heading:           #172033;
+        --db-body:              #344054;
+        --db-sub:               #667085;
+        --db-label:             #172033;
+        /* inputs */
+        --db-input-bg:          #fffaf5;
+        --db-input-border:      #f0d8c2;
+        --db-input-text:        #172033;
+        /* table */
+        --db-table-bg:          #fff;
+        --db-th-bg:             #fafafa;
+        --db-th-text:           #667085;
+        --db-td-border:         #f0d8c2;
+        --db-td-text:           #172033;
+        --db-td-sub:            #667085;
+        /* row highlight */
+        --db-row-money-bg:      #fef9ec;
+        --db-row-money-border:  #f59e0b;
+        /* type pill */
+        --db-pill-bg:           #fff3e6;
+        --db-pill-txt:          #9a4a00;
+        /* status colors */
+        --db-danger:            #dc2626;
+        --db-success:           #16a34a;
+        /* checkbox label */
+        --db-switch-txt:        #344054;
+    }
+
+    html[data-theme="dark"] {
+        /* hero — slightly cooler orange so it doesn't look like fire on dark bg */
+        --db-hero-bg:           linear-gradient(135deg, #c45c0a, #d98030);
+        --db-hero-glow:         rgba(196,92,10,.30);
+        --db-hero-text:         #f5f0eb;
+        --db-hero-sub:          rgba(245,240,235,.85);
+        /* cards — blue-navy, NOT brown */
+        --db-card-bg:           #1a2236;
+        --db-card-border:       #283148;
+        --db-card-shadow:       rgba(0,0,0,.35);
+        /* typography */
+        --db-heading:           #dce3ed;
+        --db-body:              #b8c4d4;
+        --db-sub:               #7a8ba0;
+        --db-label:             #c4cedb;
+        /* inputs */
+        --db-input-bg:          #212c3f;
+        --db-input-border:      #3a4d66;
+        --db-input-text:        #c4cedb;
+        /* table — slightly lighter than card so rows pop */
+        --db-table-bg:          #1a2236;
+        --db-th-bg:             #1e2940;
+        --db-th-text:           #7a8ba0;
+        --db-td-border:         #283148;
+        --db-td-text:           #dce3ed;   /* ← high contrast for readability */
+        --db-td-sub:            #9aaabb;
+        /* row highlight — amber left stripe, very subtle bg */
+        --db-row-money-bg:      rgba(251,191,36,.08);
+        --db-row-money-border:  #d97706;
+        /* type pill — warm amber readable on dark */
+        --db-pill-bg:           rgba(217,128,48,.22);
+        --db-pill-txt:          #f6ba72;
+        /* status colors — softer but readable */
+        --db-danger:            #f87171;
+        --db-success:           #34d399;
+        /* checkbox */
+        --db-switch-txt:        #b8c4d4;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .dashboard-page { display: grid; gap: 20px; }
+
+    /* ── Hero ────────────────────────────────────────────────────────────── */
+    .dashboard-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: var(--db-hero-text);
+        background: var(--db-hero-bg);
+        box-shadow: 0 24px 70px var(--db-hero-glow);
+    }
+
+        .dashboard-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.16), transparent 26%);
+            pointer-events: none;
+        }
+
+        .dashboard-hero::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            bottom: -110px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.10);
+        }
+
+    .dashboard-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .dashboard-title { display: grid; gap: 10px; }
+
+    .dashboard-badge {
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: var(--db-hero-text);
+    }
+
+    .dashboard-title h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1;
+        letter-spacing: -1px;
+        color: var(--db-hero-text);
+    }
+
+    .dashboard-title p {
+        margin: 0;
+        color: var(--db-hero-sub);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    /* ── Avatar ──────────────────────────────────────────────────────────── */
+    .dashboard-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        flex-shrink: 0;
+    }
+
+        .dashboard-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .dashboard-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -7px;
+            border-radius: 44px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: db-spin 4s linear infinite;
+        }
+
+    .dashboard-avatar {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)),
+                    linear-gradient(135deg, #fff, #fff3e6);
+        color: #ff7a18;
+        font-size: 42px;
+        font-weight: 1000;
+        text-transform: uppercase;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .dashboard-avatar-status {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    @@keyframes db-spin { to { transform: rotate(360deg); } }
+
+    /* ── Hero actions ────────────────────────────────────────────────────── */
+    .dashboard-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .dashboard-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 900;
+        transition: .2s ease;
+    }
+
+        .dashboard-btn:hover { transform: translateY(-2px); }
+
+    .btn-glass {
+        background: rgba(255,255,255,.16);
+        color: var(--db-hero-text);
+        border: 1px solid rgba(255,255,255,.28);
+    }
+
+    /* ── Summary cards ───────────────────────────────────────────────────── */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .summary-card {
+        background: var(--db-card-bg);
+        border: 1px solid var(--db-card-border);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 16px 38px var(--db-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+        .summary-card small {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--db-sub);
+            font-weight: 900;
+        }
+
+        .summary-card strong {
+            display: block;
+            color: var(--db-heading);
+            font-size: 20px;
+            word-break: break-word;
+        }
+
+    /* ── Filter card ─────────────────────────────────────────────────────── */
+    .dashboard-filter-card {
+        background: var(--db-card-bg);
+        border: 1px solid var(--db-card-border);
+        border-radius: 30px;
+        padding: 22px;
+        box-shadow: 0 18px 42px var(--db-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .dashboard-filters {
+        display: grid;
+        grid-template-columns: 180px 220px 260px 1fr;
+        gap: 14px;
+        align-items: end;
+    }
+
+    .filter-field { display: grid; gap: 7px; }
+
+        .filter-field > label {
+            font-weight: 900;
+            color: var(--db-label);
+            font-size: 13px;
+        }
+
+    .filter-field input,
+    .filter-field select {
+        border: 1px solid var(--db-input-border);
+        border-radius: 14px;
+        padding: 11px 13px;
+        background: var(--db-input-bg);
+        color: var(--db-input-text);
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color .2s, background .3s;
+    }
+
+        .filter-field input:focus,
+        .filter-field select:focus {
+            border-color: rgba(255,122,24,.55);
+            background: var(--db-card-bg);
+            box-shadow: 0 0 0 4px rgba(255,122,24,.09);
+        }
+
+        .filter-field select option { background: #fff; color: #172033; }
+
+    .check-field { align-self: center; }
+
+    .switch-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        color: var(--db-switch-txt);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    /* ── Table card ──────────────────────────────────────────────────────── */
+    .table-card {
+        background: var(--db-card-bg);
+        border: 1px solid var(--db-card-border);
+        border-radius: 30px;
+        padding: 22px;
+        box-shadow: 0 18px 42px var(--db-card-shadow);
+        overflow: hidden;
+        transition: background .3s, border-color .3s;
+    }
+
+    .table-responsive { overflow-x: auto; }
+
+    .dashboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .dashboard-table th {
+            background: var(--db-th-bg);
+            color: var(--db-th-text);
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding: 13px 11px;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--db-td-border);
+        }
+
+        .dashboard-table td {
+            padding: 13px 11px;
+            white-space: nowrap;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--db-td-border);
+            color: var(--db-td-text);
+            font-size: 14px;
+            transition: color .3s;
+        }
+
+        /* Client name bold */
+        .dashboard-table td strong {
+            color: var(--db-heading);
+            font-weight: 900;
+        }
+
+    /* ── Row highlight — money ───────────────────────────────────────────── */
+    .row-money {
+        background: var(--db-row-money-bg) !important;
+        border-left: 4px solid var(--db-row-money-border) !important;
+    }
+
+    /* ── Status colors ───────────────────────────────────────────────────── */
+    .danger-text       { color: var(--db-danger) !important; font-weight: 900; }
+    .remaining-danger  { color: var(--db-danger); font-weight: 900; }
+    .remaining-ok      { color: var(--db-success); font-weight: 900; }
+
+    /* ── Type pill ───────────────────────────────────────────────────────── */
+    .type-pill {
+        display: inline-flex;
+        padding: 5px 11px;
+        border-radius: 999px;
+        background: var(--db-pill-bg);
+        color: var(--db-pill-txt);
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+        border: 1px solid transparent;
+        transition: background .3s, color .3s;
+    }
+
+    /* In dark mode add a subtle border so pill stands out from table bg */
+    html[data-theme="dark"] .type-pill {
+        border-color: rgba(246,186,114,.20);
+    }
+
+    /* ── Action cell ─────────────────────────────────────────────────────── */
+    .actions-cell {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        min-width: 220px;
+    }
+
+    /* ── Card head ───────────────────────────────────────────────────────── */
+    .card-head {
+        margin-bottom: 16px;
+    }
+
+        .card-head h2 {
+            margin: 6px 0 0;
+            color: var(--db-heading);
+            font-size: 24px;
+        }
+
+    /* ── Empty cell ──────────────────────────────────────────────────────── */
+    .empty-cell {
+        text-align: center;
+        padding: 36px !important;
+        color: var(--db-sub);
+        font-weight: 800;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @@media (max-width: 1150px) {
+        .dashboard-filters { grid-template-columns: repeat(2, 1fr); }
+        .filter-actions    { justify-content: flex-start; }
+        .summary-grid      { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @@media (max-width: 650px) {
+        .dashboard-hero { padding: 24px; border-radius: 24px; }
+
+        .dashboard-filters,
+        .summary-grid { grid-template-columns: 1fr; }
+
+        .filter-actions .btn,
+        .dashboard-btn { width: 100%; }
+
+        .dashboard-actions { flex-direction: column; }
+
+        .dashboard-avatar-wrap {
+            width: 112px;
+            height: 112px;
+            border-radius: 32px;
+        }
+
+            .dashboard-avatar-wrap::before,
+            .dashboard-avatar-wrap::after { border-radius: 38px; }
+
+        .dashboard-avatar {
+            width: 88px;
+            height: 88px;
+            font-size: 34px;
+            border-radius: 27px;
+        }
+    }
+</style>
+
+<div class="dashboard-page">
+
+    @* ── Hero ── *@
+    <section class="dashboard-hero">
+        <div class="dashboard-hero-inner">
+            <div class="dashboard-title">
+                <span class="dashboard-badge">@L["Dash_Badge"]</span>
+                <h1>@L["Dash_Heading"]</h1>
+                <p>@L["Dash_WelcomeBack"], @Model.FullName. @L["Dash_Subtitle"]</p>
+            </div>
+
+            <div class="dashboard-avatar-wrap" title="@Model.FullName">
+                <div class="dashboard-avatar">@initials</div>
+
+                @if (Model.Login)
+                {
+                    <span class="dashboard-avatar-status"></span>
+                }
+            </div>
+        </div>
+
+        <div class="dashboard-actions">
+
+            <a class="dashboard-btn btn-glass"
+               asp-controller="Works"
+               asp-action="Index"
+               asp-route-date="@selectedDate">
+                @L["Work_Dashboard"]
+            </a>
+
+            <a class="dashboard-btn btn-glass"
+               asp-controller="Dashboard"
+               asp-action="ExportExcel"
+               asp-route-date="@selectedDate"
+               asp-route-bookingType="@bookingType"
+               asp-route-allWork="@allWork">
+                @L["Dash_ExcelBtn"]
+            </a>
+
+            <a class="dashboard-btn btn-glass"
+               asp-controller="Dashboard"
+               asp-action="ExportPdf"
+               asp-route-date="@selectedDate"
+               asp-route-bookingType="@bookingType"
+               asp-route-allWork="@allWork">
+                @L["Dash_PdfBtn"]
+            </a>
+        </div>
+    </section>
+
+    @* ── Summary ── *@
+    <section class="summary-grid">
+        <div class="summary-card">
+            <small>@L["Dash_Username"]</small>
+            <strong>@Model.UserName</strong>
+        </div>
+
+        <div class="summary-card">
+            <small>@L["Dash_Role"]</small>
+            <strong>@role</strong>
+        </div>
+
+        <div class="summary-card">
+            <small>@L["Dash_RegisteredWork"]</small>
+            <strong>@bookings.Count</strong>
+        </div>
+
+        <div class="summary-card">
+            <small>@L["Dash_TotalRemaining"]</small>
+            <strong>@bookings.Sum(x => x.RemainingAmount).ToString("N2")</strong>
+        </div>
+    </section>
+
+    @* ── Filters ── *@
+    <div class="dashboard-filter-card">
+        <form method="get" asp-action="Index" class="dashboard-filters">
+
+            <div class="filter-field">
+                <label>@L["Dash_FilterDate"]</label>
+                <input type="date" name="date" value="@selectedDate" />
+            </div>
+
+            <div class="filter-field">
+                <label>@L["Dash_FilterType"]</label>
+                <select name="bookingType">
+                    <option value="">@L["Dash_FilterAll"]</option>
+                    <option value="hotel"     selected="@(bookingType == "hotel")">@L["Dash_FilterHotel"]</option>
+                    <option value="transport" selected="@(bookingType == "transport")">@L["Dash_FilterTransport"]</option>
+                    <option value="both"      selected="@(bookingType == "both")">@L["Dash_FilterBoth"]</option>
+                </select>
+            </div>
+
+            <div class="filter-field check-field">
+                <label>@L["Dash_FilterScope"]</label>
+                <label class="switch-line">
+                    <input type="checkbox" name="allWork" value="true" @(allWork ? "checked" : "") />
+                    <span>@L["Dash_FilterAllWork"]</span>
+                </label>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary" type="submit">@L["Dash_FilterApply"]</button>
+                <a class="btn btn-soft" asp-controller="Dashboard" asp-action="Index">@L["Dash_FilterToday"]</a>
+            </div>
+
+        </form>
+    </div>
+
+    @* ── Table ── *@
+    <div class="table-card">
+        <div class="card-head">
+            <span class="badge">@L["Dash_TableBadge"]</span>
+            <h2>@L["Dash_TableTitle"]</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>@L["Dash_ColCode"]</th>
+                        <th>@L["Dash_ColClient"]</th>
+                        <th>@L["Dash_ColPhones"]</th>
+                        <th>@L["Dash_ColType"]</th>
+                        <th>@L["Dash_ColHotel"]</th>
+                        <th>@L["Dash_ColCheckIn"]</th>
+                        <th>@L["Dash_ColCheckOut"]</th>
+                        <th>@L["Dash_ColPayment"]</th>
+                        <th>@L["Dash_ColHotelTotal"]</th>
+                        <th>@L["Dash_ColTransport"]</th>
+                        <th>@L["Dash_ColDiscount"]</th>
+                        <th>@L["Dash_ColGrandTotal"]</th>
+                        <th>@L["Dash_ColPaid"]</th>
+                        <th>@L["Dash_ColRemaining"]</th>
+                        <th>@L["Dash_ColNotes"]</th>
+                        <th>@L["Dash_ColCreatedBy"]</th>
+                        <th>@L["Dash_ColActions"]</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (bookings.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="17" class="empty-cell">@L["Dash_NoWork"]</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in bookings)
+                        {
+                            var type =
+                                item.HasHotel && item.HasTransportation ? L["Dash_TypeHotelTransport"].Value :
+                                item.HasHotel                           ? L["Dash_TypeHotel"].Value :
+                                item.HasTransportation                  ? L["Dash_TypeTransport"].Value :
+                                                                          L["Dash_TypeNA"].Value;
+
+                            var rowClass   = item.RemainingAmount > 0 ? "row-money" : "";
+                            var phoneClass = string.IsNullOrWhiteSpace(item.PhoneNumbersText) ? "danger-text" : "";
+                            var notesClass = !string.IsNullOrWhiteSpace(item.Notes) ? "danger-text" : "";
+
+                            <tr class="@rowClass">
+                                <td><span class="code-pill">@item.Code</span></td>
+                                <td><strong>@item.ClientName</strong></td>
+
+                                <td class="@phoneClass">
+                                    @(string.IsNullOrWhiteSpace(item.PhoneNumbersText)
+                                        ? L["Dash_NoPhone"].Value
+                                        : item.PhoneNumbersText)
+                                </td>
+
+                                <td><span class="type-pill">@type</span></td>
+                                <td>@(item.HasHotel ? item.HotelName : "-")</td>
+                                <td>@(item.HasHotel ? item.CheckInDate.ToString("dd MMM yyyy") : "-")</td>
+                                <td>@(item.HasHotel ? item.CheckOutDate.ToString("dd MMM yyyy") : "-")</td>
+                                <td>@item.PayTypeName</td>
+                                <td>@item.HotelTotal.ToString("N2")</td>
+                                <td>@item.TransportationTotal.ToString("N2")</td>
+                                <td>@item.Discount.ToString("N2")</td>
+                                <td><strong>@item.GrandTotal.ToString("N2")</strong></td>
+                                <td>@item.PaidAmount.ToString("N2")</td>
+
+                                <td>
+                                    @if (item.RemainingAmount > 0)
+                                    {
+                                        <span class="remaining-danger">@item.RemainingAmount.ToString("N2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="remaining-ok">0.00</span>
+                                    }
+                                </td>
+
+                                <td class="@notesClass">
+                                    @(string.IsNullOrWhiteSpace(item.Notes) ? "-" : item.Notes)
+                                </td>
+
+                                <td>@item.CreatedBy</td>
+
+                                <td class="actions-cell">
+                                    <a class="btn btn-sm btn-light"
+                                       asp-controller="Bookings"
+                                       asp-action="Details"
+                                       asp-route-id="@item.BookingID">
+                                        @L["Dash_BtnDetails"]
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline"
+                                       asp-controller="Bookings"
+                                       asp-action="Ticket"
+                                       asp-route-id="@item.BookingID"
+                                       target="_blank">
+                                        @L["Dash_BtnTicket"]
+                                    </a>
+
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Helper"))
+                                    {
+                                        <a class="btn btn-sm btn-primary"
+                                           asp-controller="Bookings"
+                                           asp-action="Edit"
+                                           asp-route-id="@item.BookingID">
+                                            @L["Dash_BtnEdit"]
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

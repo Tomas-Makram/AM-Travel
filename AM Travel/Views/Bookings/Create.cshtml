@@ -1,0 +1,2697 @@
+@using AM_Travel.Resources
+@using Microsoft.Extensions.Localization
+@model BusinessLayer.DTOs.Book.CreateBookingDTO
+@using DataLayer.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using BusinessLayer.DTOs.Book
+@using System.Text.Json
+@using System.Security.Claims
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@inject IStringLocalizer<SharedResource> L
+
+@{
+    ViewData["Title"] = L["CB_Title"];
+
+    var fullName = ViewBag.Name as string ?? User.FindFirstValue(ClaimTypes.GivenName) ?? "Unknown";
+
+    var initials = string.Join("", fullName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(x => x[0]))
+        .ToUpper();
+
+    if (string.IsNullOrWhiteSpace(initials))
+        initials = "AM";
+
+    var roomTypes = ViewBag.RoomTypes as List<SelectListItem> ?? new();
+    var payTypes = ViewBag.PayTypes as List<SelectListItem> ?? new();
+    var isAdmin = User.IsInRole("Admin");
+    var selectedTripType = Model.Transportation?.TripType.ToString() ?? "Departure";
+    var fromLocations = ViewBag.FromLocations as List<string> ?? new();
+    var busRoutes = ViewBag.BusRoutes as IEnumerable<object> ?? Enumerable.Empty<object>();
+
+    var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+
+    string ReadRouteProp(object item, string propName)
+    {
+        return item?.GetType().GetProperty(propName)?.GetValue(item)?.ToString() ?? string.Empty;
+    }
+
+    var allLocations = fromLocations
+        .Concat(busRoutes.Select(x => ReadRouteProp(x, "FromLocation")))
+        .Concat(busRoutes.Select(x => ReadRouteProp(x, "ToLocation")))
+        .Where(x => !string.IsNullOrWhiteSpace(x))
+        .Select(x => x.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(x => x)
+        .ToList();
+
+    if (Model.Rooms == null || Model.Rooms.Count == 0)
+        Model.Rooms = new List<BookingRoomDTO> { new() { Count = 1, NightPrice = 0 } };
+
+    if (Model.PhoneNumbers == null || Model.PhoneNumbers.Count == 0)
+        Model.PhoneNumbers = new List<BookingPhoneDTO> { new() { Prime = true } };
+
+    if (Model.Payments == null || Model.Payments.Count == 0)
+        Model.Payments = new List<BookingPaymentDTO> { new() { Amount = 0, PayType = DataLayer.Models.PayType.cache, PaidAt = DateTime.Today } };
+
+    Model.Transportation ??= new TransportationBookingDTO();
+    Model.Transportation.DepartureSeats ??= new List<BookingSeatDTO>();
+    Model.Transportation.ReturnSeats ??= new List<BookingSeatDTO>();
+
+    string ErrorFor(string key)
+    {
+        if (!ViewData.ModelState.TryGetValue(key, out var state) || state.Errors.Count == 0)
+            return "";
+        return string.Join(" ", state.Errors.Select(e => e.ErrorMessage));
+    }
+
+    string JsString(string? value) => JsonSerializer.Serialize(value ?? string.Empty);
+
+    string JsGuid(Guid? value) => JsonSerializer.Serialize(
+        value.HasValue && value.Value != Guid.Empty ? value.Value.ToString() : string.Empty);
+
+    string SeatLabel(BookingSeatDTO seat)
+    {
+        if (!string.IsNullOrWhiteSpace(seat.SeatLabel)) return seat.SeatLabel;
+        return seat.SeatNumber > 0 ? seat.SeatNumber.ToString() : L["CB_JsSeat"].Value;
+    }
+
+    var postedDepartureSeats = Model.Transportation?.DepartureSeats ?? new List<BookingSeatDTO>();
+    var postedReturnSeats = Model.Transportation?.ReturnSeats ?? new List<BookingSeatDTO>();
+}
+
+<style>
+    /* ===================== THEME VARS ===================== */
+    :root {
+        --cb-hero-bg: linear-gradient(135deg,#ff7a18,#ffad42);
+        --cb-hero-glow: rgba(255,122,24,.18);
+        --cb-hero-text: #fff;
+        --cb-hero-sub: rgba(255,255,255,.95);
+        --cb-glass: rgba(255,255,255,.18);
+        --cb-card: #fff;
+        --cb-card-border: #f0d8c2;
+        --cb-card-shadow: rgba(255,122,24,.10);
+        --cb-card-shadow-soft: rgba(255,122,24,.08);
+        --cb-text: #172033;
+        --cb-muted: #667085;
+        --cb-faint: #98a2b3;
+        --cb-line: #f3dfcc;
+        --cb-soft: #fffaf5;
+        --cb-soft2: #fff3e6;
+        --cb-soft3: #fff7ed;
+        --cb-input-bg: #fffaf5;
+        --cb-input-text: #172033;
+        --cb-orange: #ff7a18;
+        --cb-danger: #dc2626;
+        --cb-success: #027a48;
+        --cb-busshell-bg: #fff;
+        --cb-buscell-bg: #fff;
+        --cb-buscell-border: #f0c9a5;
+        --cb-busgrid-bg: #fffaf5;
+        --cb-road-a: #f2f4f7;
+        --cb-road-b: #e4e7ec;
+        --cb-road-border: #d0d5dd;
+    }
+
+    html[data-theme="dark"] {
+        --cb-hero-bg: linear-gradient(135deg,#c45c0a,#d97c2a);
+        --cb-hero-glow: rgba(196,92,10,.22);
+        --cb-hero-text: #f5f0eb;
+        --cb-hero-sub: rgba(245,240,235,.88);
+        --cb-glass: rgba(255,255,255,.12);
+        --cb-card: #1a2236;
+        --cb-card-border: #283148;
+        --cb-card-shadow: rgba(0,0,0,.35);
+        --cb-card-shadow-soft: rgba(0,0,0,.30);
+        --cb-text: #dce3ed;
+        --cb-muted: #7a8ba0;
+        --cb-faint: #6b7488;
+        --cb-line: #3a4d66;
+        --cb-soft: #212c3f;
+        --cb-soft2: #2a2113;
+        --cb-soft3: #232b3b;
+        --cb-input-bg: #212c3f;
+        --cb-input-text: #dce3ed;
+        --cb-danger: #f87171;
+        --cb-success: #34d399;
+        --cb-busshell-bg: #1a2236;
+        --cb-buscell-bg: #212c3f;
+        --cb-buscell-border: #3a4d66;
+        --cb-busgrid-bg: #232b3b;
+        --cb-road-a: #2a3346;
+        --cb-road-b: #1f2738;
+        --cb-road-border: #3a4d66;
+    }
+
+    /* ===================== PAGE ===================== */
+    .cb-page {
+        display: grid;
+        gap: 24px;
+        color: var(--cb-text);
+    }
+
+    /* ===================== HERO ===================== */
+    .cb-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 38px;
+        color: var(--cb-hero-text);
+        background: var(--cb-hero-bg);
+        box-shadow: 0 24px 70px var(--cb-hero-glow);
+    }
+
+        .cb-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.22), transparent 26%);
+            pointer-events: none;
+        }
+
+        .cb-hero::after {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            right: -95px;
+            bottom: -115px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            pointer-events: none;
+        }
+
+    .cb-page[dir="rtl"] .cb-hero::after {
+        right: auto;
+        left: -95px;
+    }
+
+    .cb-hero-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .cb-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.28);
+        font-weight: 1000;
+        color: var(--cb-hero-text);
+    }
+
+    .cb-hero h1 {
+        margin: 18px 0 0;
+        font-size: clamp(42px,6vw,66px);
+        line-height: 1;
+        letter-spacing: -1.5px;
+        color: var(--cb-hero-text);
+    }
+
+    .cb-hero p {
+        margin: 16px 0 0;
+        color: var(--cb-hero-sub);
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .cb-avatar-wrap {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 42px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+        .cb-avatar-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid rgba(255,255,255,.22);
+        }
+
+        .cb-avatar-wrap::after {
+            content: "";
+            position: absolute;
+            inset: -8px;
+            border-radius: 48px;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            border-right-color: rgba(255,255,255,.72);
+            animation: cb-spin 4s linear infinite;
+        }
+
+    @@keyframes cb-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .cb-avatar {
+        position: relative;
+        z-index: 2;
+        width: 112px;
+        height: 112px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        color: #ff6a00;
+        font-size: 42px;
+        font-weight: 1000;
+        box-shadow: 0 18px 38px rgba(0,0,0,.14);
+    }
+
+    .cb-avatar-status {
+        position: absolute;
+        right: 22px;
+        bottom: 20px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    .cb-page[dir="rtl"] .cb-avatar-status {
+        right: auto;
+        left: 22px;
+    }
+
+    .cb-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+    }
+
+    /* ===================== BUTTONS ===================== */
+    .cb-btn {
+        min-height: 46px;
+        padding: 0 18px;
+        border-radius: 16px;
+        border: none;
+        font-weight: 1000;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .cb-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .cb-btn-white {
+        background: #fff;
+        color: #ff7a18;
+    }
+
+    .cb-btn-orange {
+        background: #ff7a18;
+        color: #fff;
+    }
+
+    .cb-btn-light {
+        background: var(--cb-soft);
+        color: #ff7a18;
+        border: 1px solid var(--cb-line);
+    }
+
+    /* ===================== CARDS ===================== */
+    .cb-card,
+    .cb-form-card {
+        background: var(--cb-card);
+        border: 1px solid var(--cb-card-border);
+        border-radius: 30px;
+        padding: 26px;
+        box-shadow: 0 18px 42px var(--cb-card-shadow);
+        transition: background .3s, border-color .3s;
+    }
+
+    .cb-section-head {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+
+    .cb-soft-badge {
+        width: fit-content;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: var(--cb-soft2);
+        color: #ff7a18;
+        border: 1px solid var(--cb-line);
+        font-weight: 1000;
+    }
+
+    .cb-section-head h2 {
+        margin: 0;
+        color: var(--cb-text);
+        font-size: 28px;
+        font-weight: 1000;
+    }
+
+    .cb-section-head p {
+        margin: 0;
+        color: var(--cb-muted);
+        font-weight: 800;
+        line-height: 1.6;
+    }
+
+    /* ===================== MODE SELECTOR ===================== */
+    .cb-mode-grid {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        gap: 14px;
+    }
+
+    .cb-mode-option {
+        min-height: 132px;
+        border: 1px solid var(--cb-line);
+        border-radius: 26px;
+        background: var(--cb-soft);
+        padding: 20px;
+        display: grid;
+        gap: 8px;
+        text-align: start;
+        cursor: pointer;
+        transition: .2s ease, background .3s, border-color .3s;
+        color: var(--cb-text);
+    }
+
+        .cb-mode-option strong {
+            color: var(--cb-text);
+            font-size: 20px;
+            font-weight: 1000;
+        }
+
+        .cb-mode-option span {
+            color: #ff7a18;
+            font-size: 15px;
+            font-weight: 1000;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .cb-mode-option small {
+            color: var(--cb-muted);
+            font-weight: 800;
+            line-height: 1.6;
+        }
+
+        .cb-mode-option:hover,
+        .cb-mode-option.active {
+            background: var(--cb-soft2);
+            border-color: #ff7a18;
+            box-shadow: 0 16px 32px rgba(255,122,24,.14);
+            transform: translateY(-2px);
+        }
+
+    .cb-form-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+    }
+
+    /* ===================== BOOKING FORM ===================== */
+    .booking-grid {
+        display: grid;
+        grid-template-columns: repeat(12,1fr);
+        gap: 16px;
+    }
+
+    .field {
+        grid-column: span 4;
+    }
+
+        .field.wide {
+            grid-column: span 12;
+        }
+
+    .mini-card {
+        border: 1px solid var(--cb-card-border);
+        border-radius: 28px;
+        padding: 22px;
+        background: var(--cb-card);
+        box-shadow: 0 18px 42px var(--cb-card-shadow-soft);
+        margin-bottom: 18px;
+        transition: background .3s, border-color .3s;
+    }
+
+    .mini-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .mini-title {
+        font-size: 22px;
+        font-weight: 1000;
+        color: var(--cb-text);
+    }
+
+    .mini-subtitle {
+        color: var(--cb-muted);
+        font-weight: 800;
+        margin-top: 4px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 13px;
+        font-weight: 1000;
+        color: var(--cb-muted);
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid var(--cb-line);
+        border-radius: 16px;
+        padding: 0 14px;
+        outline: none;
+        background: var(--cb-input-bg);
+        color: var(--cb-input-text);
+        font-weight: 900;
+        transition: background .3s, color .3s, border-color .2s;
+    }
+
+    textarea {
+        padding-top: 12px;
+        min-height: 100px;
+        resize: vertical;
+    }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #ff7a18;
+            box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+        }
+
+    select option {
+        background: #fff;
+        color: #172033;
+    }
+
+    html[data-theme="dark"] select option {
+        background: #212c3f;
+        color: #dce3ed;
+    }
+
+    .rows {
+        display: grid;
+        gap: 12px;
+    }
+
+    .row-item {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 12px;
+        align-items: end;
+        border: 1px solid var(--cb-line);
+        border-radius: 24px;
+        background: var(--cb-soft);
+        padding: 16px;
+    }
+
+    .payments .row-item {
+        grid-template-columns: 1fr 1fr 1fr 1.3fr auto;
+    }
+
+    .phones .row-item {
+        grid-template-columns: 1.4fr auto auto;
+        align-items: center;
+    }
+
+    .btn-small {
+        min-height: 44px;
+        border: 0;
+        border-radius: 14px;
+        padding: 0 16px;
+        font-weight: 1000;
+        cursor: pointer;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+        .btn-small:hover {
+            transform: translateY(-2px);
+        }
+
+    .btn-add {
+        background: #ff7a18;
+        color: #fff;
+    }
+
+    .btn-remove {
+        background: rgba(240,68,56,.10);
+        color: #f04438;
+    }
+
+    .summary-box {
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 12px;
+    }
+
+    .sum {
+        background: var(--cb-soft);
+        border: 1px solid var(--cb-line);
+        border-radius: 22px;
+        padding: 16px;
+    }
+
+        .sum b {
+            display: block;
+            color: var(--cb-muted);
+            font-size: 12px;
+            font-weight: 1000;
+            margin-bottom: 8px;
+        }
+
+        .sum span {
+            color: var(--cb-text);
+            font-size: 22px;
+            font-weight: 1000;
+        }
+
+    .primary-phone-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: var(--cb-text);
+        white-space: nowrap;
+    }
+
+        .primary-phone-label input {
+            width: auto;
+            min-height: auto;
+        }
+
+    .text-danger,
+    .field-error,
+    .row-error {
+        color: var(--cb-danger);
+        font-weight: 900;
+        font-size: 13px;
+        margin-top: 7px;
+    }
+
+    .input-error {
+        border-color: var(--cb-danger) !important;
+        box-shadow: 0 0 0 4px rgba(220,38,38,.10) !important;
+    }
+
+    .validation-panel {
+        display: none;
+        border: 1px solid rgba(220,38,38,.25);
+        background: #fff5f5;
+        color: #991b1b;
+        border-radius: 20px;
+        padding: 16px;
+        margin-bottom: 18px;
+        font-weight: 900;
+    }
+
+        .validation-panel.show {
+            display: block;
+        }
+
+        .validation-panel ul {
+            margin: 8px 0 0;
+            padding-inline-start: 20px;
+        }
+
+    /* ===================== TRANSPORT ===================== */
+    .transport-card {
+        display: none;
+    }
+
+        .transport-card.show {
+            display: block;
+        }
+
+    .transport-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+        .transport-grid.round {
+            grid-template-columns: 1fr 1fr;
+            align-items: start;
+        }
+
+    .transport-section {
+        border: 1px solid var(--cb-line);
+        border-radius: 26px;
+        background: var(--cb-soft);
+        padding: 18px;
+        display: grid;
+        gap: 14px;
+    }
+
+        .transport-section.disabled {
+            display: none;
+        }
+
+    .transport-section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .transport-section h3 {
+        margin: 0;
+        color: var(--cb-text);
+        font-size: 22px;
+        font-weight: 1000;
+    }
+
+    .trip-pill {
+        padding: 7px 14px;
+        border-radius: 999px;
+        background: #ff7a18;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 1000;
+        text-transform: uppercase;
+    }
+
+    .transport-field {
+        display: grid;
+        gap: 7px;
+    }
+
+    .transport-input {
+        width: 100%;
+        min-height: 48px;
+        border-radius: 16px;
+        border: 1px solid var(--cb-line);
+        padding: 0 14px;
+        font-weight: 900;
+        outline: none;
+        background: var(--cb-card);
+        color: var(--cb-input-text);
+        transition: background .3s, color .3s, border-color .2s;
+    }
+
+        .transport-input:focus {
+            border-color: #ff7a18;
+            box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+        }
+
+    .transport-date-box {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 12px;
+        align-items: end;
+    }
+
+    .seat-request-grid {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(180px,1fr));
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .seat-request-field {
+        display: grid;
+        gap: 7px;
+    }
+
+        .seat-request-field.disabled {
+            display: none;
+        }
+
+    .bus-availability-note {
+        font-size: 12px;
+        font-weight: 900;
+        color: var(--cb-muted);
+        margin-top: 6px;
+    }
+
+    .bus-availability-ok {
+        color: var(--cb-success);
+    }
+
+    .bus-availability-bad {
+        color: #b42318;
+    }
+
+    .route-swap-btn {
+        width: 48px;
+        min-height: 48px;
+        border: 0;
+        border-radius: 16px;
+        background: #ff7a18;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 1000;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 12px 26px rgba(255,122,24,.18);
+        transition: .2s ease;
+    }
+
+        .route-swap-btn:hover {
+            transform: translateY(-2px) rotate(180deg);
+            background: #e86608;
+        }
+
+    .transport-price-grid {
+        display: none;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+        padding: 14px;
+        border: 1px solid var(--cb-line);
+        border-radius: 20px;
+        background: var(--cb-card);
+    }
+
+        .transport-price-grid.show {
+            display: grid;
+        }
+
+    .price-title {
+        grid-column: 1/-1;
+        font-weight: 1000;
+        color: var(--cb-text);
+        margin-bottom: 2px;
+    }
+
+    /* ===================== BUS SHELL ===================== */
+    .bus-shell {
+        overflow: auto;
+        padding: 20px;
+        border-radius: 26px;
+        border: 1px solid var(--cb-line);
+        background: radial-gradient(circle at 20% 10%, rgba(255,122,24,.08), transparent 28%), var(--cb-busshell-bg);
+        min-height: 440px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    }
+
+    .bus-stage {
+        width: max-content;
+        margin: auto;
+        display: grid;
+        justify-items: center;
+        position: relative;
+        padding: 0 45px;
+        --bus-width: 420px;
+        --cols: 5;
+        --cell-size: 54px;
+        --cell-gap: 7px;
+    }
+
+    .bus-shell,
+    .bus-stage,
+    .bus-body-wrap,
+    .bus-body,
+    .bus-grid {
+        direction: ltr;
+    }
+
+    .bus-meta {
+        direction: ltr;
+    }
+
+    .bus-nose {
+        width: var(--bus-width);
+        height: 76px;
+        position: relative;
+        border-radius: 54px 54px 18px 18px;
+        background: linear-gradient(180deg,#ffb266 0%,#ff7a18 100%);
+        border: 4px solid #ffcfaa;
+        border-bottom: 0;
+        box-shadow: inset 0 9px 0 rgba(255,255,255,.18),0 16px 30px rgba(255,122,24,.14);
+        z-index: 3;
+    }
+
+    .bus-windshield {
+        position: absolute;
+        left: 50%;
+        top: 13px;
+        transform: translateX(-50%);
+        width: 62%;
+        height: 34px;
+        border-radius: 30px 30px 12px 12px;
+        background: linear-gradient(135deg,#172033,#344054);
+    }
+
+    .bus-headlight {
+        position: absolute;
+        bottom: 12px;
+        width: 28px;
+        height: 15px;
+        border-radius: 999px;
+        background: #fff7d6;
+    }
+
+        .bus-headlight.left {
+            left: 28px;
+        }
+
+        .bus-headlight.right {
+            right: 28px;
+        }
+
+    .bus-body-wrap {
+        position: relative;
+        width: var(--bus-width);
+    }
+
+    .bus-body {
+        width: var(--bus-width);
+        padding: 18px;
+        background: var(--cb-busshell-bg);
+        border-left: 4px solid #ffcfaa;
+        border-right: 4px solid #ffcfaa;
+        border-bottom: 4px solid #ffcfaa;
+        border-radius: 0 0 38px 38px;
+        box-shadow: inset 0 0 0 8px var(--cb-soft3),0 20px 38px rgba(255,122,24,.11);
+        position: relative;
+        z-index: 2;
+    }
+
+    .bus-wheel {
+        position: absolute;
+        width: 28px;
+        height: 72px;
+        border-radius: 16px;
+        background: linear-gradient(180deg,#111827,#344054);
+        border: 4px solid #475467;
+        z-index: 1;
+    }
+
+        .bus-wheel.left.top {
+            left: -18px;
+            top: 62px;
+        }
+
+        .bus-wheel.left.bottom {
+            left: -18px;
+            bottom: 62px;
+        }
+
+        .bus-wheel.right.top {
+            right: -18px;
+            top: 62px;
+        }
+
+        .bus-wheel.right.bottom {
+            right: -18px;
+            bottom: 62px;
+        }
+
+    .bus-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 0 18px;
+        color: var(--cb-muted);
+        font-size: 12px;
+        font-weight: 1000;
+        text-transform: uppercase;
+    }
+
+    .bus-grid {
+        display: grid;
+        gap: var(--cell-gap);
+        grid-template-columns: repeat(var(--cols),var(--cell-size));
+        width: max-content;
+        margin: auto;
+        padding: 12px;
+        border-radius: 24px;
+        background: var(--cb-busgrid-bg);
+        border: 1px solid var(--cb-line);
+        position: relative;
+        z-index: 4;
+    }
+
+    .bus-cell {
+        width: var(--cell-size);
+        height: calc(var(--cell-size)*.82);
+        border-radius: calc(var(--cell-size)*.22);
+        border: 1px dashed var(--cb-buscell-border);
+        background: var(--cb-buscell-bg);
+        display: grid;
+        place-items: center;
+        user-select: none;
+        font-weight: 1000;
+        position: relative;
+        transition: .12s ease;
+        font-size: 12px;
+        color: var(--cb-text);
+    }
+
+        .bus-cell.selectable {
+            cursor: pointer;
+        }
+
+            .bus-cell.selectable:hover {
+                box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+                transform: translateY(-1px);
+            }
+
+        .bus-cell.empty::after {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ffd5b4;
+        }
+
+        .bus-cell.seat {
+            background: linear-gradient(180deg,#ff9340,#ff6a00);
+            color: #fff;
+            border: none;
+        }
+
+        .bus-cell.vip {
+            background: linear-gradient(180deg,#ffd166,#ff9f1c);
+            color: #172033;
+            border: none;
+        }
+
+        .bus-cell.driver {
+            background: #172033;
+            color: #fff;
+            border: none;
+        }
+
+        .bus-cell.assistant {
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+        }
+
+        .bus-cell.road {
+            background: repeating-linear-gradient(135deg,var(--cb-road-a),var(--cb-road-a) 8px,var(--cb-road-b) 8px,var(--cb-road-b) 16px);
+            color: var(--cb-muted);
+            border: 2px solid var(--cb-road-border);
+        }
+
+        .bus-cell.wc {
+            background: #e8f3ff;
+            color: #1570ef;
+            border: 2px solid #84caff;
+        }
+
+        .bus-cell.door-only {
+            background: transparent;
+            border: 1px dashed var(--cb-buscell-border);
+            color: transparent;
+        }
+
+        .bus-cell.selected {
+            outline: 4px solid rgba(18,183,106,.45);
+            transform: translateY(-1px);
+        }
+
+        .bus-cell.disabled-seat,
+        .bus-cell.reserved-seat {
+            opacity: .45;
+            filter: grayscale(.35);
+            cursor: not-allowed;
+        }
+
+            .bus-cell.reserved-seat::after {
+                content: attr(data-booked-label);
+                position: absolute;
+                font-size: 9px;
+                bottom: -16px;
+                color: #b42318;
+                font-weight: 1000;
+            }
+
+    .seat-map-empty {
+        padding: 22px;
+        text-align: center;
+        color: var(--cb-faint);
+        font-weight: 1000;
+    }
+
+    .selected-seat-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .selected-seat-box {
+        background: var(--cb-card);
+        border: 1px solid var(--cb-line);
+        border-radius: 18px;
+        padding: 12px;
+        color: var(--cb-text);
+        font-weight: 900;
+    }
+
+        .selected-seat-box small {
+            display: block;
+            color: var(--cb-muted);
+            margin-top: 5px;
+            font-weight: 800;
+        }
+
+    .seat-location-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+        .seat-location-grid label {
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+    .seat-location-input {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--cb-line);
+        border-radius: 14px;
+        padding: 0 12px;
+        outline: none;
+        background: var(--cb-input-bg);
+        color: var(--cb-input-text);
+        font-weight: 900;
+    }
+
+        .seat-location-input:focus {
+            border-color: #ff7a18;
+            box-shadow: 0 0 0 4px rgba(255,122,24,.12);
+        }
+
+    @@media (max-width: 1100px) {
+        .transport-grid.round {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .field {
+            grid-column: span 12;
+        }
+
+        .row-item,
+        .payments .row-item,
+        .phones .row-item {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-box,
+        .transport-price-grid,
+        .transport-date-box,
+        .seat-location-grid,
+        .seat-request-grid,
+        .cb-mode-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cb-hero {
+            padding: 28px;
+        }
+
+        .cb-avatar-wrap {
+            width: 120px;
+            height: 120px;
+        }
+
+        .cb-avatar {
+            width: 92px;
+            height: 92px;
+            font-size: 34px;
+        }
+    }
+</style>
+
+<div class="cb-page" dir="@(isRtl ? "rtl" : "ltr")">
+
+    <section class="cb-hero">
+        <div class="cb-hero-inner">
+            <div>
+                <span class="cb-badge">@L["CB_Badge"]</span>
+                <h1>@L["CB_Heading"]</h1>
+                <p>@L["CB_Subtitle"]</p>
+            </div>
+            <div class="cb-avatar-wrap" title="@fullName">
+                <div class="cb-avatar">@initials</div>
+                <span class="cb-avatar-status"></span>
+            </div>
+        </div>
+        <div class="cb-actions">
+            <a class="cb-btn cb-btn-white" asp-action="Index">@L["CB_BackToBookings"]</a>
+        </div>
+    </section>
+
+    <section class="cb-card">
+        <div class="cb-section-head">
+            <span class="cb-soft-badge">@L["CB_BookingType"]</span>
+            <h2>@L["CB_SelectMode"]</h2>
+            <p>@L["CB_ModeDesc"]</p>
+        </div>
+        <div class="cb-mode-grid">
+            <button type="button" class="cb-mode-option" data-type="hotel" id="modeHotel">
+                <span>@L["CB_ModeHotelTag"]</span>
+                <strong>@L["CB_ModeHotelTitle"]</strong>
+                <small>@L["CB_ModeHotelDesc"]</small>
+            </button>
+            <button type="button" class="cb-mode-option" data-type="transport" id="modeTransport">
+                <span>@L["CB_ModeTransportTag"]</span>
+                <strong>@L["CB_ModeTransportTitle"]</strong>
+                <small>@L["CB_ModeTransportDesc"]</small>
+            </button>
+            <button type="button" class="cb-mode-option" data-type="both" id="modeBoth">
+                <span>@L["CB_ModeBothTag"]</span>
+                <strong>@L["CB_ModeBothTitle"]</strong>
+                <small>@L["CB_ModeBothDesc"]</small>
+            </button>
+        </div>
+    </section>
+
+    <section class="cb-form-card">
+        <form id="mainBookingForm" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <datalist id="SeatLocationOptions">
+                @foreach (var loc in allLocations)
+                {
+                    <option value="@loc"></option>
+                }
+            </datalist>
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <input asp-for="HasHotel" type="hidden" id="HasHotelHidden" />
+            <input asp-for="HasTransportation" type="hidden" id="HasTransportationHidden" />
+
+            <!-- BASIC DATA -->
+            <div class="mini-card">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["CB_BasicData"]</div>
+                        <div class="mini-subtitle">@L["CB_BasicDataSub"]</div>
+                    </div>
+                </div>
+                <div class="booking-grid">
+                    <div class="field">
+                        <label asp-for="ClientName">@L["CB_ClientName"]</label>
+                        <input asp-for="ClientName" placeholder="@L["CB_ClientNamePH"]" />
+                        <span asp-validation-for="ClientName" class="text-danger"></span>
+                    </div>
+                    <div class="field hotel-date-field">
+                        <label asp-for="CheckInDate">@L["CB_CheckIn"]</label>
+                        <input asp-for="CheckInDate" type="date" id="CheckInDate" />
+                        <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                    </div>
+                    <div class="field hotel-date-field">
+                        <label asp-for="NightsCount">@L["CB_Nights"]</label>
+                        <input asp-for="NightsCount" type="number" min="1" id="NightsCount" />
+                        <span asp-validation-for="NightsCount" class="text-danger"></span>
+                    </div>
+                    <div class="field hotel-date-field">
+                        <label asp-for="CheckOutDate">@L["CB_CheckOut"]</label>
+                        <input asp-for="CheckOutDate" type="date" id="CheckOutDate" />
+                        <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                        <div id="dateError" class="field-error"></div>
+                    </div>
+                    <div class="field wide">
+                        <label asp-for="Notes">@L["CB_Notes"]</label>
+                        <textarea asp-for="Notes" rows="3" placeholder="@L["CB_NotesPH"]"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOTEL ROOMS -->
+            <div class="mini-card hotel-only" id="hotelBox">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["CB_HotelRooms"]</div>
+                        <div class="mini-subtitle">@L["CB_HotelRoomsSub"]</div>
+                    </div>
+                    <button type="button" class="btn-small btn-add" onclick="addRoom()">@L["CB_AddRoom"]</button>
+                </div>
+                <div class="booking-grid">
+                    <div class="field wide">
+                        <label asp-for="HotelName">@L["CB_HotelName"]</label>
+                        <input asp-for="HotelName" id="HotelName" placeholder="@L["CB_HotelNamePH"]" />
+                        <span asp-validation-for="HotelName" class="text-danger"></span>
+                        <div id="hotelNameError" class="field-error"></div>
+                    </div>
+                </div>
+                <div id="roomsRows" class="rows">
+                    @for (var i = 0; i < Model.Rooms.Count; i++)
+                    {
+                        <div class="row-item room-row">
+                            <div>
+                                <label>@L["CB_RoomType"]</label>
+                                <select name="Rooms[@i].RoomType" class="room-type">
+                                    @foreach (var item in roomTypes)
+                                    {
+                                        <option value="@item.Value" selected="@(item.Value == ((int)Model.Rooms[i].RoomType).ToString())">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <label>@L["CB_Count"]</label>
+                                <input name="Rooms[@i].Count" class="room-count" type="number" min="1" value="@Model.Rooms[i].Count" />
+                                <div class="field-error">@ErrorFor($"Rooms[{i}].Count")</div>
+                            </div>
+                            <div>
+                                <label>@L["CB_NightPrice"]</label>
+                                <input name="Rooms[@i].NightPrice" class="room-price" type="number" min="1" step="0.01" inputmode="decimal" value="@Model.Rooms[i].NightPrice" />
+                                <div class="field-error">@ErrorFor($"Rooms[{i}].NightPrice")</div>
+                            </div>
+                            <button type="button" class="btn-small btn-remove" onclick="removeRow(this)">@L["CB_Remove"]</button>
+                        </div>
+                    }
+                </div>
+                <input asp-for="NumberOfRooms" type="hidden" id="NumberOfRooms" />
+                <input asp-for="RoomType" type="hidden" />
+                <input asp-for="HotelNightPrice" type="hidden" id="HotelNightPrice" />
+                <input asp-for="HotelTotal" type="hidden" id="HotelTotal" />
+            </div>
+
+            <!-- CHILDREN -->
+            <div class="mini-card hotel-only">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["CB_Children"]</div>
+                        <div class="mini-subtitle">@L["CB_ChildrenSub"]</div>
+                    </div>
+                </div>
+                <div class="booking-grid">
+                    <div class="field">
+                        <label asp-for="ChildrenCountUntil6Years">@L["CB_Until6"]</label>
+                        <input asp-for="ChildrenCountUntil6Years" type="number" min="0" id="child6" />
+                    </div>
+                    <div class="field">
+                        <label asp-for="ChildrenCountUntil12Years">@L["CB_Until12"]</label>
+                        <input asp-for="ChildrenCountUntil12Years" type="number" min="0" id="child12" />
+                    </div>
+                    <div class="field">
+                        <label asp-for="TotalChildrenCount">@L["CB_TotalChildren"]</label>
+                        <input asp-for="TotalChildrenCount" type="number" min="0" id="childrenTotal" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRANSPORTATION -->
+            <div id="transportInlineSection" class="mini-card transport-card">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["CB_Transportation"]</div>
+                        <div class="mini-subtitle">@L["CB_TransportationSub"]</div>
+                    </div>
+                </div>
+                <div class="seat-request-grid">
+                    <div class="seat-request-field" id="DepartureRequiredSeatsField">
+                        <label>@L["CB_GoRequiredSeats"]</label>
+                        <input class="transport-input" type="number" min="1" step="1"
+                               id="DepartureRequiredSeats" name="Transportation.DepartureRequiredSeats"
+                               value="@(Model.Transportation?.DepartureRequiredSeats > 0 ? Model.Transportation.DepartureRequiredSeats : Math.Max(1, Model.Transportation?.DepartureSeats?.Count ?? 1))"
+                               oninput="onRequiredSeatsChanged('Departure')" />
+                        <div class="bus-availability-note">@L["CB_GoRequiredSeatsNote"]</div>
+                    </div>
+                    <div class="seat-request-field" id="ReturnRequiredSeatsField">
+                        <label>@L["CB_ReturnRequiredSeats"]</label>
+                        <input class="transport-input" type="number" min="1" step="1"
+                               id="ReturnRequiredSeats" name="Transportation.ReturnRequiredSeats"
+                               value="@(Model.Transportation?.ReturnRequiredSeats > 0 ? Model.Transportation.ReturnRequiredSeats : Math.Max(1, Model.Transportation?.ReturnSeats?.Count ?? 1))"
+                               oninput="onRequiredSeatsChanged('Return')" />
+                        <div class="bus-availability-note">@L["CB_ReturnRequiredSeatsNote"]</div>
+                    </div>
+                </div>
+                <div class="booking-grid">
+                    <div class="field">
+                        <label>@L["CB_TripType"]</label>
+                        <select class="transport-input" id="TripType" name="Transportation.TripType" onchange="changeTripType()">
+                            <option value="Departure" selected="@(selectedTripType == "Departure")">@L["CB_TripGoOnly"]</option>
+                            <option value="Return" selected="@(selectedTripType == "Return")">@L["CB_TripReturnOnly"]</option>
+                            <option value="RoundTrip" selected="@(selectedTripType == "RoundTrip")">@L["CB_TripRound"]</option>
+                        </select>
+                    </div>
+                    <div class="field transport-date-input" id="DepartureDateField">
+                        <label>@L["CB_GoDate"]</label>
+                        <input class="transport-input" type="date" id="DepartureDate"
+                               name="Transportation.DepartureDate"
+                               value="@(Model.Transportation?.DepartureDate?.ToString("yyyy-MM-dd") ?? Model.CheckInDate.ToString("yyyy-MM-dd"))"
+                               onchange="onTripDateChanged('Departure')" />
+                    </div>
+                    <div class="field transport-date-input" id="ReturnDateField">
+                        <label>@L["CB_ReturnDate"]</label>
+                        <input class="transport-input" type="date" id="ReturnDate"
+                               name="Transportation.ReturnDate"
+                               value="@(Model.Transportation?.ReturnDate?.ToString("yyyy-MM-dd") ?? Model.CheckOutDate.ToString("yyyy-MM-dd"))"
+                               onchange="onTripDateChanged('Return')" />
+                    </div>
+                </div>
+
+                <div id="transportGrid" class="transport-grid" style="margin-top:18px;">
+
+                    <!-- GO PANEL -->
+                    <div id="departurePanel" class="transport-section">
+                        <div class="transport-section-head">
+                            <h3>@L["CB_GoTrip"]</h3>
+                            <span class="trip-pill">@L["CB_PillGo"]</span>
+                        </div>
+                        <input type="hidden" id="CreateNewDepartureTrip" name="Transportation.CreateNewDepartureTrip" value="@((Model.Transportation?.CreateNewDepartureTrip ?? true).ToString().ToLower())" />
+                        <input type="hidden" id="DepartureTripIdHidden" name="Transportation.DepartureTripId" value="@Model.Transportation?.DepartureTripId" />
+
+                        <div class="transport-date-box">
+                            <div class="transport-field">
+                                <label>@L["CB_GoFrom"]</label>
+                                <select class="transport-input route-from" id="DepartureFromLocation"
+                                        name="Transportation.DepartureFromLocation"
+                                        onchange="onRouteFromChanged('Departure', true)">
+                                    <option value="">@L["CB_SelectFromLocation"]</option>
+                                    @foreach (var loc in allLocations)
+                                    {
+                                        <option value="@loc" selected="@(string.Equals(loc, Model.Transportation?.DepartureFromLocation, StringComparison.OrdinalIgnoreCase))">@loc</option>
+                                    }
+                                </select>
+                            </div>
+                            <button type="button" class="route-swap-btn" title="@L["CB_SwapGoRoute"]" onclick="swapRoute('Departure', true)">⇄</button>
+                            <div class="transport-field">
+                                <label>@L["CB_GoTo"]</label>
+                                <select class="transport-input route-to" id="DepartureToLocation"
+                                        name="Transportation.DepartureToLocation"
+                                        onchange="onRouteToChanged('Departure', true)">
+                                    <option value="">@L["CB_SelectToLocation"]</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="transport-field">
+                            <label>@L["CB_GoBus"]</label>
+                            <select class="transport-input" id="DepartureBusId"
+                                    name="Transportation.DepartureBusId"
+                                    onchange="loadBusSeats('Departure')">
+                                <option value="">@L["CB_SelectRouteFirst"]</option>
+                            </select>
+                        </div>
+
+                        <div id="DepartureSeatMap">
+                            <div class="bus-shell">
+                                <div class="seat-map-empty">@L["CB_SelectRouteToShowBuses"]</div>
+                            </div>
+                        </div>
+
+                        <div id="DeparturePriceBox" class="transport-price-grid">
+                            <div class="price-title">@L["CB_SelectedGoPrices"]</div>
+                        </div>
+                        <div id="DepartureSelectedSeats" class="selected-seat-list"></div>
+                        <div id="DepartureHiddenSeats"></div>
+                    </div>
+
+                    <!-- RETURN PANEL -->
+                    <div id="returnPanel" class="transport-section">
+                        <div class="transport-section-head">
+                            <h3>@L["CB_ReturnTrip"]</h3>
+                            <span class="trip-pill">@L["CB_PillReturn"]</span>
+                        </div>
+                        <input type="hidden" id="CreateNewReturnTrip" name="Transportation.CreateNewReturnTrip" value="@((Model.Transportation?.CreateNewReturnTrip ?? true).ToString().ToLower())" />
+                        <input type="hidden" id="ReturnTripIdHidden" name="Transportation.ReturnTripId" value="@Model.Transportation?.ReturnTripId" />
+
+                        <div class="transport-date-box">
+                            <div class="transport-field">
+                                <label>@L["CB_ReturnFrom"]</label>
+                                <select class="transport-input route-from" id="ReturnFromLocation"
+                                        name="Transportation.ReturnFromLocation"
+                                        onchange="onRouteFromChanged('Return', true)">
+                                    <option value="">@L["CB_SelectFromLocation"]</option>
+                                    @foreach (var loc in allLocations)
+                                    {
+                                        <option value="@loc" selected="@(string.Equals(loc, Model.Transportation?.ReturnFromLocation, StringComparison.OrdinalIgnoreCase))">@loc</option>
+                                    }
+                                </select>
+                            </div>
+                            <button type="button" class="route-swap-btn" title="@L["CB_SwapReturnRoute"]" onclick="swapRoute('Return', true)">⇄</button>
+                            <div class="transport-field">
+                                <label>@L["CB_ReturnTo"]</label>
+                                <select class="transport-input route-to" id="ReturnToLocation"
+                                        name="Transportation.ReturnToLocation"
+                                        onchange="onRouteToChanged('Return', true)">
+                                    <option value="">@L["CB_SelectToLocation"]</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="transport-field">
+                            <label>@L["CB_ReturnBus"]</label>
+                            <select class="transport-input" id="ReturnBusId"
+                                    name="Transportation.ReturnBusId"
+                                    onchange="loadBusSeats('Return')">
+                                <option value="">@L["CB_SelectRouteFirst"]</option>
+                            </select>
+                        </div>
+
+                        <div id="ReturnSeatMap">
+                            <div class="bus-shell">
+                                <div class="seat-map-empty">@L["CB_SelectRouteToShowBuses"]</div>
+                            </div>
+                        </div>
+
+                        <div id="ReturnPriceBox" class="transport-price-grid">
+                            <div class="price-title">@L["CB_SelectedReturnPrices"]</div>
+                        </div>
+                        <div id="ReturnSelectedSeats" class="selected-seat-list"></div>
+                        <div id="ReturnHiddenSeats"></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- PAYMENTS -->
+            <div class="mini-card payments">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["CB_Payments"]</div>
+                        <div class="mini-subtitle">@L["CB_PaymentsSub"]</div>
+                    </div>
+                    <button type="button" class="btn-small btn-add" onclick="addPayment()">@L["CB_AddPayment"]</button>
+                </div>
+                <div id="paymentsRows" class="rows">
+                    @for (var i = 0; i < Model.Payments.Count; i++)
+                    {
+                        <div class="row-item payment-row">
+                            <div>
+                                <label>@L["CB_Amount"]</label>
+                                <input name="Payments[@i].Amount" class="payment-amount" type="number" min="0" step="0.01" inputmode="decimal" value="@Model.Payments[i].Amount" />
+                                <div class="field-error">@ErrorFor($"Payments[{i}].Amount")</div>
+                            </div>
+                            <div>
+                                <label>@L["CB_PayType"]</label>
+                                <select asp-for="Payments[i].PayType"
+                                        asp-items="Html.GetEnumSelectList<PayType>()"
+                                        class="form-control">
+                                </select>
+                            </div>
+                            <div>
+                                <label>@L["CB_PaidAt"]</label>
+                                <input name="Payments[@i].PaidAt" type="date" value="@Model.Payments[i].PaidAt.ToString("yyyy-MM-dd")" />
+                                <div class="field-error">@ErrorFor($"Payments[{i}].PaidAt")</div>
+                            </div>
+                            <div>
+                                <label>@L["CB_PaymentNotes"]</label>
+                                <input name="Payments[@i].Notes" value="@Model.Payments[i].Notes" placeholder="@L["CB_PaymentNotesPH"]" />
+                                <div class="field-error">@ErrorFor($"Payments[{i}].Notes")</div>
+                            </div>
+                            <button type="button" class="btn-small btn-remove" onclick="removeRow(this)">@L["CB_Remove"]</button>
+                        </div>
+                    }
+                </div>
+                <input asp-for="PayType" type="hidden" />
+                <input asp-for="PaidAmount" type="hidden" id="PaidAmount" />
+            </div>
+
+            <!-- PHONES -->
+            <div class="mini-card phones">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["CB_PhoneNumbers"]</div>
+                        <div class="mini-subtitle">@L["CB_PhoneNumbersSub"]</div>
+                    </div>
+                    <button type="button" class="btn-small btn-add" onclick="addPhone()">@L["CB_AddPhone"]</button>
+                </div>
+                <div id="phonesRows" class="rows">
+                    @for (var i = 0; i < Model.PhoneNumbers.Count; i++)
+                    {
+                        <div class="row-item phone-row">
+                            <div>
+                                <label>@L["CB_Phone"]</label>
+                                <input name="PhoneNumbers[@i].PhoneNumber" class="phone-input" value="@Model.PhoneNumbers[i].PhoneNumber" placeholder="01012345678" />
+                                <div class="field-error">@ErrorFor($"PhoneNumbers[{i}].PhoneNumber")</div>
+                            </div>
+                            <label class="primary-phone-label">
+                                <input type="radio" name="primePhone" onchange="syncPrimePhones()" @(Model.PhoneNumbers[i].Prime ? "checked" : "") />
+                                @L["CB_Primary"]
+                            </label>
+                            <input type="hidden" name="PhoneNumbers[@i].Prime" class="phone-prime" value="@(Model.PhoneNumbers[i].Prime.ToString().ToLower())" />
+                            <button type="button" class="btn-small btn-remove" onclick="removeRow(this); syncPrimePhones();">@L["CB_Remove"]</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- TOTALS -->
+            <div class="mini-card">
+                <div class="mini-head">
+                    <div>
+                        <div class="mini-title">@L["CB_Totals"]</div>
+                        <div class="mini-subtitle">@L["CB_TotalsSub"]</div>
+                    </div>
+                </div>
+                <div class="booking-grid">
+                    <div class="field">
+                        <label asp-for="Discount">@L["CB_Discount"]</label>
+                        @if (isAdmin)
+                        {
+                            <input asp-for="Discount" id="Discount" type="number" min="0" step="0.01" inputmode="decimal" />
+                        }
+                        else
+                        {
+                            <input asp-for="Discount" id="Discount" type="number" min="0" step="0.01" readonly />
+                        }
+                    </div>
+                    <input asp-for="SeatsCount" type="hidden" id="SeatsCount" />
+                    <input type="hidden" name="SeatPrice" id="SeatPrice" value="@Model.SeatPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                    <input asp-for="TransportationTotal" type="hidden" id="TransportationTotal" />
+                    <input asp-for="GrandTotal" type="hidden" id="GrandTotal" />
+                    <input asp-for="RemainingAmount" type="hidden" id="RemainingAmount" />
+                    <div class="field wide summary-box">
+                        <div class="sum"><b>@L["CB_SumNights"]</b><span id="nightsText">0</span></div>
+                        <div class="sum"><b>@L["CB_SumHotel"]</b><span id="hotelText">0.00</span></div>
+                        <div class="sum"><b>@L["CB_SumTransport"]</b><span id="transportText">0.00</span></div>
+                        <div class="sum"><b>@L["CB_SumGrandRemaining"]</b><span><span id="grandText">0.00</span> / <span id="remainingText">0.00</span></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cb-form-actions">
+                <button class="cb-btn cb-btn-orange" type="submit">@L["CB_CreateBtn"]</button>
+                <a class="cb-btn cb-btn-light" asp-action="Index">@L["CB_Cancel"]</a>
+            </div>
+
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // ── Localized JS strings ─────────────────────────────────────────────────
+        const CB_I18N = {
+            seat:                 @Html.Raw(JsString(L["CB_JsSeat"].Value)),
+            checkoutAfterCheckin: @Html.Raw(JsString(L["CB_JsCheckoutAfterCheckin"].Value)),
+            selectBus:            @Html.Raw(JsString(L["CB_JsSelectBus"].Value)),
+            selectToLocation:     @Html.Raw(JsString(L["CB_JsSelectToLocation"].Value)),
+            selectRouteFirst:     @Html.Raw(JsString(L["CB_JsSelectRouteFirst"].Value)),
+            selectRouteToShowBuses: @Html.Raw(JsString(L["CB_JsSelectRouteToShowBuses"].Value)),
+            selectBusToShowSeats: @Html.Raw(JsString(L["CB_JsSelectBusToShowSeats"].Value)),
+            cannotLoadRoute:      @Html.Raw(JsString(L["CB_JsCannotLoadRoute"].Value)),
+            cannotLoadBuses:      @Html.Raw(JsString(L["CB_JsCannotLoadBuses"].Value)),
+            cannotLoadLayout:     @Html.Raw(JsString(L["CB_JsCannotLoadLayout"].Value)),
+            loadingLayout:        @Html.Raw(JsString(L["CB_JsLoadingLayout"].Value)),
+            newTrip:              @Html.Raw(JsString(L["CB_JsNewTrip"].Value)),
+            existingTrip:         @Html.Raw(JsString(L["CB_JsExistingTrip"].Value)),
+            available:            @Html.Raw(JsString(L["CB_JsAvailable"].Value)),
+            goDisabled:           @Html.Raw(JsString(L["CB_JsGoDisabled"].Value)),
+            returnDisabled:       @Html.Raw(JsString(L["CB_JsReturnDisabled"].Value)),
+            booked:               @Html.Raw(JsString(L["CB_JsBooked"].Value)),
+            dirGo:                @Html.Raw(JsString(L["CB_JsDirGo"].Value)),
+            dirReturn:            @Html.Raw(JsString(L["CB_JsDirReturn"].Value)),
+            busSuffix:            @Html.Raw(JsString(L["CB_JsBusSuffix"].Value)),
+            seatLocation:         @Html.Raw(JsString(L["CB_JsSeatLocation"].Value)),
+            seatLocationHint:     @Html.Raw(JsString(L["CB_JsSeatLocationHint"].Value)),
+            seatFromLocation:     @Html.Raw(JsString(L["CB_JsSeatFromLocation"].Value)),
+            seatToLocation:       @Html.Raw(JsString(L["CB_JsSeatToLocation"].Value)),
+            seatLocationFromPH:   @Html.Raw(JsString(L["CB_JsSeatLocationFromPH"].Value)),
+            seatLocationToPH:     @Html.Raw(JsString(L["CB_JsSeatLocationToPH"].Value)),
+            seatPriceLabel:       @Html.Raw(JsString(L["CB_JsSeatPriceLabel"].Value)),
+            countLabel:           @Html.Raw(JsString(L["CB_JsCountLabel"].Value)),
+            pricePerSeat:         @Html.Raw(JsString(L["CB_JsPricePerSeat"].Value)),
+            selectedPrices:       @Html.Raw(JsString(L["CB_JsSelectedPrices"].Value)),
+            roomType:             @Html.Raw(JsString(L["CB_RoomType"].Value)),
+            count:                @Html.Raw(JsString(L["CB_Count"].Value)),
+            nightPrice:           @Html.Raw(JsString(L["CB_NightPrice"].Value)),
+            amount:               @Html.Raw(JsString(L["CB_Amount"].Value)),
+            payType:              @Html.Raw(JsString(L["CB_PayType"].Value)),
+            paidAt:               @Html.Raw(JsString(L["CB_PaidAt"].Value)),
+            paymentNotes:         @Html.Raw(JsString(L["CB_PaymentNotes"].Value)),
+            paymentNotesPH:       @Html.Raw(JsString(L["CB_PaymentNotesPH"].Value)),
+            phone:                @Html.Raw(JsString(L["CB_Phone"].Value)),
+            primary:              @Html.Raw(JsString(L["CB_Primary"].Value)),
+            remove:               @Html.Raw(JsString(L["CB_Remove"].Value)),
+            // validation
+            seatsExceedRequired:  @Html.Raw(JsString(L["CB_JsSeatsExceedRequired"].Value)),
+            enterRequiredSeats:   @Html.Raw(JsString(L["CB_JsEnterRequiredSeats"].Value)),
+            selectDateFirst:      @Html.Raw(JsString(L["CB_JsSelectDateFirst"].Value)),
+            loadingBuses:         @Html.Raw(JsString(L["CB_JsLoadingBuses"].Value)),
+            noBusSeats:           @Html.Raw(JsString(L["CB_JsNoBusSeats"].Value)),
+            foundBuses:           @Html.Raw(JsString(L["CB_JsFoundBuses"].Value)),
+            busOnlyHas:           @Html.Raw(JsString(L["CB_JsBusOnlyHas"].Value)),
+            reqSeatsRequired:     @Html.Raw(JsString(L["CB_JsReqSeatsRequired"].Value)),
+            dateRequired:         @Html.Raw(JsString(L["CB_JsDateRequired"].Value)),
+            fromLocRequired:      @Html.Raw(JsString(L["CB_JsFromLocRequired"].Value)),
+            toLocRequired:        @Html.Raw(JsString(L["CB_JsToLocRequired"].Value)),
+            busRequired:          @Html.Raw(JsString(L["CB_JsBusRequired"].Value)),
+            selectOneSeat:        @Html.Raw(JsString(L["CB_JsSelectOneSeat"].Value)),
+            seatsMustEqual:       @Html.Raw(JsString(L["CB_JsSeatsMustEqual"].Value)),
+            seatFromRequired:     @Html.Raw(JsString(L["CB_JsSeatFromRequired"].Value)),
+            seatToRequired:       @Html.Raw(JsString(L["CB_JsSeatToRequired"].Value)),
+            seatPricePositive:    @Html.Raw(JsString(L["CB_JsSeatPricePositive"].Value)),
+            hotelNameRequired:    @Html.Raw(JsString(L["CB_JsHotelNameRequired"].Value)),
+            roomRowCount:         @Html.Raw(JsString(L["CB_JsRoomRowCount"].Value)),
+            roomRowPrice:         @Html.Raw(JsString(L["CB_JsRoomRowPrice"].Value)),
+            phoneRowRequired:     @Html.Raw(JsString(L["CB_JsPhoneRowRequired"].Value)),
+            phoneRowIncorrect:    @Html.Raw(JsString(L["CB_JsPhoneRowIncorrect"].Value)),
+            onePrimaryRequired:   @Html.Raw(JsString(L["CB_JsOnePrimaryRequired"].Value)),
+            paymentRowRequired:   @Html.Raw(JsString(L["CB_JsPaymentRowRequired"].Value)),
+            paymentRowNegative:   @Html.Raw(JsString(L["CB_JsPaymentRowNegative"].Value)),
+            paidExceedsGrand:     @Html.Raw(JsString(L["CB_JsPaidExceedsGrand"].Value)),
+            countPositive:        @Html.Raw(JsString(L["CB_JsCountPositive"].Value)),
+            nightPricePositive:   @Html.Raw(JsString(L["CB_JsNightPricePositive"].Value)),
+            amountPositive:       @Html.Raw(JsString(L["CB_JsAmountPositive"].Value)),
+            phoneRequired:        @Html.Raw(JsString(L["CB_JsPhoneRequired"].Value)),
+            phoneIncorrect:       @Html.Raw(JsString(L["CB_JsPhoneIncorrect"].Value)),
+            phoneIncorrectEx:     @Html.Raw(JsString(L["CB_JsPhoneIncorrectEx"].Value))
+        };
+
+        // simple {0} {1} placeholder formatter
+        function cbFmt(tpl, ...args) {
+            return String(tpl).replace(/\{(\d+)\}/g, (m, i) => (args[i] !== undefined ? args[i] : m));
+        }
+
+        // ── Server state (postback restore) ──────────────────────────────────────
+        const postedTransportState = {
+            tripType: @Html.Raw(JsString(selectedTripType)),
+            departure: {
+                busId:         @Html.Raw(JsGuid(Model.Transportation?.DepartureBusId)),
+                tripId:        @Html.Raw(JsGuid(Model.Transportation?.DepartureTripId)),
+                createNewTrip: @((Model.Transportation?.CreateNewDepartureTrip ?? true).ToString().ToLower()),
+                requiredSeats: @(Model.Transportation?.DepartureRequiredSeats > 0 ? Model.Transportation.DepartureRequiredSeats : Math.Max(1, Model.Transportation?.DepartureSeats?.Count ?? 1)),
+                date: @Html.Raw(JsString(Model.Transportation?.DepartureDate?.ToString("yyyy-MM-dd") ?? Model.CheckInDate.ToString("yyyy-MM-dd"))),
+                from: @Html.Raw(JsString(Model.Transportation?.DepartureFromLocation)),
+                to:   @Html.Raw(JsString(Model.Transportation?.DepartureToLocation)),
+                seats: [
+                    @Html.Raw(string.Join(",\n                ", postedDepartureSeats.Select(s =>
+                            "{ seatId: " + JsString(s.SeatId.ToString()) +
+                            ", label: " + JsString(SeatLabel(s)) +
+                            ", type: " + JsString(s.SeatType.ToString()) +
+                            ", typeKey: " + JsString(s.SeatType == DataLayer.Models.SeatType.VIP ? "VIP" : "Normal") +
+                            ", price: " + s.SeatPrice.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                            ", fromLocation: " + JsString(s.FromLocation) +
+                            ", toLocation: " + JsString(s.ToLocation) + " }")))
+                ]
+            },
+            returnTrip: {
+                busId:         @Html.Raw(JsGuid(Model.Transportation?.ReturnBusId)),
+                tripId:        @Html.Raw(JsGuid(Model.Transportation?.ReturnTripId)),
+                createNewTrip: @((Model.Transportation?.CreateNewReturnTrip ?? true).ToString().ToLower()),
+                requiredSeats: @(Model.Transportation?.ReturnRequiredSeats > 0 ? Model.Transportation.ReturnRequiredSeats : Math.Max(1, Model.Transportation?.ReturnSeats?.Count ?? 1)),
+                date: @Html.Raw(JsString(Model.Transportation?.ReturnDate?.ToString("yyyy-MM-dd") ?? Model.CheckOutDate.ToString("yyyy-MM-dd"))),
+                from: @Html.Raw(JsString(Model.Transportation?.ReturnFromLocation)),
+                to:   @Html.Raw(JsString(Model.Transportation?.ReturnToLocation)),
+                seats: [
+                    @Html.Raw(string.Join(",\n                ", postedReturnSeats.Select(s =>
+                            "{ seatId: " + JsString(s.SeatId.ToString()) +
+                            ", label: " + JsString(SeatLabel(s)) +
+                            ", type: " + JsString(s.SeatType.ToString()) +
+                            ", typeKey: " + JsString(s.SeatType == DataLayer.Models.SeatType.VIP ? "VIP" : "Normal") +
+                            ", price: " + s.SeatPrice.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                            ", fromLocation: " + JsString(s.FromLocation) +
+                            ", toLocation: " + JsString(s.ToLocation) + " }")))
+                ]
+            }
+        };
+
+        const roomTypeOptions = `@Html.Raw(string.Join("", roomTypes.Select(x => $"<option value='{x.Value}'>{x.Text}</option>")))`;
+        const payTypeOptions  = `@Html.Raw(string.Join("", payTypes.Select(x => $"<option value='{x.Value}'>{x.Text}</option>")))`;
+
+        // ── Runtime state ─────────────────────────────────────────────────────────
+        const selectedSeats  = { Departure: [], Return: [] };
+        const seatTypePrices = { Departure: {}, Return: {} };
+        const seatLocations  = { Departure: { from: "", to: "" }, Return: { from: "", to: "" } };
+        let routeSyncing        = false;
+        let routeReloadTimer    = null;
+        let isRestoringPostback = false;
+        let didRestorePostback  = false;
+
+        // ── Helpers ───────────────────────────────────────────────────────────────
+        function q(s)      { return document.querySelector(s); }
+        function qa(s)     { return Array.from(document.querySelectorAll(s)); }
+        function num(v) {
+            const n = parseFloat(String(v ?? "0").replace(",", "."));
+            return Number.isFinite(n) ? n : 0;
+        }
+
+        function money(v) {
+            const n = num(v);
+            return Math.round((n + Number.EPSILON) * 100) / 100;
+        }
+
+        function moneyText(v) {
+            return money(v).toFixed(2);
+        }
+        function intNum(v) { return parseInt(v || "0", 10) || 0; }
+
+        function getRequiredSeats(direction) {
+            const v = intNum(q(`#${direction}RequiredSeats`)?.value);
+            return v < 1 ? 0 : v;
+        }
+        function getSeatFromLocation(direction) {
+            return q(`#${direction}SeatFromLocation`)?.value?.trim() || seatLocations[direction]?.from || "";
+        }
+        function getSeatToLocation(direction) {
+            return q(`#${direction}SeatToLocation`)?.value?.trim() || seatLocations[direction]?.to || "";
+        }
+        function directionValue(d) { return d === "Return" ? 2 : 1; }
+        function directionTitle(d) { return d === "Departure" ? CB_I18N.dirGo : CB_I18N.dirReturn; }
+        function otherDirection(d) { return d === "Departure" ? "Return" : "Departure"; }
+        function phoneValid(v)     { return /^01[0-2,5][0-9]{8}$/.test((v || "").trim()); }
+
+        // ── Client-side error panel ───────────────────────────────────────────────
+        function clearClientErrors() {
+            const panel = q("#ClientValidationPanel");
+            if (panel) panel.classList.remove("show");
+            const list = q("#ClientValidationList");
+            if (list)  list.innerHTML = "";
+            qa(".input-error").forEach(x => x.classList.remove("input-error"));
+            qa(".field-error[data-js='true']").forEach(x => x.innerText = "");
+        }
+        function addClientError(input, message) {
+            const panel = q("#ClientValidationPanel");
+            const list  = q("#ClientValidationList");
+            if (panel && list) {
+                panel.classList.add("show");
+                const li = document.createElement("li");
+                li.innerText = message;
+                list.appendChild(li);
+            }
+            if (input) {
+                input.classList.add("input-error");
+                const h = input.parentElement?.querySelector(".field-error");
+                if (h) { h.dataset.js = "true"; h.innerText = message; }
+            }
+        }
+
+        // ── Hotel dates ───────────────────────────────────────────────────────────
+        function getInputDate(input) {
+            if (!input || !input.value) return null;
+            const p = input.value.split("-");
+            return p.length === 3 ? new Date(+p[0], +p[1]-1, +p[2]) : null;
+        }
+        function setInputDate(input, date) {
+            if (!input || !date) return;
+            input.value = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+        }
+        function calculateCheckoutFromNights() {
+            const ci = q("#CheckInDate"), ni = q("#NightsCount"), co = q("#CheckOutDate");
+            if (!ci || !ni || !co) return;
+            const checkIn = getInputDate(ci);
+            if (!checkIn) return;
+            let nights = parseInt(ni.value || "1");
+            if (isNaN(nights) || nights < 1) nights = 1;
+            ni.value = nights;
+            const out = new Date(checkIn); out.setDate(checkIn.getDate() + nights);
+            setInputDate(co, out);
+            const de = q("#dateError"); if (de) de.innerText = "";
+            syncTransportationDatesByMode();
+        }
+        function calculateNightsFromDates() {
+            const ci = q("#CheckInDate"), co = q("#CheckOutDate"), ni = q("#NightsCount");
+            if (!ci || !co || !ni) return;
+            const checkIn = getInputDate(ci), checkOut = getInputDate(co);
+            if (!checkIn || !checkOut) return;
+            const diff = Math.round((checkOut - checkIn) / 86400000);
+            if (diff < 1) {
+                const f = new Date(checkIn); f.setDate(checkIn.getDate() + 1);
+                setInputDate(co, f); ni.value = 1;
+                const de = q("#dateError"); if (de) de.innerText = CB_I18N.checkoutAfterCheckin;
+                syncTransportationDatesByMode(); return;
+            }
+            ni.value = diff;
+            const de = q("#dateError"); if (de) de.innerText = "";
+            syncTransportationDatesByMode();
+        }
+        function syncTransportationDatesByMode() {
+            if (isRestoringPostback) return;
+            if (q("#HasHotelHidden")?.value !== "true" || q("#HasTransportationHidden")?.value !== "true") return;
+            const type = q("#TripType")?.value || "Departure";
+            const ci = q("#CheckInDate")?.value || "", co = q("#CheckOutDate")?.value || "";
+            if ((type === "Departure" || type === "RoundTrip") && q("#DepartureDate")) q("#DepartureDate").value = ci;
+            if ((type === "Return"    || type === "RoundTrip") && q("#ReturnDate"))    q("#ReturnDate").value    = co;
+        }
+
+        // ── Stable bus map message ───────────────────────────────────────────────
+        function setBusMapMessage(direction, message, extraClass) {
+            const map = q(`#${direction}SeatMap`);
+            if (!map) return;
+            const cls = extraClass ? ` ${extraClass}` : "";
+            map.innerHTML = `<div class="bus-shell"><div class="seat-map-empty${cls}">${message}</div></div>`;
+        }
+
+        // ── Mode / visibility ─────────────────────────────────────────────────────
+        function selectBookingType(type) {
+            const hasHotel     = type === "hotel"     || type === "both";
+            const hasTransport = type === "transport" || type === "both";
+
+            if (q("#HasHotelHidden"))          q("#HasHotelHidden").value          = hasHotel     ? "true" : "false";
+            if (q("#HasTransportationHidden")) q("#HasTransportationHidden").value = hasTransport ? "true" : "false";
+
+            qa(".hotel-only").forEach(x => {
+                x.style.display = hasHotel ? "" : "none";
+                x.querySelectorAll("input, select, textarea").forEach(el => {
+                    el.disabled = !hasHotel;
+                });
+            });
+            qa(".hotel-date-field").forEach(x => {
+                x.style.display = hasHotel ? "" : "none";
+                x.querySelectorAll("input, select, textarea").forEach(el => {
+                    el.disabled = !hasHotel;
+                });
+            });
+
+            q("#transportInlineSection")?.classList.toggle("show", hasTransport);
+            if (hasHotel && !isRestoringPostback) calculateCheckoutFromNights();
+            if (!isRestoringPostback) { changeTripType(); setRequiredSeatsVisibility(); calculateAll(); }
+        }
+        function setRequiredSeatsVisibility() {
+            const type   = q("#TripType")?.value || "Departure";
+            const showGo = type === "Departure" || type === "RoundTrip";
+            const showRt = type === "Return"    || type === "RoundTrip";
+            q("#DepartureRequiredSeatsField")?.classList.toggle("disabled", !showGo);
+            q("#ReturnRequiredSeatsField")?.classList.toggle("disabled",    !showRt);
+            const di = q("#DepartureRequiredSeats"), ri = q("#ReturnRequiredSeats");
+            if (di) di.disabled = !showGo;
+            if (ri) ri.disabled = !showRt;
+        }
+        function setSideEnabled(direction, enabled) {
+            const panel = q(`#${direction === "Departure" ? "departure" : "return"}Panel`);
+            panel?.classList.toggle("disabled", !enabled);
+            const df = q(`#${direction}DateField`); if (df) df.style.display = enabled ? "" : "none";
+            [`#${direction}Date`,`#${direction}BusId`,`#CreateNew${direction}Trip`,
+             `#${direction}FromLocation`,`#${direction}ToLocation`].forEach(s => { const e = q(s); if (e) e.disabled = !enabled; });
+        }
+        function changeTripType() {
+            const type   = q("#TripType")?.value || "Departure";
+            const showGo = type === "Departure" || type === "RoundTrip";
+            const showRt = type === "Return"    || type === "RoundTrip";
+            setSideEnabled("Departure", showGo);
+            setSideEnabled("Return",    showRt);
+            setRequiredSeatsVisibility();
+            q("#transportGrid")?.classList.toggle("round", type === "RoundTrip");
+            if (!isRestoringPostback) {
+                if (!showGo) { clearTrip("Departure", CB_I18N.goDisabled);     const b = q("#DepartureBusId"); if (b) b.value = ""; }
+                if (!showRt) { clearTrip("Return",    CB_I18N.returnDisabled); const b = q("#ReturnBusId");   if (b) b.value = ""; }
+                if (type === "RoundTrip") syncReverseRoute("Departure");
+                if (showGo && q("#DepartureFromLocation")?.value && q("#DepartureToLocation")?.value) scheduleLoadRouteBuses("Departure");
+                if (showRt && q("#ReturnFromLocation")?.value    && q("#ReturnToLocation")?.value)    scheduleLoadRouteBuses("Return");
+            }
+            calculateAll();
+        }
+
+        // ── Clear helpers ─────────────────────────────────────────────────────────
+        function clearSeatSelection(direction) {
+            if (isRestoringPostback) return;
+            selectedSeats[direction] = []; seatTypePrices[direction] = {}; seatLocations[direction] = { from: "", to: "" };
+            const h = q(`#${direction}HiddenSeats`), s = q(`#${direction}SelectedSeats`);
+            if (h) h.innerHTML = ""; if (s) s.innerHTML = "";
+            updatePriceBox(direction); calculateAll();
+        }
+        function clearTrip(direction, message) {
+            selectedSeats[direction] = []; seatTypePrices[direction] = {}; seatLocations[direction] = { from: "", to: "" };
+            const h = q(`#${direction}HiddenSeats`), s = q(`#${direction}SelectedSeats`);
+            const th = q(`#${direction}TripIdHidden`), ch = q(`#CreateNew${direction}Trip`);
+            if (h) h.innerHTML = ""; if (s) s.innerHTML = "";
+            setBusMapMessage(direction, message);
+            if (th) th.value = ""; if (ch) ch.value = "true";
+            updatePriceBox(direction);
+        }
+        function clearBusAndSeats(direction, message) {
+            const bs = q(`#${direction}BusId`), th = q(`#${direction}TripIdHidden`), ch = q(`#CreateNew${direction}Trip`);
+            selectedSeats[direction] = []; seatTypePrices[direction] = {}; seatLocations[direction] = { from: "", to: "" };
+            renderSelectedSeats(direction); updatePriceBox(direction);
+            if (bs) { bs.innerHTML = `<option value="">${CB_I18N.selectBus}</option>`; bs.value = ""; }
+            if (th) th.value = ""; if (ch) ch.value = "true";
+            setBusMapMessage(direction, message);
+        }
+
+        // ── Route loading ─────────────────────────────────────────────────────────
+        function scheduleLoadRouteBuses(direction) {
+            clearTimeout(routeReloadTimer);
+            routeReloadTimer = setTimeout(() => loadRouteBuses(direction), 300);
+        }
+        async function onRequiredSeatsChanged(direction) {
+            const input = q(`#${direction}RequiredSeats`);
+            if (input && input.value !== "" && intNum(input.value) < 1) input.value = 1;
+            clearBusAndSeats(direction, CB_I18N.selectBusToShowSeats);
+            const from = q(`#${direction}FromLocation`)?.value || "", to = q(`#${direction}ToLocation`)?.value || "";
+            if (from && to) scheduleLoadRouteBuses(direction);
+            calculateAll();
+        }
+        async function setSelectValueAndLoadOptions(select, value) {
+            if (!select) return;
+            let opt = Array.from(select.options).find(x => x.value === value);
+            if (!opt && value) { opt = document.createElement("option"); opt.value = opt.textContent = value; select.appendChild(opt); }
+            select.value = value || "";
+        }
+        async function loadToLocations(direction, from, selectedTo) {
+            const ts = q(`#${direction}ToLocation`); if (!ts) return;
+            ts.innerHTML = `<option value="">${CB_I18N.selectToLocation}</option>`; if (!from) return;
+            try {
+                const r = await (await fetch(`/Bookings/GetRouteToLocations?fromLocation=${encodeURIComponent(from)}&direction=${directionValue(direction)}`)).json();
+                if (!r.success || !r.data) return;
+                r.data.forEach(loc => { const o = document.createElement("option"); o.value = o.textContent = loc; ts.appendChild(o); });
+                if (selectedTo) await setSelectValueAndLoadOptions(ts, selectedTo);
+            } catch { setBusMapMessage(direction, CB_I18N.cannotLoadRoute); }
+        }
+        async function loadRouteBuses(direction) {
+            const from = q(`#${direction}FromLocation`)?.value || "", to = q(`#${direction}ToLocation`)?.value || "";
+            const date = q(`#${direction}Date`)?.value || "", req = getRequiredSeats(direction);
+            const bs = q(`#${direction}BusId`), th = q(`#${direction}TripIdHidden`), ch = q(`#CreateNew${direction}Trip`);
+            if (bs) { bs.innerHTML = `<option value="">${CB_I18N.selectBus}</option>`; bs.value = ""; }
+            if (!isRestoringPostback) { if (th) th.value = ""; if (ch) ch.value = "true"; clearSeatSelection(direction); }
+            setBusMapMessage(direction, CB_I18N.selectBusToShowSeats);
+            if (!from || !to) return;
+            if (!req || req < 1) { setBusMapMessage(direction, cbFmt(CB_I18N.enterRequiredSeats, directionTitle(direction))); return; }
+            if (!date)           { setBusMapMessage(direction, cbFmt(CB_I18N.selectDateFirst, directionTitle(direction))); return; }
+            try {
+                setBusMapMessage(direction, cbFmt(CB_I18N.loadingBuses, req));
+                const r = await (await fetch(`/Bookings/GetRouteBusesBySeatCount?fromLocation=${encodeURIComponent(from)}&toLocation=${encodeURIComponent(to)}&direction=${directionValue(direction)}&tripDate=${encodeURIComponent(date)}&requiredSeats=${encodeURIComponent(req)}`)).json();
+                if (!r.success || !r.data || !r.data.length) { setBusMapMessage(direction, r.message || cbFmt(CB_I18N.noBusSeats, req)); return; }
+                r.data.forEach(bus => {
+                    const o = document.createElement("option");
+                    o.value = bus.busId; o.dataset.from = bus.fromLocation || ""; o.dataset.to = bus.toLocation || "";
+                    o.dataset.tripId = bus.tripId || ""; o.dataset.createNewTrip = bus.createNewTrip ? "true" : "false";
+                    o.dataset.availableCount = bus.availableCount || 0; o.dataset.seatsCount = bus.seatsCount || 0; o.dataset.reservedCount = bus.reservedCount || 0;
+                    const plate = bus.plateNumber ? ` (${bus.plateNumber})` : "";
+                    o.textContent = `${bus.busName}${plate} - ${bus.fromLocation} -> ${bus.toLocation} | ${bus.createNewTrip ? CB_I18N.newTrip : CB_I18N.existingTrip} | ${CB_I18N.available}: ${bus.availableCount}/${bus.seatsCount}`;
+                    bs.appendChild(o);
+                });
+                setBusMapMessage(direction, cbFmt(CB_I18N.foundBuses, r.data.length), "bus-availability-ok");
+            } catch { setBusMapMessage(direction, CB_I18N.cannotLoadBuses); }
+        }
+
+        // ── Route change / swap / sync ────────────────────────────────────────────
+        async function onRouteFromChanged(direction, userAction) {
+            clearSeatSelection(direction);
+            const ts = q(`#${direction}ToLocation`); if (ts) ts.innerHTML = `<option value="">${CB_I18N.selectToLocation}</option>`;
+            const bs = q(`#${direction}BusId`); if (bs) { bs.innerHTML = `<option value="">${CB_I18N.selectRouteFirst}</option>`; bs.value = ""; }
+            setBusMapMessage(direction, CB_I18N.selectRouteToShowBuses);
+            await loadToLocations(direction, q(`#${direction}FromLocation`)?.value || "");
+            if (userAction) await syncReverseRoute(direction);
+            calculateAll();
+        }
+        async function onRouteToChanged(direction, userAction) {
+            clearSeatSelection(direction);
+            await loadRouteBuses(direction);
+            if (userAction) await syncReverseRoute(direction);
+            calculateAll();
+        }
+        async function swapRoute(direction, userAction) {
+            const tts = q("#TripType"), curType = tts?.value || "Departure";
+            const fs = q(`#${direction}FromLocation`), ts = q(`#${direction}ToLocation`);
+            if (!fs || !ts) return;
+            const oldFrom = fs.value || "", oldTo = ts.value || "";
+            if (curType !== "RoundTrip") {
+                const newType = curType === "Departure" ? "Return" : "Departure";
+                tts.value = newType; changeTripType();
+                const td = newType === "Return" ? "Return" : "Departure";
+                const tf = q(`#${td}FromLocation`), tt = q(`#${td}ToLocation`);
+                await setSelectValueAndLoadOptions(tf, oldTo);
+                if (oldTo) await loadToLocations(td, oldTo);
+                await setSelectValueAndLoadOptions(tt, oldFrom);
+                clearBusAndSeats(td, CB_I18N.selectBusToShowSeats);
+                await loadRouteBuses(td); calculateAll(); return;
+            }
+            await setSelectValueAndLoadOptions(fs, oldTo);
+            if (oldTo) await loadToLocations(direction, oldTo);
+            else ts.innerHTML = `<option value="">${CB_I18N.selectToLocation}</option>`;
+            await setSelectValueAndLoadOptions(ts, oldFrom);
+            clearBusAndSeats(direction, CB_I18N.selectBusToShowSeats);
+            await loadRouteBuses(direction);
+            if (userAction) await syncReverseRoute(direction);
+            calculateAll();
+        }
+        async function syncReverseRoute(changedDirection) {
+            if (routeSyncing) return;
+            if ((q("#TripType")?.value || "Departure") !== "RoundTrip") return;
+            const other = otherDirection(changedDirection);
+            const from = q(`#${changedDirection}FromLocation`)?.value || "", to = q(`#${changedDirection}ToLocation`)?.value || "";
+            if (!from && !to) return;
+            routeSyncing = true;
+            await setSelectValueAndLoadOptions(q(`#${other}FromLocation`), to);
+            if (to) await loadToLocations(other, to);
+            await setSelectValueAndLoadOptions(q(`#${other}ToLocation`), from);
+            clearBusAndSeats(other, CB_I18N.selectBusToShowSeats);
+            await loadRouteBuses(other);
+            routeSyncing = false;
+        }
+
+        // ── Bus seat map ──────────────────────────────────────────────────────────
+        async function onTripDateChanged(direction) {
+            clearBusAndSeats(direction, CB_I18N.selectBusToShowSeats);
+            const from = q(`#${direction}FromLocation`)?.value || "", to = q(`#${direction}ToLocation`)?.value || "";
+            if (from && to) await loadRouteBuses(direction);
+            calculateAll();
+        }
+        async function loadBusSeats(direction) {
+            const date = q(`#${direction}Date`)?.value, busId = q(`#${direction}BusId`)?.value || "";
+            const req  = getRequiredSeats(direction);
+            selectedSeats[direction] = []; seatTypePrices[direction] = {}; seatLocations[direction] = { from: "", to: "" };
+            const h = q(`#${direction}HiddenSeats`), s = q(`#${direction}SelectedSeats`);
+            if (h) h.innerHTML = ""; if (s) s.innerHTML = "";
+            updatePriceBox(direction);
+            if (!req || req < 1) { setBusMapMessage(direction, cbFmt(CB_I18N.enterRequiredSeats, directionTitle(direction))); q(`#${direction}BusId`).value = ""; calculateAll(); return; }
+            if (!busId)          { setBusMapMessage(direction, cbFmt(CB_I18N.selectBusToShowSeats, directionTitle(direction))); calculateAll(); return; }
+            const bs = q(`#${direction}BusId`), opt = bs?.options[bs.selectedIndex];
+            if (opt) {
+                const fi = q(`#${direction}FromLocation`), ti = q(`#${direction}ToLocation`);
+                const th = q(`#${direction}TripIdHidden`),  ch = q(`#CreateNew${direction}Trip`);
+                if (fi && opt.dataset.from) fi.value = opt.dataset.from;
+                if (ti && opt.dataset.to)   ti.value = opt.dataset.to;
+                if (th) th.value = opt.dataset.tripId || "";
+                if (ch) ch.value = opt.dataset.createNewTrip === "false" ? "false" : "true";
+            }
+            setBusMapMessage(direction, CB_I18N.loadingLayout);
+            try {
+                const tripId = q(`#${direction}TripIdHidden`)?.value || "";
+                const url = tripId
+                    ? `/Bookings/GetBusLayout?tripId=${encodeURIComponent(tripId)}`
+                    : `/Bookings/GetBusLayout?busId=${encodeURIComponent(busId)}&date=${encodeURIComponent(date || "")}&direction=${directionValue(direction)}`;
+                const r = await (await fetch(url)).json();
+                if (!r.success) { setBusMapMessage(direction, r.message || CB_I18N.cannotLoadLayout); return; }
+                drawBus(direction, r);
+                const avail = qa(`#${direction}BusGrid .bus-cell.selectable:not(.reserved-seat):not(.disabled-seat)`).length;
+                if (avail < req) q(`#${direction}SeatMap`).insertAdjacentHTML("afterbegin",
+                    `<div class="seat-map-empty bus-availability-bad">${cbFmt(CB_I18N.busOnlyHas, avail)}</div>`);
+            } catch { setBusMapMessage(direction, CB_I18N.cannotLoadLayout); }
+            calculateAll();
+        }
+        function drawBus(direction, layout) {
+            const holder  = q(`#${direction}SeatMap`);
+            const columns = layout.columns || layout.layoutColumns || 4;
+            const rows    = layout.rows    || layout.layoutRows    || 1;
+            const seats   = layout.seats   || [];
+            const byPos   = {};
+            seats.forEach(s => { byPos[`${s.row||s.rowNumber}_${s.column||s.columnNumber}`] = s; });
+
+            holder.innerHTML = `
+                <div class="bus-shell">
+                    <div class="bus-stage" id="${direction}BusStage">
+                        <div class="bus-nose">
+                            <div class="bus-windshield"></div>
+                            <div class="bus-headlight left"></div>
+                            <div class="bus-headlight right"></div>
+                        </div>
+                        <div class="bus-body-wrap">
+                            <div class="bus-wheel left top"></div><div class="bus-wheel left bottom"></div>
+                            <div class="bus-wheel right top"></div><div class="bus-wheel right bottom"></div>
+                            <div class="bus-body">
+                                <div class="bus-meta">
+                                    <span>${directionTitle(direction)} ${CB_I18N.busSuffix}</span>
+                                    <span>${rows} x ${columns}</span>
+                                </div>
+                                <div class="bus-grid" id="${direction}BusGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            const stage    = q(`#${direction}BusStage`);
+            const grid     = q(`#${direction}BusGrid`);
+            const cellSize = columns >= 8 ? 46 : columns >= 6 ? 50 : 54;
+            const gap      = columns >= 8 ? 5  : 7;
+            const busWidth = columns * cellSize + (columns - 1) * gap + 82;
+            stage.style.setProperty("--cols",      columns);
+            stage.style.setProperty("--cell-size", `${cellSize}px`);
+            stage.style.setProperty("--cell-gap",  `${gap}px`);
+            stage.style.setProperty("--bus-width", `${busWidth}px`);
+
+            for (let r = 1; r <= rows; r++) {
+                for (let c = 1; c <= columns; c++) {
+                    const seat = byPos[`${r}_${c}`];
+                    const cell = document.createElement("button"); cell.type = "button"; cell.className = "bus-cell";
+                    if (!seat) { cell.classList.add("empty"); grid.appendChild(cell); continue; }
+                    const css = seatTypeClass(seat.type || seat.seatType);
+                    const active = seat.isActive !== false, reserved = seat.isReserved === true;
+                    const label  = seat.label || seat.seatLabel || seat.seatNumber || "";
+                    cell.classList.add(css);
+                    if (css === "empty") cell.classList.add("empty");
+                    if (!active)  cell.classList.add("disabled-seat");
+                    if (reserved) { cell.classList.add("reserved-seat"); cell.dataset.bookedLabel = CB_I18N.booked; }
+                    cell.textContent = css === "empty" ? "" : (label || (css==="driver"?"DRV":css==="assistant"?"AST":css==="wc"?"WC":""));
+                    cell.dataset.seatId = seat.seatId || seat.id || "";
+                    if (active && !reserved && isSelectableSeat(seat.type || seat.seatType)) {
+                        cell.classList.add("selectable");
+                        cell.onclick = function() { toggleSeat(direction, seat, cell); };
+                    }
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        // ── Seat type helpers ─────────────────────────────────────────────────────
+        function seatTypeKey(type) {
+            const t = String(type ?? "").toLowerCase();
+            if (t === "vip" || t === "1") return "VIP";
+            if (t === "normal" || t === "0" || t === "seat") return "Normal";
+            return "Normal";
+        }
+        function seatTypeClass(type) {
+            const t = String(type ?? "").toLowerCase();
+            if (t === "normal" || t === "0" || t === "seat") return "seat";
+            if (t === "vip" || t === "1") return "vip";
+            if (t === "driver" || t === "2") return "driver";
+            if (t === "assistant" || t === "3") return "assistant";
+            if (t === "aisle" || t === "road" || t === "4") return "road";
+            if (t === "door" || t === "dooronly" || t === "door-only" || t === "5") return "door-only";
+            if (t === "bathroom" || t === "wc" || t === "6") return "wc";
+            if (t === "empty" || t === "7") return "empty";
+            return "seat";
+        }
+        function isSelectableSeat(type) {
+            const c = seatTypeClass(type);
+            return c === "seat" || c === "vip";
+        }
+
+        // ── Seat toggle & display ─────────────────────────────────────────────────
+        function toggleSeat(direction, seat, btn) {
+            const seatId = seat.seatId, label = seat.label || seat.seatLabel || seat.seatNumber || CB_I18N.seat;
+            const type = seat.type || seat.seatType, typeKey = seatTypeKey(type);
+            const idx = selectedSeats[direction].findIndex(x => x.seatId === seatId);
+            if (idx >= 0) { selectedSeats[direction].splice(idx, 1); btn.classList.remove("selected"); }
+            else {
+                const req = getRequiredSeats(direction);
+                if (req > 0 && selectedSeats[direction].length >= req) {
+                    clearClientErrors(); addClientError(q(`#${direction}BusId`), cbFmt(CB_I18N.seatsExceedRequired, directionTitle(direction), req)); return;
+                }
+                if (seatTypePrices[direction][typeKey] === undefined) seatTypePrices[direction][typeKey] = 0;
+                selectedSeats[direction].push({ seatId, label, type, typeKey, price: num(seatTypePrices[direction][typeKey]) });
+                btn.classList.add("selected");
+            }
+            updatePriceBox(direction); applySeatPrices(direction);
+        }
+        function selectedSeatTypes(direction) {
+            return Array.from(new Set(selectedSeats[direction].map(x => seatTypeKey(x.type)).filter(x => x==="Normal"||x==="VIP")));
+        }
+        function updatePriceBox(direction) {
+            const box = q(`#${direction}PriceBox`); if (!box) return;
+            const types = selectedSeatTypes(direction);
+            box.innerHTML = `<div class="price-title">${cbFmt(CB_I18N.selectedPrices, directionTitle(direction))}</div>`;
+            if (!types.length) { box.classList.remove("show"); return; }
+            box.classList.add("show");
+            types.forEach(typeKey => {
+                const val = seatTypePrices[direction][typeKey] ?? 0;
+                box.insertAdjacentHTML("beforeend", `
+                    <div class="transport-field">
+                        <label>${typeKey} ${CB_I18N.seatPriceLabel}</label>
+                        <input class="transport-input direction-type-price" data-direction="${direction}" data-type-key="${typeKey}"
+                               type="number" min="0" step="0.01" inputmode="decimal" value="${val}"
+                               oninput="setSeatTypePrice('${direction}','${typeKey}',this.value)" />
+                    </div>`);
+            });
+        }
+        function setSeatTypePrice(direction, typeKey, value) {
+            const price = money(value);
+
+            seatTypePrices[direction][typeKey] = price;
+
+            selectedSeats[direction].forEach(s => {
+                if ((s.typeKey || seatTypeKey(s.type)) === typeKey) {
+                    s.price = price;
+                }
+            });
+
+            updateSelectedSeatSummary(direction);
+            renderHiddenSeats(direction);
+            calculateAll();
+        }
+        function applySeatPrices(direction) {
+            selectedSeatTypes(direction).forEach(typeKey => {
+                const val = getSeatTypePrice(direction, typeKey);
+                seatTypePrices[direction][typeKey] = val;
+                selectedSeats[direction].forEach(s => { if ((s.typeKey || seatTypeKey(s.type)) === typeKey) s.price = num(val); });
+            });
+            renderSelectedSeats(direction); calculateAll();
+        }
+        function updateSelectedSeatSummary(direction) {
+            selectedSeatTypes(direction).forEach(typeKey => {
+                const box = q(`.selected-seat-summary-box[data-direction="${direction}"][data-type-key="${typeKey}"] .seat-summary-price`);
+                if (box) box.innerText = num(seatTypePrices[direction][typeKey]).toFixed(2);
+            });
+        }
+        function renderSelectedSeats(direction) {
+            const list = q(`#${direction}SelectedSeats`); if (!list) return;
+            const title = directionTitle(direction); list.innerHTML = ""; updatePriceBox(direction);
+            if (selectedSeats[direction].length > 0) {
+                const grouped = {};
+                selectedSeats[direction].forEach(s => { const k = s.typeKey||seatTypeKey(s.type); if (!grouped[k]) grouped[k]=[]; grouped[k].push(s.label); });
+                Object.keys(grouped).forEach(key => {
+                    list.insertAdjacentHTML("beforeend", `
+                        <div class="selected-seat-box selected-seat-summary-box" data-direction="${direction}" data-type-key="${key}">
+                            ${title} ${key}: ${grouped[key].join(", ")}
+                            <small>${CB_I18N.countLabel}: ${grouped[key].length} - ${CB_I18N.pricePerSeat}: <span class="seat-summary-price">${num(seatTypePrices[direction][key]).toFixed(2)}</span></small>
+                        </div>`);
+                });
+                list.insertAdjacentHTML("beforeend", `
+                    <div class="selected-seat-box">
+                        ${title} ${CB_I18N.seatLocation}
+                        <small>${CB_I18N.seatLocationHint}</small>
+                        <div class="seat-location-grid">
+                            <div>
+                                <label>${title} ${CB_I18N.seatFromLocation}</label>
+                                <input class="seat-location-input" id="${direction}SeatFromLocation" list="SeatLocationOptions"
+                                       value="${seatLocations[direction].from||""}" placeholder="${CB_I18N.seatLocationFromPH}"
+                                       oninput="onSeatLocationChanged('${direction}')" />
+                            </div>
+                            <div>
+                                <label>${title} ${CB_I18N.seatToLocation}</label>
+                                <input class="seat-location-input" id="${direction}SeatToLocation" list="SeatLocationOptions"
+                                       value="${seatLocations[direction].to||""}" placeholder="${CB_I18N.seatLocationToPH}"
+                                       oninput="onSeatLocationChanged('${direction}')" />
+                            </div>
+                        </div>
+                    </div>`);
+            }
+            renderHiddenSeats(direction);
+        }
+        function onSeatLocationChanged(direction) {
+            seatLocations[direction].from = q(`#${direction}SeatFromLocation`)?.value || "";
+            seatLocations[direction].to   = q(`#${direction}SeatToLocation`)?.value   || "";
+            renderHiddenSeats(direction); calculateAll();
+        }
+        function renderHiddenSeats(direction) {
+            const holder = q(`#${direction}HiddenSeats`);
+            if (!holder) return;
+
+            const prefix = direction === "Departure"
+                ? "Transportation.DepartureSeats"
+                : "Transportation.ReturnSeats";
+
+            holder.innerHTML = "";
+
+            const sf = getSeatFromLocation(direction);
+            const st = getSeatToLocation(direction);
+
+            selectedSeats[direction].forEach((s, i) => {
+                const price = getSeatItemPrice(direction, s);
+
+                holder.insertAdjacentHTML("beforeend",
+                    `<input type="hidden" name="${prefix}[${i}].Direction" value="${direction}" />` +
+                    `<input type="hidden" name="${prefix}[${i}].SeatId" value="${s.seatId}" />` +
+                    `<input type="hidden" name="${prefix}[${i}].SeatPrice" value="${price.toString()}" />` +
+                    `<input type="hidden" name="${prefix}[${i}].FromLocation" value="${sf}" />` +
+                    `<input type="hidden" name="${prefix}[${i}].ToLocation" value="${st}" />`
+                );
+            });
+
+            const allSeats = [...selectedSeats.Departure, ...selectedSeats.Return];
+            const firstPrice = allSeats.length ? num(allSeats[0].price) : 0;
+            const totalPrice = allSeats.reduce((sum, x) => sum + num(x.price), 0);
+
+            const seatPriceInput = q("#SeatPrice");
+            const seatsCountInput = q("#SeatsCount");
+            const transportationTotalInput = q("#TransportationTotal");
+
+            if (seatPriceInput) seatPriceInput.value = firstPrice.toString();
+            if (seatsCountInput) seatsCountInput.value = allSeats.length.toString();
+            if (transportationTotalInput) transportationTotalInput.value = totalPrice.toString();
+        }
+
+        // ── Postback restore ──────────────────────────────────────────────────────
+        async function restoreTripFromPost(direction, state) {
+            if (!state) return;
+            if (!state.seats?.length && !state.from && !state.to && !state.busId) return;
+            const ri = q(`#${direction}RequiredSeats`); if (ri && state.requiredSeats) ri.value = state.requiredSeats;
+            const di = q(`#${direction}Date`);          if (di && state.date) di.value = state.date;
+            await setSelectValueAndLoadOptions(q(`#${direction}FromLocation`), state.from || "");
+            if (state.from) await loadToLocations(direction, state.from, state.to || "");
+            else            await setSelectValueAndLoadOptions(q(`#${direction}ToLocation`), state.to || "");
+            if (state.from && state.to) await loadRouteBuses(direction);
+            if (state.busId) await setSelectValueAndLoadOptions(q(`#${direction}BusId`), state.busId);
+            const th = q(`#${direction}TripIdHidden`), ch = q(`#CreateNew${direction}Trip`);
+            if (th) th.value = state.tripId || ""; if (ch) ch.value = state.createNewTrip ? "true" : "false";
+            if (state.busId) await loadBusSeats(direction);
+            selectedSeats[direction] = (state.seats || []).map(s => ({
+                seatId: s.seatId, label: s.label || CB_I18N.seat,
+                type: s.type || s.typeKey || "Normal", typeKey: s.typeKey || seatTypeKey(s.type || "Normal"),
+                price: num(s.price)
+            }));
+            seatTypePrices[direction] = {};
+            selectedSeats[direction].forEach(s => { const k = s.typeKey || seatTypeKey(s.type); seatTypePrices[direction][k] = num(s.price); });
+            if (state.seats?.length) seatLocations[direction] = { from: state.seats[0].fromLocation || "", to: state.seats[0].toLocation || "" };
+            selectedSeats[direction].forEach(s => {
+                let btn = qa(`#${direction}BusGrid .bus-cell`).find(x => (x.dataset.seatId||"").toLowerCase() === (s.seatId||"").toLowerCase());
+                if (!btn && s.label) btn = qa(`#${direction}BusGrid .bus-cell`).find(x => x.textContent.trim() === String(s.label).trim());
+                if (btn) btn.classList.add("selected");
+            });
+            renderSelectedSeats(direction); calculateAll();
+        }
+        async function restoreTransportationPostback() {
+            if (didRestorePostback || typeof postedTransportState === "undefined") return;
+            didRestorePostback = true; isRestoringPostback = true;
+            try {
+                if (postedTransportState.tripType && q("#TripType")) q("#TripType").value = postedTransportState.tripType;
+                changeTripType();
+                await restoreTripFromPost("Departure", postedTransportState.departure);
+                await restoreTripFromPost("Return",    postedTransportState.returnTrip);
+            } finally { isRestoringPostback = false; }
+            calculateAll();
+        }
+
+
+        function getSeatTypePrice(direction, typeKey) {
+            const input = q(`.direction-type-price[data-direction="${direction}"][data-type-key="${typeKey}"]`);
+            if (input) return num(input.value);
+            if (seatTypePrices[direction] && seatTypePrices[direction][typeKey] !== undefined) return num(seatTypePrices[direction][typeKey]);
+            return num(q("#SeatPrice")?.value);
+        }
+
+        function getSeatItemPrice(direction, seat) {
+            const typeKey = seat.typeKey || seatTypeKey(seat.type);
+            const price = money(getSeatTypePrice(direction, typeKey));
+
+            seat.price = price;
+
+            if (!seatTypePrices[direction]) {
+                seatTypePrices[direction] = {};
+            }
+
+            seatTypePrices[direction][typeKey] = price;
+
+            return price;
+        }
+
+        function syncSeatPricesFromInputs() {
+            qa(".direction-type-price").forEach(input => {
+                const direction = input.dataset.direction;
+                const typeKey = input.dataset.typeKey;
+
+                if (!direction || !typeKey) return;
+
+                const value = money(input.value);
+
+                seatTypePrices[direction][typeKey] = value;
+
+                selectedSeats[direction].forEach(s => {
+                    if ((s.typeKey || seatTypeKey(s.type)) === typeKey) {
+                        s.price = value;
+                    }
+                });
+            });
+        }
+
+        // ── Transport total ───────────────────────────────────────────────────────
+        window.getTransportationTotal = function() {
+            syncSeatPricesFromInputs();
+            return selectedSeats.Departure.reduce((s,x)=>s+num(x.price),0) +
+                   selectedSeats.Return.reduce((s,x)=>s+num(x.price),0);
+        };
+        function getTransportTotalFromDrawer() { return window.getTransportationTotal ? window.getTransportationTotal() : 0; }
+
+        // ── Form validation ───────────────────────────────────────────────────────
+        function validateTripSide(direction, tripType, errors) {
+            const active = direction === "Departure" ? tripType==="Departure"||tripType==="RoundTrip" : tripType==="Return"||tripType==="RoundTrip";
+            if (!active) return;
+            const title = directionTitle(direction), req = getRequiredSeats(direction);
+            if (!req || req < 1)                             errors.push([q(`#${direction}RequiredSeats`),  cbFmt(CB_I18N.reqSeatsRequired, title)]);
+            if (!q(`#${direction}Date`)?.value)              errors.push([q(`#${direction}Date`),           cbFmt(CB_I18N.dateRequired, title)]);
+            if (!q(`#${direction}FromLocation`)?.value.trim()) errors.push([q(`#${direction}FromLocation`), cbFmt(CB_I18N.fromLocRequired, title)]);
+            if (!q(`#${direction}ToLocation`)?.value.trim())   errors.push([q(`#${direction}ToLocation`),   cbFmt(CB_I18N.toLocRequired, title)]);
+            if (!q(`#${direction}BusId`)?.value)             errors.push([q(`#${direction}BusId`),          cbFmt(CB_I18N.busRequired, title)]);
+            if (!selectedSeats[direction].length)            errors.push([q(`#${direction}BusId`),          cbFmt(CB_I18N.selectOneSeat, title)]);
+            if (req > 0 && selectedSeats[direction].length !== req) errors.push([q(`#${direction}BusId`), cbFmt(CB_I18N.seatsMustEqual, title, req)]);
+            if (selectedSeats[direction].length) {
+                if (!getSeatFromLocation(direction)) errors.push([q(`#${direction}SeatFromLocation`), cbFmt(CB_I18N.seatFromRequired, title)]);
+                if (!getSeatToLocation(direction))   errors.push([q(`#${direction}SeatToLocation`),   cbFmt(CB_I18N.seatToRequired, title)]);
+                selectedSeatTypes(direction).forEach(typeKey => {
+                    const pi = q(`.direction-type-price[data-direction="${direction}"][data-type-key="${typeKey}"]`);
+                    if (getSeatTypePrice(direction, typeKey) <= 0) errors.push([pi, cbFmt(CB_I18N.seatPricePositive, title, typeKey)]);
+                });
+            }
+        }
+        function validateAllRows() {
+            clearClientErrors();
+            const errors = [], hasHotel = q("#HasHotelHidden")?.value==="true", hasTransport = q("#HasTransportationHidden")?.value==="true";
+            if (hasHotel) calculateCheckoutFromNights();
+            if (hasHotel && !q("#HotelName")?.value.trim()) errors.push([q("#HotelName"), CB_I18N.hotelNameRequired]);
+            if (hasHotel) { qa(".room-row").forEach((row,i)=>{ const cnt=row.querySelector(".room-count"), prc=row.querySelector(".room-price"); if(num(cnt.value)<=0)errors.push([cnt,cbFmt(CB_I18N.roomRowCount,i+1)]); if(num(prc.value)<=0)errors.push([prc,cbFmt(CB_I18N.roomRowPrice,i+1)]); }); }
+            if (hasTransport) { const tt=q("#TripType")?.value||"Departure"; validateTripSide("Departure",tt,errors); validateTripSide("Return",tt,errors); }
+            qa(".phone-row").forEach((row,i)=>{ const ph=row.querySelector(".phone-input"); if(!ph.value.trim())errors.push([ph,cbFmt(CB_I18N.phoneRowRequired,i+1)]); else if(!phoneValid(ph.value))errors.push([ph,cbFmt(CB_I18N.phoneRowIncorrect,i+1)]); });
+            if (!qa(".phone-row").some(row=>row.querySelector("input[type=radio]")?.checked)) errors.push([q(".phone-input"), CB_I18N.onePrimaryRequired]);
+            calculateAll();
+            const grand = num(q("#GrandTotal")?.value), paid = qa(".payment-amount").reduce((s,x)=>s+num(x.value),0);
+            qa(".payment-row").forEach((row,i)=>{ const amt=row.querySelector(".payment-amount"); if(amt.value.trim()==="")errors.push([amt,cbFmt(CB_I18N.paymentRowRequired,i+1)]); if(num(amt.value)<0)errors.push([amt,cbFmt(CB_I18N.paymentRowNegative,i+1)]); });
+            if (paid > grand) errors.push([qa(".payment-amount").at(-1), CB_I18N.paidExceedsGrand]);
+            errors.forEach(e => addClientError(e[0], e[1]));
+            if (errors.length) { q("#ClientValidationPanel")?.scrollIntoView({behavior:"smooth",block:"start"}); return false; }
+            return true;
+        }
+        // ── Inline row error helpers ──────────────────────────────────────────────
+        function showRowError(input, message) {
+            if (!input) return;
+            input.classList.add("input-error");
+            input.focus();
+            let errDiv = input.parentElement?.querySelector(".field-error");
+            if (!errDiv) {
+                errDiv = document.createElement("div");
+                errDiv.className = "field-error";
+                input.parentElement?.appendChild(errDiv);
+            }
+            errDiv.dataset.js = "true";
+            errDiv.innerText = message;
+        }
+        function clearRowErrors(container) {
+            container.querySelectorAll(".input-error").forEach(x => x.classList.remove("input-error"));
+            container.querySelectorAll(".field-error[data-js='true']").forEach(x => x.innerText = "");
+        }
+
+        // ── Dynamic rows ──────────────────────────────────────────────────────────
+        function reindex(containerId, prefix) {
+            const c = q("#" + containerId); if (!c) return;
+            c.querySelectorAll(".row-item").forEach((row, i) => {
+                row.querySelectorAll("[name]").forEach(el => {
+                    el.name = el.name.replace(new RegExp(prefix + "\\[\\d+\\]"), `${prefix}[${i}]`);
+                });
+            });
+        }
+
+        function removeRow(btn) {
+            const row       = btn.closest(".row-item");
+            const container = row.closest(".rows");
+            if (container.querySelectorAll(".row-item").length <= 1) {
+                row.style.outline = "2px solid #f04438";
+                setTimeout(() => row.style.outline = "", 1200);
+                return;
+            }
+            row.remove();
+            reindex("roomsRows", "Rooms");
+            reindex("paymentsRows", "Payments");
+            reindex("phonesRows", "PhoneNumbers");
+            syncPrimePhones();
+            calculateAll();
+        }
+
+        function addRoom() {
+            const lastRow = qa("#roomsRows .room-row").at(-1);
+            if (lastRow) {
+                clearRowErrors(lastRow);
+                const cnt  = lastRow.querySelector(".room-count");
+                const prc  = lastRow.querySelector(".room-price");
+                let hasErr = false;
+                if (!cnt.value || num(cnt.value) <= 0) { showRowError(cnt, CB_I18N.countPositive); hasErr = true; }
+                if (!prc.value || num(prc.value) <= 0) { showRowError(prc, CB_I18N.nightPricePositive); hasErr = true; }
+                if (hasErr) return;
+            }
+            const i = qa("#roomsRows .room-row").length;
+            q("#roomsRows").insertAdjacentHTML("beforeend", `
+                <div class="row-item room-row">
+                    <div><label>${CB_I18N.roomType}</label><select name="Rooms[${i}].RoomType" class="room-type">${roomTypeOptions}</select></div>
+                    <div><label>${CB_I18N.count}</label><input name="Rooms[${i}].Count" class="room-count" type="number" min="1" value="1" /><div class="field-error"></div></div>
+                    <div><label>${CB_I18N.nightPrice}</label><input name="Rooms[${i}].NightPrice" class="room-price" type="number" min="1" step="0.01" inputmode="decimal" value="" placeholder="0.00" /><div class="field-error"></div></div>
+                    <button type="button" class="btn-small btn-remove" onclick="removeRow(this)">${CB_I18N.remove}</button>
+                </div>`);
+            const newRow = qa("#roomsRows .room-row").at(-1);
+            newRow?.querySelector(".room-price")?.focus();
+            calculateAll();
+        }
+
+        function addPayment() {
+            const lastRow = qa("#paymentsRows .payment-row").at(-1);
+            if (lastRow) {
+                clearRowErrors(lastRow);
+                const amt  = lastRow.querySelector(".payment-amount");
+                let hasErr = false;
+                if (!amt.value.trim() || num(amt.value) <= 0) {
+                    showRowError(amt, CB_I18N.amountPositive);
+                    hasErr = true;
+                }
+                if (hasErr) return;
+            }
+            const i     = qa("#paymentsRows .payment-row").length;
+            const today = new Date();
+            const paidAt = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+            q("#paymentsRows").insertAdjacentHTML("beforeend", `
+                <div class="row-item payment-row">
+                    <div><label>${CB_I18N.amount}</label><input name="Payments[${i}].Amount" class="payment-amount" type="number" min="0.01" step="0.01" inputmode="decimal" value="" placeholder="0.00" /><div class="field-error"></div></div>
+                    <div><label>${CB_I18N.payType}</label><select name="Payments[${i}].PayType">${payTypeOptions}</select></div>
+                    <div><label>${CB_I18N.paidAt}</label><input name="Payments[${i}].PaidAt" type="date" value="${paidAt}" /><div class="field-error"></div></div>
+                    <div><label>${CB_I18N.paymentNotes}</label><input name="Payments[${i}].Notes" placeholder="${CB_I18N.paymentNotesPH}" /><div class="field-error"></div></div>
+                    <button type="button" class="btn-small btn-remove" onclick="removeRow(this)">${CB_I18N.remove}</button>
+                </div>`);
+            const newRow = qa("#paymentsRows .payment-row").at(-1);
+            newRow?.querySelector(".payment-amount")?.focus();
+            calculateAll();
+        }
+
+        function addPhone() {
+            const lastRow = qa("#phonesRows .phone-row").at(-1);
+            if (lastRow) {
+                clearRowErrors(lastRow);
+                const ph   = lastRow.querySelector(".phone-input");
+                let hasErr = false;
+                if (!ph.value.trim()) {
+                    showRowError(ph, CB_I18N.phoneRequired);
+                    hasErr = true;
+                } else if (!phoneValid(ph.value)) {
+                    showRowError(ph, CB_I18N.phoneIncorrectEx);
+                    hasErr = true;
+                }
+                if (hasErr) return;
+            }
+            const i = qa("#phonesRows .phone-row").length;
+            q("#phonesRows").insertAdjacentHTML("beforeend", `
+                <div class="row-item phone-row">
+                    <div><label>${CB_I18N.phone}</label><input name="PhoneNumbers[${i}].PhoneNumber" class="phone-input" placeholder="01012345678" /><div class="field-error"></div></div>
+                    <label class="primary-phone-label"><input type="radio" name="primePhone" onchange="syncPrimePhones()" /> ${CB_I18N.primary}</label>
+                    <input type="hidden" name="PhoneNumbers[${i}].Prime" class="phone-prime" value="false" />
+                    <button type="button" class="btn-small btn-remove" onclick="removeRow(this); syncPrimePhones();">${CB_I18N.remove}</button>
+                </div>`);
+            const newRow = qa("#phonesRows .phone-row").at(-1);
+            newRow?.querySelector(".phone-input")?.focus();
+            syncPrimePhones();
+        }
+        function syncPrimePhones() {
+            const rows = qa("#phonesRows .phone-row");
+            if (rows.length && !rows.some(r => r.querySelector("input[type=radio]")?.checked)) rows[0].querySelector("input[type=radio]").checked = true;
+            rows.forEach(row => { row.querySelector(".phone-prime").value = row.querySelector("input[type=radio]").checked ? "true" : "false"; });
+        }
+
+        // ── Live totals ───────────────────────────────────────────────────────────
+        function calculateAll() {
+            syncSeatPricesFromInputs();
+            renderHiddenSeats("Departure");
+            renderHiddenSeats("Return");
+            const hasHotel    = q("#HasHotelHidden")?.value === "true";
+            const hasTransport = q("#HasTransportationHidden")?.value === "true";
+            let nights = parseInt(q("#NightsCount")?.value||"1"); if (isNaN(nights)||nights<1) nights = 1;
+            let hotelTotal = 0, roomCount = 0;
+            if (hasHotel) { qa(".room-row").forEach(row=>{ const cnt=num(row.querySelector(".room-count")?.value), prc=num(row.querySelector(".room-price")?.value); roomCount+=cnt; hotelTotal+=cnt*prc*nights; }); }
+            const transportTotal  = hasTransport ? getTransportTotalFromDrawer() : 0;
+            const paidAmount      = qa(".payment-amount").reduce((s,x)=>s+num(x.value),0);
+            const discount        = num(q("#Discount")?.value);
+            const grandTotal      = Math.max(0, hotelTotal + transportTotal - discount);
+            const remainingAmount = Math.max(0, grandTotal - paidAmount);
+            if (q("#NumberOfRooms"))        q("#NumberOfRooms").value        = roomCount;
+            if (q("#HotelNightPrice"))      q("#HotelNightPrice").value      = qa(".room-price")[0]?.value || 0;
+            if (q("#HotelTotal"))           q("#HotelTotal").value           = hotelTotal.toFixed(2);
+            if (q("#TransportationTotal"))  q("#TransportationTotal").value  = transportTotal.toFixed(2);
+            if (q("#PaidAmount"))           q("#PaidAmount").value           = paidAmount.toFixed(2);
+            if (q("#GrandTotal"))           q("#GrandTotal").value           = grandTotal.toFixed(2);
+            if (q("#RemainingAmount"))      q("#RemainingAmount").value      = remainingAmount.toFixed(2);
+            if (q("#SeatsCount"))           q("#SeatsCount").value           = selectedSeats.Departure.length + selectedSeats.Return.length;
+            const firstSeat = selectedSeats.Departure.find(x => getSeatItemPrice("Departure", x) > 0) || selectedSeats.Return.find(x => getSeatItemPrice("Return", x) > 0) || selectedSeats.Departure[0] || selectedSeats.Return[0];
+            if (q("#SeatPrice")) q("#SeatPrice").value = firstSeat ? num(firstSeat.price).toFixed(2) : "0";
+            if (q("#childrenTotal")) q("#childrenTotal").value = num(q("#child6")?.value) + num(q("#child12")?.value);
+            if (q("#nightsText"))    q("#nightsText").innerText    = nights;
+            if (q("#hotelText"))     q("#hotelText").innerText     = hotelTotal.toFixed(2);
+            if (q("#transportText")) q("#transportText").innerText = transportTotal.toFixed(2);
+            if (q("#grandText"))     q("#grandText").innerText     = grandTotal.toFixed(2);
+            if (q("#remainingText")) q("#remainingText").innerText = remainingAmount.toFixed(2);
+        }
+
+        // ── Global event listeners ────────────────────────────────────────────────
+        document.addEventListener("input", function(e) {
+            if (e.target.id === "NightsCount") calculateCheckoutFromNights();
+            if (e.target.classList.contains("phone-input")) {
+                const msg = e.target.value.trim() && !phoneValid(e.target.value) ? CB_I18N.phoneIncorrect : "";
+                const h = e.target.parentElement.querySelector(".field-error");
+                e.target.classList.toggle("input-error", !!msg);
+                if (h) h.innerText = msg;
+            }
+            calculateAll();
+        });
+        document.addEventListener("change", function(e) {
+            if (e.target.id === "CheckInDate")  calculateCheckoutFromNights();
+            if (e.target.id === "CheckOutDate") calculateNightsFromDates();
+            calculateAll();
+        });
+
+        // ── DOMContentLoaded ──────────────────────────────────────────────────────
+        document.addEventListener("DOMContentLoaded", function() {
+            const ni = q("#NightsCount"); if (ni && (!ni.value || parseInt(ni.value)<1)) ni.value = 1;
+
+            const form = q("form");
+            if (form) {
+                form.addEventListener("submit", function(e) {
+                    if (q("#HasHotelHidden")?.value === "true") calculateCheckoutFromNights();
+
+                    syncSeatPricesFromInputs();
+                    applySeatPrices("Departure");
+                    applySeatPrices("Return");
+
+                    renderHiddenSeats("Departure");
+                    renderHiddenSeats("Return");
+
+                    calculateAll();
+
+                    if (!validateAllRows()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+            }
+
+            syncPrimePhones();
+            if (q("#HasHotelHidden")?.value === "true") calculateCheckoutFromNights();
+
+            function activateMode(type) {
+                qa(".cb-mode-option").forEach(b => b.classList.remove("active"));
+                q(`.cb-mode-option[data-type="${type}"]`)?.classList.add("active");
+                selectBookingType(type);
+            }
+
+            q("#modeHotel")?.addEventListener("click",    () => activateMode("hotel"));
+            q("#modeTransport")?.addEventListener("click", () => activateMode("transport"));
+            q("#modeBoth")?.addEventListener("click",      () => activateMode("both"));
+
+            const initialType = '@(Model.HasHotel && Model.HasTransportation ? "both" : Model.HasTransportation ? "transport" : "hotel")';
+            activateMode(initialType);
+
+            if (q("#TripType")) q("#TripType").value = postedTransportState?.tripType || q("#TripType").value || "Departure";
+
+            restoreTransportationPostback().then(() => { setRequiredSeatsVisibility(); calculateAll(); });
+        });
+    </script>
+}

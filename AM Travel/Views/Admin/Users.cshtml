@@ -1,0 +1,833 @@
+@model IEnumerable<BusinessLayer.DTOs.Account.AccountsDTO>
+
+@{
+    ViewData["Title"] = L["Users_Title"];
+    var totalCount = Model.Count();
+}
+
+<style>
+    :root {
+        --usr-hero-bg: linear-gradient(135deg, #ff7a18, #ffad42);
+        --usr-hero-glow: rgba(255,122,24,.18);
+        --usr-hero-text: #fff;
+        --usr-hero-sub: rgba(255,255,255,.92);
+        --usr-card-bg: #fff;
+        --usr-card-border: #f0d8c2;
+        --usr-card-shadow: rgba(255,122,24,.10);
+        --usr-input-bg: #fffaf5;
+        --usr-input-border: #f0d8c2;
+        --usr-input-text: #172033;
+        --usr-heading: #172033;
+        --usr-sub: #667085;
+        --usr-th: #667085;
+        --usr-td-border: #f0d8c2;
+        --usr-name: #172033;
+        --usr-count-bg: #fff3e6;
+        --usr-count-txt: #ff7a18;
+        --usr-modal-bg: #fff;
+        --usr-modal-border: #f0d8c2;
+        --usr-info-bg: #fffaf5;
+        --usr-info-border: #f3dfcc;
+        --usr-info-label: #667085;
+        --usr-info-val: #172033;
+        --usr-pwd-bg: #fffaf5;
+        --usr-pwd-border: #f0d8c2;
+        --usr-pwd-text: #172033;
+        --usr-cancel-bg: #f2f4f7;
+        --usr-cancel-txt: #344054;
+    }
+
+    html[data-theme="dark"] {
+        --usr-hero-bg: linear-gradient(135deg, #c45c0a, #d97c2a);
+        --usr-hero-glow: rgba(196,92,10,.22);
+        --usr-hero-text: #f5f0eb;
+        --usr-hero-sub: rgba(245,240,235,.88);
+        --usr-card-bg: #1e2535;
+        --usr-card-border: #2d3650;
+        --usr-card-shadow: rgba(0,0,0,.28);
+        --usr-input-bg: #252d3f;
+        --usr-input-border: #3a4460;
+        --usr-input-text: #d4cbc3;
+        --usr-heading: #e8ddd5;
+        --usr-sub: #8a96a8;
+        --usr-th: #8a96a8;
+        --usr-td-border: #2d3650;
+        --usr-name: #e8ddd5;
+        --usr-count-bg: rgba(196,92,10,.22);
+        --usr-count-txt: #e8925a;
+        --usr-modal-bg: #1e2535;
+        --usr-modal-border: #2d3650;
+        --usr-info-bg: #252d3f;
+        --usr-info-border: #313c54;
+        --usr-info-label: #8a96a8;
+        --usr-info-val: #d4cbc3;
+        --usr-pwd-bg: #252d3f;
+        --usr-pwd-border: #3a4460;
+        --usr-pwd-text: #d4cbc3;
+        --usr-cancel-bg: #252d3f;
+        --usr-cancel-txt: #8a96a8;
+    }
+
+    .users-page {
+        display: grid;
+        gap: 22px;
+    }
+
+    .users-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 32px;
+        padding: 32px;
+        color: var(--usr-hero-text);
+        background: var(--usr-hero-bg);
+        box-shadow: 0 24px 70px var(--usr-hero-glow);
+    }
+
+    .users-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 12% 15%, rgba(255,255,255,.18), transparent 26%);
+        pointer-events: none;
+    }
+
+    .users-hero::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -90px;
+        bottom: -110px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.12);
+    }
+
+    .users-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .users-title {
+        display: grid;
+        gap: 10px;
+    }
+
+    .admin-badge {
+        width: fit-content;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.24);
+        font-weight: 900;
+        color: var(--usr-hero-text);
+    }
+
+    .users-title h1 {
+        margin: 0;
+        font-size: clamp(34px, 5vw, 54px);
+        line-height: 1;
+        letter-spacing: -1px;
+        color: var(--usr-hero-text);
+    }
+
+    .users-title p {
+        margin: 0;
+        color: var(--usr-hero-sub);
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    .users-avatar-wrap {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        display: grid;
+        place-items: center;
+        border-radius: 38px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.22);
+        backdrop-filter: blur(12px);
+        flex-shrink: 0;
+    }
+
+    .users-avatar-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        border-radius: 44px;
+        border: 3px solid rgba(255,255,255,.22);
+    }
+
+    .users-avatar-wrap::after {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        border-radius: 44px;
+        border: 3px solid transparent;
+        border-top-color: #fff;
+        border-right-color: rgba(255,255,255,.72);
+        animation: users-avatar-spin 4s linear infinite;
+    }
+
+    .users-avatar {
+        position: relative;
+        z-index: 2;
+        width: 104px;
+        height: 104px;
+        border-radius: 32px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), rgba(255,255,255,.72)), linear-gradient(135deg, #fff, #fff3e6);
+        color: #ff7a18;
+        border: 1px solid rgba(255,255,255,.55);
+        font-size: 42px;
+        font-weight: 1000;
+        letter-spacing: -1px;
+        box-shadow: 0 18px 38px rgba(0,0,0,.16);
+    }
+
+    .users-avatar-status {
+        position: absolute;
+        right: 13px;
+        bottom: 13px;
+        z-index: 3;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #12b76a;
+        border: 4px solid #fff;
+    }
+
+    @@keyframes users-avatar-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .hero-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+    }
+
+    .hero-btn {
+        min-height: 46px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 900;
+        transition: .2s ease;
+        border: 1px solid rgba(255,255,255,.24);
+        color: var(--usr-hero-text);
+        background: rgba(255,255,255,.16);
+    }
+
+    .hero-btn.primary {
+        background: #fff;
+        color: #ff7a18;
+        border-color: #fff;
+        box-shadow: 0 14px 30px rgba(0,0,0,.12);
+    }
+
+    .hero-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .search-card {
+        background: var(--usr-card-bg);
+        border: 1px solid var(--usr-card-border);
+        border-radius: 28px;
+        padding: 20px;
+        box-shadow: 0 18px 42px var(--usr-card-shadow);
+        display: grid;
+        gap: 14px;
+        transition: background .3s, border-color .3s;
+    }
+
+    .search-title {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .search-title h2 {
+        margin: 0;
+        color: var(--usr-heading);
+    }
+
+    .search-count {
+        background: var(--usr-count-bg);
+        color: var(--usr-count-txt);
+        padding: 8px 13px;
+        border-radius: 999px;
+        font-weight: 900;
+        transition: background .3s, color .3s;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-box input {
+        width: 100%;
+        border: 1px solid var(--usr-input-border);
+        border-radius: 18px;
+        padding: 16px 52px 16px 18px;
+        background: var(--usr-input-bg);
+        color: var(--usr-input-text);
+        outline: none;
+        font-size: 15px;
+        transition: .2s ease;
+        box-sizing: border-box;
+    }
+
+    .search-box input:focus {
+        background: var(--usr-card-bg);
+        border-color: #ff7a18;
+        box-shadow: 0 0 0 5px rgba(255,122,24,.10);
+    }
+
+    .search-box input::placeholder {
+        color: var(--usr-sub);
+        opacity: .7;
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ff7a18;
+        font-size: 20px;
+    }
+
+    .users-card {
+        background: var(--usr-card-bg);
+        border: 1px solid var(--usr-card-border);
+        border-radius: 30px;
+        padding: 24px;
+        box-shadow: 0 18px 42px var(--usr-card-shadow);
+        overflow-x: auto;
+        transition: background .3s, border-color .3s;
+    }
+
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1100px;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid var(--usr-td-border);
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .users-table th {
+        color: var(--usr-th);
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .user-name {
+        font-weight: 900;
+        color: var(--usr-name);
+    }
+
+    .user-meta {
+        color: var(--usr-sub);
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .pill {
+        display: inline-flex;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .pill-role { background: #fff3e6; color: #ff7a18; }
+    .pill-success { background: rgba(18,183,106,.12); color: #12b76a; }
+    .pill-warning { background: rgba(247,144,9,.14); color: #f79009; }
+    .pill-danger { background: rgba(239,68,68,.12); color: #ef4444; }
+
+    html[data-theme="dark"] .pill-role { background: rgba(196,92,10,.22); color: #e8925a; }
+    html[data-theme="dark"] .pill-success { background: rgba(18,183,106,.16); color: #34d399; }
+    html[data-theme="dark"] .pill-warning { background: rgba(247,144,9,.16); color: #fbbf24; }
+    html[data-theme="dark"] .pill-danger { background: rgba(239,68,68,.16); color: #f87171; }
+
+    .row-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        border: none;
+        border-radius: 14px;
+        padding: 10px 14px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: .2s ease;
+        white-space: nowrap;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-active { background: rgba(18,183,106,.12); color: #12b76a; }
+    .btn-deactive { background: rgba(239,68,68,.12); color: #ef4444; }
+    .btn-block { background: rgba(239,68,68,.12); color: #ef4444; }
+    .btn-unblock { background: rgba(18,183,106,.12); color: #12b76a; }
+    .btn-password { background: #fff3e6; color: #ff7a18; }
+
+    html[data-theme="dark"] .btn-active { background: rgba(18,183,106,.18); color: #34d399; }
+    html[data-theme="dark"] .btn-deactive { background: rgba(239,68,68,.18); color: #f87171; }
+    html[data-theme="dark"] .btn-block { background: rgba(239,68,68,.18); color: #f87171; }
+    html[data-theme="dark"] .btn-unblock { background: rgba(18,183,106,.18); color: #34d399; }
+    html[data-theme="dark"] .btn-password { background: rgba(196,92,10,.22); color: #e8925a; }
+
+    .no-results {
+        display: none;
+        padding: 28px;
+        text-align: center;
+        color: var(--usr-sub);
+        font-weight: 800;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(23,32,51,.55);
+        backdrop-filter: blur(8px);
+        padding: 20px;
+    }
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+    .password-modal {
+        width: min(760px, 100%);
+        background: var(--usr-modal-bg);
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 28px 90px rgba(0,0,0,.32);
+        border: 1px solid var(--usr-modal-border);
+        transition: background .3s, border-color .3s;
+    }
+
+    .modal-head {
+        padding: 28px;
+        color: #fff;
+        background: var(--usr-hero-bg);
+    }
+
+    .modal-head h2 {
+        margin: 10px 0 6px;
+        font-size: 32px;
+    }
+
+    .modal-head p {
+        margin: 0;
+        color: rgba(255,255,255,.9);
+    }
+
+    .modal-body {
+        padding: 26px;
+        display: grid;
+        gap: 18px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .info-box {
+        padding: 14px;
+        border-radius: 18px;
+        background: var(--usr-info-bg);
+        border: 1px solid var(--usr-info-border);
+        transition: background .3s, border-color .3s;
+    }
+
+    .info-box small {
+        display: block;
+        color: var(--usr-info-label);
+        font-weight: 900;
+        margin-bottom: 6px;
+    }
+
+    .info-box strong {
+        color: var(--usr-info-val);
+        word-break: break-word;
+    }
+
+    .password-field {
+        display: grid;
+        gap: 8px;
+    }
+
+    .password-field label {
+        font-weight: 900;
+        color: var(--usr-heading);
+    }
+
+    .password-field input {
+        width: 100%;
+        border: 1px solid var(--usr-pwd-border);
+        border-radius: 16px;
+        padding: 14px 15px;
+        background: var(--usr-pwd-bg);
+        color: var(--usr-pwd-text);
+        outline: none;
+        font-size: 15px;
+        transition: border-color .2s, background .3s;
+        box-sizing: border-box;
+    }
+
+    .password-field input:focus {
+        border-color: rgba(255,122,24,.6);
+        background: var(--usr-modal-bg);
+        box-shadow: 0 0 0 5px rgba(255,122,24,.10);
+    }
+
+    .password-field input::placeholder {
+        color: var(--usr-sub);
+        opacity: .7;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .modal-btn {
+        border: none;
+        border-radius: 16px;
+        padding: 13px 20px;
+        font-weight: 900;
+        cursor: pointer;
+        font-size: 15px;
+        transition: .2s ease;
+    }
+
+    .modal-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .modal-btn.cancel {
+        background: var(--usr-cancel-bg);
+        color: var(--usr-cancel-txt);
+    }
+
+    .modal-btn.confirm {
+        background: linear-gradient(135deg, #ff7a18, #ffad42);
+        color: #fff;
+    }
+
+    @@media (max-width: 700px) {
+        .info-grid { grid-template-columns: 1fr; }
+        .modal-actions { flex-direction: column; }
+        .modal-btn { width: 100%; }
+        .hero-actions { flex-direction: column; }
+        .hero-btn { width: 100%; text-align: center; }
+        .users-avatar-wrap { width: 112px; height: 112px; border-radius: 32px; }
+        .users-avatar-wrap::before,
+        .users-avatar-wrap::after { border-radius: 38px; }
+        .users-avatar { width: 88px; height: 88px; border-radius: 27px; font-size: 34px; }
+    }
+</style>
+
+<div class="users-page">
+
+    <section class="users-hero">
+        <div class="users-hero-inner">
+            <div class="users-title">
+                <span class="admin-badge">@L["Users_Badge"]</span>
+                <h1>@L["Users_Heading"]</h1>
+                <p>@L["Users_Subtitle"]</p>
+            </div>
+
+            <div class="users-avatar-wrap">
+                <div class="users-avatar">AA</div>
+                <span class="users-avatar-status"></span>
+            </div>
+        </div>
+
+        <div class="hero-actions">
+            <a class="hero-btn primary" asp-action="CreateUser">@L["Users_CreateUser"]</a>
+            <a class="hero-btn" asp-controller="Dashboard" asp-action="Index">@L["Users_Dashboard"]</a>
+        </div>
+    </section>
+
+    <section class="search-card">
+        <div class="search-title">
+            <h2>@L["Users_SearchTitle"]</h2>
+
+            <div class="search-count">
+                <span id="visibleCount">@totalCount</span> / @totalCount
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input id="usersSearch"
+                   type="text"
+                   autocomplete="off"
+                   placeholder="@L["Users_SearchPH"]" />
+            <span class="search-icon">🔎</span>
+        </div>
+    </section>
+
+    <section class="users-card">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>@L["Users_ColUser"]</th>
+                    <th>@L["Users_ColRole"]</th>
+                    <th>@L["Users_ColActivation"]</th>
+                    <th>@L["Users_ColBlock"]</th>
+                    <th>@L["Users_ColJoinDate"]</th>
+                    <th>@L["Users_ColLastLogin"]</th>
+                    <th>@L["Users_ColActions"]</th>
+                </tr>
+            </thead>
+
+            <tbody id="usersTableBody">
+                @foreach (var user in Model)
+                {
+                    var searchableText = $"{user.FullName} {user.UserName} {user.PhoneNumber} {user.NationalId} {user.Role}".ToLowerInvariant();
+                    var notLoggedYet = L["Users_NotLoggedYet"].Value;
+                    var notSet = L["Users_NotSet"].Value;
+
+                    <tr class="user-row" data-search="@searchableText">
+                        <td>
+                            <div class="user-name">@user.FullName</div>
+                            <div class="user-meta">@L["Users_MetaUsername"]: @user.UserName</div>
+                            <div class="user-meta">@L["Users_MetaPhone"]: @user.PhoneNumber</div>
+                            <div class="user-meta">@L["Users_MetaNational"]: @user.NationalId</div>
+                        </td>
+
+                        <td>
+                            <span class="pill pill-role">@user.Role</span>
+                        </td>
+
+                        <td>
+                            @if (user.Activate)
+                            {
+                                <span class="pill pill-success">@L["Users_Active"]</span>
+                            }
+                            else
+                            {
+                                <span class="pill pill-warning">@L["Users_Inactive"]</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if (user.IsBlocked)
+                            {
+                                <span class="pill pill-danger">@L["Users_Blocked"]</span>
+                            }
+                            else
+                            {
+                                <span class="pill pill-success">@L["Users_Unblocked"]</span>
+                            }
+                        </td>
+
+                        <td>@user.JoinDate</td>
+                        <td>@(user.LastLogin?.ToString() ?? notLoggedYet)</td>
+
+                        <td>
+                            <div class="row-actions">
+
+                                <form asp-action="ChangeActivateStatus" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    @if (user.Activate)
+                                    {
+                                        <button class="action-btn btn-deactive" type="submit">@L["Users_Deactivate"]</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="action-btn btn-active" type="submit">@L["Users_Activate"]</button>
+                                    }
+                                </form>
+
+                                <form asp-action="ChangeBlockStatus" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    @if (user.IsBlocked)
+                                    {
+                                        <button class="action-btn btn-unblock" type="submit">@L["Users_Unblock"]</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="action-btn btn-block" type="submit">@L["Users_Block"]</button>
+                                    }
+                                </form>
+
+                                <button type="button"
+                                        class="action-btn btn-password open-password-modal"
+                                        data-user-id="@user.Id"
+                                        data-full-name="@user.FullName"
+                                        data-username="@user.UserName"
+                                        data-role="@user.Role"
+                                        data-phone="@user.PhoneNumber"
+                                        data-national="@user.NationalId"
+                                        data-join="@user.JoinDate"
+                                        data-last-login="@(user.LastLogin?.ToString() ?? notLoggedYet)"
+                                        data-not-set="@notSet">
+                                    @L["Users_ChangePwd"]
+                                </button>
+
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div id="noResults" class="no-results">
+            @L["Users_NoResults"]
+        </div>
+    </section>
+
+</div>
+
+<div id="passwordModal" class="modal-overlay">
+    <div class="password-modal">
+
+        <div class="modal-head">
+            <span class="admin-badge">@L["Users_ModalBadge"]</span>
+            <h2 id="modalFullName">User Name</h2>
+            <p>@L["Users_ModalSubtitle"]</p>
+        </div>
+
+        <form asp-action="ChangePassword" method="post" class="modal-body">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" id="modalUserId" name="userId" />
+
+            <div class="info-grid">
+                <div class="info-box"><small>@L["Users_ModalFullName"]</small><strong id="infoFullName"></strong></div>
+                <div class="info-box"><small>@L["Users_ModalUsername"]</small><strong id="infoUsername"></strong></div>
+                <div class="info-box"><small>@L["Users_ModalAccountType"]</small><strong id="infoRole"></strong></div>
+                <div class="info-box"><small>@L["Users_ModalPhone"]</small><strong id="infoPhone"></strong></div>
+                <div class="info-box"><small>@L["Users_ModalNational"]</small><strong id="infoNational"></strong></div>
+                <div class="info-box"><small>@L["Users_ModalJoinDate"]</small><strong id="infoJoin"></strong></div>
+                <div class="info-box"><small>@L["Users_ModalLastLogin"]</small><strong id="infoLastLogin"></strong></div>
+            </div>
+
+            <div class="password-field">
+                <label for="newPassword">@L["Users_ModalNewPwd"]</label>
+                <input id="newPassword"
+                       name="newPassword"
+                       type="password"
+                       placeholder="@L["Users_ModalNewPwdPH"]"
+                       required
+                       minlength="6" />
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="modal-btn cancel" id="closePasswordModal">@L["Users_ModalCancel"]</button>
+                <button type="submit" class="modal-btn confirm">@L["Users_ModalConfirm"]</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput  = document.getElementById("usersSearch");
+        const rows         = Array.from(document.querySelectorAll(".user-row"));
+        const visibleCount = document.getElementById("visibleCount");
+        const noResults    = document.getElementById("noResults");
+
+        searchInput.addEventListener("input", function () {
+            const value = this.value.trim().toLowerCase();
+            let count = 0;
+
+            rows.forEach(row => {
+                const match = (row.dataset.search || "").includes(value);
+                row.style.display = match ? "" : "none";
+                if (match) count++;
+            });
+
+            visibleCount.textContent = count;
+            noResults.style.display  = count === 0 ? "block" : "none";
+        });
+
+        const modal            = document.getElementById("passwordModal");
+        const closeBtn         = document.getElementById("closePasswordModal");
+        const modalUserId      = document.getElementById("modalUserId");
+        const modalFullName    = document.getElementById("modalFullName");
+        const infoFullName     = document.getElementById("infoFullName");
+        const infoUsername     = document.getElementById("infoUsername");
+        const infoRole         = document.getElementById("infoRole");
+        const infoPhone        = document.getElementById("infoPhone");
+        const infoNational     = document.getElementById("infoNational");
+        const infoJoin         = document.getElementById("infoJoin");
+        const infoLastLogin    = document.getElementById("infoLastLogin");
+        const passwordInput    = document.getElementById("newPassword");
+
+        document.querySelectorAll(".open-password-modal").forEach(button => {
+            button.addEventListener("click", function () {
+                const notSet = this.dataset.notSet || "-";
+
+                modalUserId.value = this.dataset.userId || "";
+                modalFullName.textContent = this.dataset.fullName || "User";
+
+                infoFullName.textContent  = this.dataset.fullName  || notSet;
+                infoUsername.textContent  = this.dataset.username  || notSet;
+                infoRole.textContent      = this.dataset.role      || notSet;
+                infoPhone.textContent     = this.dataset.phone     || notSet;
+                infoNational.textContent  = this.dataset.national  || notSet;
+                infoJoin.textContent      = this.dataset.join      || notSet;
+                infoLastLogin.textContent = this.dataset.lastLogin || notSet;
+
+                passwordInput.value = "";
+                modal.classList.add("show");
+                setTimeout(() => passwordInput.focus(), 150);
+            });
+        });
+
+        closeBtn.addEventListener("click", () => modal.classList.remove("show"));
+
+        modal.addEventListener("click", function (e) {
+            if (e.target === modal) modal.classList.remove("show");
+        });
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") modal.classList.remove("show");
+        });
+    </script>
+}
